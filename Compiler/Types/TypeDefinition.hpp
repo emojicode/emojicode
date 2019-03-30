@@ -12,8 +12,6 @@
 #include "CompilerError.hpp"
 #include "Generic.hpp"
 #include "Lex/SourcePosition.hpp"
-#include "Scoping/Scope.hpp"
-#include "Functions/Mood.hpp"
 #include "Type.hpp"
 #include <functional>
 #include <map>
@@ -30,6 +28,8 @@ class Type;
 namespace EmojicodeCompiler {
 
 class ASTExpr;
+class Scope;
+enum class Mood;
 
 struct InstanceVariableDeclaration {
     InstanceVariableDeclaration() = delete;
@@ -115,7 +115,7 @@ public:
     void eachFunctionWithoutInitializers(const std::function<void(Function *)>& cb) const;
 
     /// @retunrs A reference to the instance scope for SemanticAnalysis.
-    Scope& instanceScope() { return scope_; }
+    Scope& instanceScope() { return *scope_.get(); }
 
     /// Whether the type was exported in the package it was defined.
     bool exported() const { return exported_; }
@@ -155,7 +155,7 @@ protected:
     virtual ~TypeDefinition();
 
 private:
-    Scope scope_;
+    std::unique_ptr<Scope> scope_;
 
     std::map<std::u32string, std::unique_ptr<Function>> methods_;
     std::map<std::u32string, std::unique_ptr<Function>> typeMethods_;

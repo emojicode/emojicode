@@ -17,6 +17,7 @@
 #include "Types/Protocol.hpp"
 #include "Types/Type.hpp"
 #include "Lex/SourceManager.hpp"
+#include "Scoping/Scope.hpp"
 #include <algorithm>
 #include <iostream>
 

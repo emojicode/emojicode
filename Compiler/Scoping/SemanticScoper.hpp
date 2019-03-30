@@ -9,7 +9,6 @@
 #ifndef CallableScoper_hpp
 #define CallableScoper_hpp
 
-#include "Functions/Function.hpp"
 #include "SemanticScopeStats.hpp"
 #include "Scope.hpp"
 #include <list>
@@ -25,6 +24,8 @@ struct ResolvedVariable {
 
 struct FunctionObjectVariableInformation;
 class PathAnalyser;
+class Function;
+struct Parameter;
 
 /// Scoper used during Semantic Analysis. Assigns ID's to variables that are used with IDScoper later.
 class SemanticScoper {

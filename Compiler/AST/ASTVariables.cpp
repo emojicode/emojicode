@@ -9,12 +9,14 @@
 #include "ASTVariables.hpp"
 #include "ASTBinaryOperator.hpp"
 #include "ASTInitialization.hpp"
+#include "ASTType.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Scoping/SemanticScoper.hpp"
 #include "Scoping/VariableNotFoundError.hpp"
 #include "Types/TypeExpectation.hpp"
+#include "Functions/Function.hpp"
 
 namespace EmojicodeCompiler {
 

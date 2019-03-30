@@ -10,6 +10,7 @@
 #include "Functions/Function.hpp"
 #include "Types/Class.hpp"
 #include "Types/ValueType.hpp"
+#include "Scoping/Scope.hpp"
 
 namespace EmojicodeCompiler {
 

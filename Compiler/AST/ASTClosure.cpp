@@ -15,11 +15,14 @@
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Types/TypeExpectation.hpp"
+#include "Functions/Function.hpp"
 
 namespace EmojicodeCompiler {
 
 ASTClosure::ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition &p, bool isEscaping)
         : ASTExpr(p), closure_(std::move(closure)), isEscaping_(isEscaping) {}
+
+ASTClosure::~ASTClosure() = default;
 
 Type ASTClosure::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     closure_->setClosure();
@@ -115,6 +118,12 @@ void ASTClosure::applyBoxingFromExpectation(ExpressionAnalyser *analyser, const 
         }
     }
 }
+
+ASTCallableBox::ASTCallableBox(std::shared_ptr<ASTExpr> expr, const SourcePosition &p, const Type &exprType,
+                               std::unique_ptr<Function> thunk)
+    : ASTBoxing(std::move(expr), p, exprType), thunk_(std::move(thunk)) {}
+
+ASTCallableBox::~ASTCallableBox() = default;
 
 void ASTCallableBox::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     analyseAllocation(type);

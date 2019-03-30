@@ -20,13 +20,10 @@ namespace EmojicodeCompiler {
 class ClosureCodeGenerator : public FunctionCodeGenerator {
 public:
     /// Constructor for a normal closure.
-    ClosureCodeGenerator(const Capture &capture, Function *f, CodeGenerator *generator, bool escaping)
-        : FunctionCodeGenerator(f, f->unspecificReification().function, generator),
-          capture_(capture), escaping_(escaping) {}
+    ClosureCodeGenerator(const Capture &capture, Function *f, CodeGenerator *generator, bool escaping);
 
     /// Constructor for a callable thunk.
-    ClosureCodeGenerator(Function *f, CodeGenerator *generator)
-        : FunctionCodeGenerator(f, f->unspecificReification().function, generator), thunk_(true) {}
+    ClosureCodeGenerator(Function *f, CodeGenerator *generator);
 
     llvm::Value* thisValue() const override {
         assert(capture_.capturesSelf() || thunk_);

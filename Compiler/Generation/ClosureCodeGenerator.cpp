@@ -12,6 +12,15 @@
 
 namespace EmojicodeCompiler {
 
+
+ClosureCodeGenerator::ClosureCodeGenerator(const Capture &capture, Function *f, CodeGenerator *generator, bool escaping)
+    : FunctionCodeGenerator(f, f->unspecificReification().function, generator),
+    capture_(capture), escaping_(escaping) {}
+
+
+ClosureCodeGenerator::ClosureCodeGenerator(Function *f, CodeGenerator *generator)
+    : FunctionCodeGenerator(f, f->unspecificReification().function, generator), thunk_(true) {}
+
 void ClosureCodeGenerator::declareArguments(llvm::Function *llvmFunction) {
     unsigned int i = 0;
     auto it = llvmFunction->args().begin();

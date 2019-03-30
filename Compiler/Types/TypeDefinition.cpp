@@ -11,14 +11,15 @@
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "Types/Type.hpp"
+#include "Scoping/Scope.hpp"
 #include <algorithm>
 
 namespace EmojicodeCompiler {
 
 TypeDefinition::TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation,
                                bool exported)
-    : name_(std::move(name)), package_(p), documentation_(std::move(documentation)), position_(pos),
-      exported_(exported) {}
+    : scope_(std::make_unique<Scope>()), name_(std::move(name)), package_(p), documentation_(std::move(documentation)),
+      position_(pos), exported_(exported) {}
 
 TypeDefinition::~TypeDefinition() = default;
 

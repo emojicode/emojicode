@@ -8,6 +8,7 @@
 
 #include "PathAnalyser.hpp"
 #include "Scoping/SemanticScoper.hpp"
+#include "CompilerError.hpp"
 #include <algorithm>
 #include <cassert>
 

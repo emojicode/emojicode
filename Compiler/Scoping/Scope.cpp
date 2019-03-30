@@ -11,6 +11,7 @@
 #include "CompilerError.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Analysis/PathAnalyser.hpp"
+#include "Variable.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -19,7 +20,7 @@ Variable& Scope::declareVariable(const std::u32string &variable, const Type &typ
     return declareVariableWithId(variable, type, constant, VariableID(maxVariableId_++), p);
 }
 
-Variable& Scope::declareVariableWithId(const std::u32string &variable, Type type, bool constant, VariableID id,
+Variable& Scope::declareVariableWithId(const std::u32string &variable, Type type, bool constant, size_t id,
                                        const SourcePosition &p) {
     if (hasLocalVariable(variable)) {
         throw CompilerError(p, "Cannot redeclare variable.");

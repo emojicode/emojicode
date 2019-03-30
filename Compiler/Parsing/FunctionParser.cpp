@@ -25,6 +25,7 @@
 #include "Compiler.hpp"
 #include "Lex/Token.hpp"
 #include "Package/Package.hpp"
+#include "Functions/Function.hpp"
 
 namespace EmojicodeCompiler {
 

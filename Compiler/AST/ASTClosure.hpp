@@ -37,6 +37,8 @@ public:
     void toCode(PrettyStream &pretty) const override;
     void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
 
+    ~ASTClosure();
+
 private:
     std::unique_ptr<Function> closure_;
     Capture capture_;
@@ -51,13 +53,14 @@ private:
 class ASTCallableBox final : public ASTBoxing, public MFHeapAutoAllocates {
 public:
     ASTCallableBox(std::shared_ptr<ASTExpr> expr, const SourcePosition &p, const Type &exprType,
-                   std::unique_ptr<Function> thunk)
-    : ASTBoxing(std::move(expr), p, exprType), thunk_(std::move(thunk)) {}
+                   std::unique_ptr<Function> thunk);
 
     void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
 
     llvm::Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(PrettyStream &pretty) const override {}
+
+    ~ASTCallableBox();
 
 private:
     std::unique_ptr<Function> thunk_;

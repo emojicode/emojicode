@@ -10,7 +10,6 @@
 #define Variable_hpp
 
 #include <utility>
-
 #include "Lex/SourcePosition.hpp"
 #include "Types/Type.hpp"
 

@@ -20,14 +20,14 @@ void TypeDescriptionGenerator::addType(const Type &type) {
     auto notype = type.unoptionalized().unboxed();
     switch (notype.type()) {
         case TypeType::Class:
-            genericInfo = buildConstant00GEP(fg_->typeHelper().classInfo(), notype.klass()->classInfo(), fg_->ctx());
+            genericInfo = buildConstant00Gep(fg_->typeHelper().classInfo(), notype.klass()->classInfo(), fg_->ctx());
             break;
         case TypeType::Protocol:
             genericInfo = fg_->generator()->runTimeTypeInfoForProtocol(notype);
             break;
         case TypeType::ValueType:
         case TypeType::Enum:
-            genericInfo = buildConstant00GEP(fg_->typeHelper().boxInfo(), fg_->boxInfoFor(notype), fg_->ctx());
+            genericInfo = buildConstant00Gep(fg_->typeHelper().boxInfo(), fg_->boxInfoFor(notype), fg_->ctx());
             break;
         case TypeType::Something:
             genericInfo = fg_->generator()->somethingRTTI();
@@ -137,7 +137,7 @@ llvm::Value* TypeDescriptionGenerator::finishStatic() {
     auto var = new llvm::GlobalVariable(*fg_->generator()->module(), type, true,
                                         llvm::GlobalValue::LinkageTypes::PrivateLinkage, init);
     var->setUnnamedAddr(llvm::GlobalVariable::UnnamedAddr::Global);
-    return buildConstant00GEP(type, var, fg_->ctx());
+    return buildConstant00Gep(type, var, fg_->ctx());
 }
 
 }  // namespace EmojicodeCompiler

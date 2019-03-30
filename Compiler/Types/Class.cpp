@@ -14,6 +14,7 @@
 #include "Package/Package.hpp"
 #include "TypeContext.hpp"
 #include "Utils/StringUtils.hpp"
+#include "Scoping/Scope.hpp"
 #include <algorithm>
 #include <utility>
 

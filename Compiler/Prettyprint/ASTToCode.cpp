@@ -20,6 +20,7 @@
 #include "AST/ASTUnsafeBlock.hpp"
 #include "AST/ASTVariables.hpp"
 #include "AST/ASTSuper.hpp"
+#include "AST/ASTType.hpp"
 #include "AST/ASTConditionalAssignment.hpp"
 #include "AST/ASTTypeAsValue.hpp"
 #include "Parsing/OperatorHelper.hpp"

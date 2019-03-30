@@ -18,11 +18,11 @@ namespace EmojicodeCompiler {
 class ExpressionAnalyser;
 
 struct VariableCapture {
-    VariableCapture(VariableID id, Type type, VariableID captureId) : sourceId(id), type(std::move(type)), captureId(captureId) {}
-    VariableID sourceId;
+    VariableCapture(size_t id, Type type, size_t captureId) : sourceId(id), type(std::move(type)), captureId(captureId) {}
+    size_t sourceId;
     Type type;
     /// The ID of the variable copy in the Closure
-    VariableID captureId;
+    size_t captureId;
 };
 
 /** A @c CapturingCallableScoper can automatically capture unknown variables from another scope. These two

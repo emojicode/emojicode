@@ -11,6 +11,7 @@
 #include "Generation/Declarator.hpp"
 #include "Compiler.hpp"
 #include "Types/TypeContext.hpp"
+#include "Functions/Function.hpp"
 #include <llvm/Support/raw_ostream.h>
 
 namespace EmojicodeCompiler {

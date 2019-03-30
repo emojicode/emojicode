@@ -14,6 +14,8 @@
 
 namespace EmojicodeCompiler {
 
+class Variable;
+class Type;
 class Compiler;
 class PathAnalyser;
 struct SourcePosition;
