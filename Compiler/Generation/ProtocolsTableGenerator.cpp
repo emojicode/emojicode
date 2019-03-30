@@ -32,10 +32,7 @@ llvm::Constant* ProtocolsTableGenerator::createProtocolTable(TypeDefinition *typ
     auto array = new llvm::GlobalVariable(*generator_->module(), arrayType, true,
                                           llvm::GlobalValue::LinkageTypes::PrivateLinkage,
                                           llvm::ConstantArray::get(arrayType, entries));
-    return llvm::ConstantExpr::getInBoundsGetElementPtr(arrayType, array, llvm::ArrayRef<llvm::Constant *>{
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator_->context()), 0),
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator_->context()), 0)
-    });
+    return buildConstant00Gep(arrayType, array, generator_->context());
 }
 
 void ProtocolsTableGenerator::generate(const Type &type) {
@@ -110,10 +107,7 @@ llvm::GlobalVariable* ProtocolsTableGenerator::createDispatchTable(const Type &t
     auto array = llvm::ConstantArray::get(arrayType, virtualTable);
     auto arrayVar = new llvm::GlobalVariable(*generator_->module(), arrayType, true,
                                              llvm::GlobalValue::LinkageTypes::PrivateLinkage, array);
-    auto avGep = llvm::ConstantExpr::getInBoundsGetElementPtr(arrayType, arrayVar, llvm::ArrayRef<llvm::Constant *>{
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator_->context()), 0),
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator_->context()), 0)
-    });
+    auto avGep = buildConstant00Gep(arrayType, arrayVar, generator_->context());
 
     auto load = llvm::ConstantInt::get(llvm::Type::getInt1Ty(generator_->context()),
                                        (type.type() == TypeType::Class ||

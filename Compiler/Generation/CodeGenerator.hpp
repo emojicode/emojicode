@@ -108,6 +108,8 @@ private:
     std::map<Type, llvm::Constant*> protocolIds_;
 };
 
+llvm::Constant* buildConstant00Gep(llvm::Type *type, llvm::Constant *value, llvm::LLVMContext &context);
+
 }  // namespace EmojicodeCompiler
 
 #endif /* CodeGenerator_hpp */

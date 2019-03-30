@@ -15,8 +15,6 @@
 
 namespace EmojicodeCompiler {
 
-llvm::Constant* buildConstant00GEP(llvm::Type *type, llvm::Constant *value, llvm::LLVMContext &context); // TODO: MOVE INTO PROPER .hpp
-
 void TypeDescriptionGenerator::addType(const Type &type) {
     llvm::Constant *genericInfo;
     auto notype = type.unoptionalized().unboxed();

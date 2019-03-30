@@ -79,7 +79,7 @@ llvm::Constant* createGenericTypeInfo(CodeGenerator *cg, Generic<T, E> *generic,
     });
 }
 
-llvm::Constant* buildConstant00GEP(llvm::Type *type, llvm::Constant *value, llvm::LLVMContext &context) {
+llvm::Constant* buildConstant00Gep(llvm::Type *type, llvm::Constant *value, llvm::LLVMContext &context) {
     return llvm::ConstantExpr::getInBoundsGetElementPtr(type, value,
                                                         llvm::ArrayRef<llvm::Constant *> {
                                                             llvm::ConstantInt::get(llvm::Type::getInt32Ty(context), 0),
@@ -285,7 +285,7 @@ void CodeGenerator::createClassInfo(Class *klass) {
     }
 
     auto protocolTable = protocolsTableGenerator_->createProtocolTable(klass);
-    auto gep = buildConstant00GEP(virtualTable->getType()->getElementType(), virtualTable, context());
+    auto gep = buildConstant00Gep(virtualTable->getType()->getElementType(), virtualTable, context());
     auto initializer = llvm::ConstantStruct::get(typeHelper_.classInfo(), {
         createGenericTypeInfo(this, klass, RunTimeTypeInfoFlags::Class), gep, protocolTable, superclass });
     auto info = new llvm::GlobalVariable(*module(), typeHelper_.classInfo(), true,
