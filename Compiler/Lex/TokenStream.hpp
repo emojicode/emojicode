@@ -43,8 +43,8 @@ public:
 
     /// @returns True iff the end of the stream has not been reached and the next token is an identifer and the
     ///          first value of the token is the specified one.
-    bool nextTokenIs(char32_t c) const {
-        return hasMoreTokens() && nextToken().type() == TokenType::Identifier && nextToken().value()[0] == c;
+    bool nextTokenIs(char32_t c, TokenType type = TokenType::Identifier) const {
+        return hasMoreTokens() && nextToken().type() == type && nextToken().value()[0] == c;
     }
 
     /// Returns true iff the stream has more tokens and the next token does not match the provided value as determined
@@ -59,7 +59,7 @@ public:
     }
 
     /// Consumes the next token and returns true iff by nextTokenIs(char32_t) returns true for the provided value.
-    bool consumeTokenIf(char32_t c);
+    bool consumeTokenIf(char32_t c, TokenType type = TokenType::Identifier);
 
     /// Consumes the next token and returns true iff by nextTokenIs(TokenType) returns true for the provided value.
     bool consumeTokenIf(TokenType type);

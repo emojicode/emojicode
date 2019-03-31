@@ -91,12 +91,12 @@ void ASTUnsafeBlock::toCode(PrettyStream &pretty) const {
 
 void ASTIf::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty.indent() << "↪️ " << conditions_.front() << " " << blocks_.front();
+    pretty.indent() << "↪️ " << conditions_.front() << " " << blocks_.front().block;
     for (size_t i = 1; i < conditions_.size(); i++) {
-        pretty.indent() << "🙅↪️ " << conditions_[i] << " " << blocks_[i];
+        pretty.indent() << "🙅↪️ " << conditions_[i] << " " << blocks_[i].block;
     }
     if (hasElse()) {
-        pretty.indent() << "🙅 " << blocks_.back();
+        pretty.indent() << "🙅 " << blocks_.back().block;
     }
 }
 

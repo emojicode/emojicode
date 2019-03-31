@@ -59,6 +59,7 @@ enum class TokenType {
     Mutable,
     Call,
     Generic,
+    Decorator,
 
     Class,
     Enumeration,

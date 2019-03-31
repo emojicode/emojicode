@@ -61,6 +61,7 @@ const char* Token::stringNameForType(TokenType type) {
         case TokenType::BlankLine: return "BlankLine";
         case TokenType::LineBreak: return "Line Break";
         case TokenType::Generic: return "Generic";
+        case TokenType::Decorator: return "Decorator";
         case TokenType::PackageDocumentationComment: return "Package Documentation Token";
     }
 }

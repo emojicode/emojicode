@@ -111,6 +111,7 @@ enum Emojis {
     E_CONSTRUCTION_SIGN = 0x1F6A7,
     E_RED_TRIANGLE_POINTED_UP = 0x1F53A,
     E_SMALL_ORANGE_DIAMOND = 0x1F538,
+    E_PINE_DECORATION = 0x1F38D,
 };
 
 }  // namespace EmojicodeCompiler

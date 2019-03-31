@@ -17,9 +17,15 @@ namespace EmojicodeCompiler {
 
 class ASTIf final : public ASTStatement {
 public:
+    enum class BranchSpeed {
+        Unknown, Fast, Slow
+    };
+
     using ASTStatement::ASTStatement;
     void addCondition(const std::shared_ptr<ASTExpr> &ptr) { conditions_.emplace_back(ptr); }
-    void addBlock(ASTBlock ptr) { blocks_.emplace_back(std::move(ptr)); }
+    void addBlock(ASTBlock ptr, BranchSpeed speed = BranchSpeed::Unknown) {
+        blocks_.emplace_back(std::move(ptr), speed);
+    }
 
     void analyse(FunctionAnalyser *) override;
     void generate(FunctionCodeGenerator *) const override;
@@ -29,8 +35,13 @@ public:
 
     bool hasElse() const { return conditions_.size() < blocks_.size(); }
 private:
+    struct Branch {
+        Branch(ASTBlock block, BranchSpeed speed) : block(std::move(block)), speed(speed) {}
+        ASTBlock block;
+        BranchSpeed speed;
+    };
     std::vector<std::shared_ptr<ASTExpr>> conditions_;
-    std::vector<ASTBlock> blocks_;
+    std::vector<Branch> blocks_;
 };
 
 class ASTRepeatWhile final : public ASTStatement {

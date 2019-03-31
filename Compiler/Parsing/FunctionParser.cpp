@@ -216,7 +216,14 @@ std::unique_ptr<ASTStatement> FunctionParser::parseIf(const SourcePosition &posi
     auto node = std::make_unique<ASTIf>(position);
     do {
         node->addCondition(parseCondition());
-        node->addBlock(parseBlock());
+        ASTIf::BranchSpeed speed = ASTIf::BranchSpeed::Unknown;
+        if (stream_.consumeTokenIf(0x1F40C, TokenType::Decorator)) {
+            speed = ASTIf::BranchSpeed::Slow;
+        }
+        if (stream_.consumeTokenIf(0x1F3CE, TokenType::Decorator)) {
+            speed = ASTIf::BranchSpeed::Fast;
+        }
+        node->addBlock(parseBlock(), speed);
     } while (stream_.consumeTokenIf(TokenType::ElseIf));
 
     if (stream_.consumeTokenIf(TokenType::Else)) {

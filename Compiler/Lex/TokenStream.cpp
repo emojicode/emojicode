@@ -29,8 +29,8 @@ Token TokenStream::consumeToken(TokenType type) {
     return advanceLexer();
 }
 
-bool TokenStream::consumeTokenIf(char32_t c) {
-    if (nextTokenIs(c)) {
+bool TokenStream::consumeTokenIf(char32_t c, TokenType type) {
+    if (nextTokenIs(c, type)) {
         advanceLexer();
         return true;
     }

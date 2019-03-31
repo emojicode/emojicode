@@ -10,6 +10,8 @@
 #include "Compiler.hpp"
 #include "Generation/CallCodeGenerator.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
+#include <llvm/IR/Metadata.h>
+#include <llvm/IR/MDBuilder.h>
 
 namespace EmojicodeCompiler {
 
@@ -25,11 +27,18 @@ void ASTIf::generate(FunctionCodeGenerator *fg) const {
 
         auto cond = conditions_[i]->generate(fg);
         fg->releaseTemporaryObjects();
-        fg->builder().CreateCondBr(cond, thenBlock, elseBlock);
-        fg->builder().SetInsertPoint(thenBlock);
-        blocks_[i].generate(fg);
+        auto br = fg->builder().CreateCondBr(cond, thenBlock, elseBlock);
+        if (blocks_[i].speed == BranchSpeed::Slow) {
+            br->setMetadata(llvm::LLVMContext::MD_prof, llvm::MDBuilder(fg->ctx()).createBranchWeights(1, 99));
+        }
+        else if (blocks_[i].speed == BranchSpeed::Fast) {
+            br->setMetadata(llvm::LLVMContext::MD_prof, llvm::MDBuilder(fg->ctx()).createBranchWeights(99, 1));
+        }
 
-        if (!blocks_[i].returnedCertainly()) {
+        fg->builder().SetInsertPoint(thenBlock);
+        blocks_[i].block.generate(fg);
+
+        if (!blocks_[i].block.returnedCertainly()) {
             fg->builder().CreateBr(afterIfBlock);
             addAfter = true;
         }
@@ -37,9 +46,9 @@ void ASTIf::generate(FunctionCodeGenerator *fg) const {
     }
 
     if (hasElse()) {
-        blocks_.back().generate(fg);
+        blocks_.back().block.generate(fg);
 
-        if (!blocks_.back().returnedCertainly()) {
+        if (!blocks_.back().block.returnedCertainly()) {
             fg->builder().CreateBr(afterIfBlock);
             addAfter = true;
         }

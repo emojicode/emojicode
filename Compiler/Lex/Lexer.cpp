@@ -156,6 +156,9 @@ bool Lexer::beginToken(Token *token, TokenConstructionState *constState) const {
             token->type_ = TokenType::Operator;
             token->value_.push_back(codePoint());
             return true;
+        case E_PINE_DECORATION:
+            token->type_ = TokenType::Decorator;
+            return true;
         default:
             break;
     }
@@ -181,6 +184,13 @@ bool Lexer::beginToken(Token *token, TokenConstructionState *constState) const {
 
 Lexer::TokenState Lexer::continueToken(Token *token, TokenConstructionState *constState) const {
     switch (token->type()) {
+        case TokenType::Decorator: {
+            if (!isEmoji(codePoint())) {
+                throw CompilerError(position(), "🎍 must be followed by an emoji.");
+            }
+            token->value_.push_back(codePoint());
+            return TokenState::Ended;
+        }
         case TokenType::Identifier:
             return continueIdentifierToken(token, constState);
         case TokenType::Operator:

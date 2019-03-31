@@ -26,16 +26,16 @@ void ASTIf::analyse(FunctionAnalyser *analyser) {
         analyser->pathAnalyser().beginBranch();
         analyser->scoper().pushScope();
         analyser->expectType(analyser->boolean(), &conditions_[i]);
-        blocks_[i].analyse(analyser);
-        blocks_[i].popScope(analyser);
+        blocks_[i].block.analyse(analyser);
+        blocks_[i].block.popScope(analyser);
         analyser->pathAnalyser().endBranch();
     }
 
     if (hasElse()) {
         analyser->pathAnalyser().beginBranch();
         analyser->scoper().pushScope();
-        blocks_.back().analyse(analyser);
-        blocks_.back().popScope(analyser);
+        blocks_.back().block.analyse(analyser);
+        blocks_.back().block.popScope(analyser);
         analyser->pathAnalyser().endBranch();
 
         analyser->pathAnalyser().finishMutualExclusiveBranches();
@@ -48,11 +48,11 @@ void ASTIf::analyse(FunctionAnalyser *analyser) {
 void ASTIf::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
     for (size_t i = 0; i < conditions_.size(); i++) {
         conditions_[i]->analyseMemoryFlow(analyser, MFFlowCategory::Borrowing);
-        blocks_[i].analyseMemoryFlow(analyser);
-        analyser->popScope(&blocks_[i]);
+        blocks_[i].block.analyseMemoryFlow(analyser);
+        analyser->popScope(&blocks_[i].block);
     }
     if (hasElse()) {
-        blocks_.back().analyseMemoryFlow(analyser);
+        blocks_.back().block.analyseMemoryFlow(analyser);
     }
 }
 
