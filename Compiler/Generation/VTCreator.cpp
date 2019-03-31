@@ -3,10 +3,15 @@
 //
 
 #include "VTCreator.hpp"
-#include "Declarator.hpp"
+#include "Types/Class.hpp"
+#include "CodeGenerator.hpp"
 #include "Functions/Function.hpp"
 
 namespace EmojicodeCompiler {
+
+VTCreator::VTCreator(Class *klass, CodeGenerator *cg)
+    : generator_(cg), klass_(klass), hasSuperClass_(klass->superclass() != nullptr),
+    vti_(hasSuperClass_ ? klass->superclass()->virtualFunctionCount() : 1) {}
 
 void VTCreator::assign(Function *function) {
     decltype(vti_) designatedVti;
@@ -21,7 +26,7 @@ void VTCreator::assign(Function *function) {
     if (function->virtualTableThunk() != nullptr) {
         auto layer = function->virtualTableThunk();
         layer->createUnspecificReification();
-        declarator_.declareLlvmFunction(layer);
+        generator_->declareLlvmFunction(layer);
         functions_[designatedVti] = layer->unspecificReification().function;
 
         functions_.emplace_back(function->unspecificReification().function);
@@ -48,11 +53,11 @@ void VTCreator::build() {
 void VTCreator::assign() {
     for (auto init : klass_->initializerList()) {
         init->createUnspecificReification();
-        declarator_.declareLlvmFunction(init);
+        generator_->declareLlvmFunction(init);
     }
 
     klass_->deinitializer()->createUnspecificReification();
-    declarator_.declareLlvmFunction(klass_->deinitializer());
+    generator_->declareLlvmFunction(klass_->deinitializer());
     klass_->deinitializer()->unspecificReification().setVti(0);
     if (functions_.empty()) {
         functions_.emplace_back(klass_->deinitializer()->unspecificReification().function);
@@ -65,7 +70,7 @@ void VTCreator::assign() {
         function->createUnspecificReification();
         if (function->unspecificReification().function == nullptr) {
             // If this is a super boxing layer it was already declared (see assign(Function*))
-            declarator_.declareLlvmFunction(function);
+            generator_->declareLlvmFunction(function);
         }
 
         if (function->accessLevel() == AccessLevel::Private) {

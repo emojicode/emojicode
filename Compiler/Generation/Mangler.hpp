@@ -18,6 +18,7 @@ class Function;
 class Type;
 class Class;
 class Type;
+class Protocol;
 class TypeDefinition;
 
 std::string mangleFunction(Function *function, const std::map<size_t, Type> &genericArgs);
@@ -25,7 +26,7 @@ std::string mangleTypeName(const Type &type);
 std::string mangleClassInfoName(Class *klass);
 std::string mangleBoxInfoName(const Type &type);
 std::string mangleProtocolConformance(const Type &type, const Type &protocol);
-std::string mangleProtocolRunTimeTypeInfo(const Type &type);
+std::string mangleProtocolRunTimeTypeInfo(Protocol *protocol);
 std::string mangleMultiprotocolConformance(const Type &multi, const Type &conformer);
 std::string mangleBoxRetain(const Type &type);
 std::string mangleBoxRelease(const Type &type);

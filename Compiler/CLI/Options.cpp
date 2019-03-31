@@ -37,7 +37,7 @@ Options::Options(int argc, char *argv[]) {
     args::Flag format(parser, "format", "Format source code", {"format"});
     args::Flag color(parser, "color", "Always show compiler messages in color", {"color"});
     args::Flag optimize(parser, "optimize", "Compile with optimizations", {'O'});
-    args::Flag printIr(parser, "print-ir", "Print the IR to the standard output", {"print-ir"});
+    args::Flag printIr(parser, "emit-llvm", "Print the IR to the standard output", {"emit-llvm"});
     args::ValueFlagList<std::string> searchPaths(parser, "search path",
                                                  "Adds the path to the package search path (after './packages')",
                                                  {'S'});
@@ -58,7 +58,7 @@ Options::Options(int argc, char *argv[]) {
         if (package) {
             mainPackageName_ = package.Get();
         }
-        if (object) {
+        if (object || printIr_) {
             pack_ = false;
         }
         if (out) {
@@ -174,6 +174,17 @@ std::string Options::objectPath() const {
         parentPath.append("/");
     }
     return parentPath + std::string(llvm::sys::path::stem(mainFile_)) + ".o";
+}
+
+std::string Options::llvmIrPath() const {
+    if (!printIr_) {
+        return "";
+    }
+    std::string parentPath = llvm::sys::path::parent_path(mainFile_);
+    if (!parentPath.empty()) {
+        parentPath.append("/");
+    }
+    return parentPath + std::string(llvm::sys::path::stem(mainFile_)) + ".ll";
 }
 
 }  // namespace CLI

@@ -28,6 +28,7 @@ class Class;
 class Protocol;
 class ValueType;
 class Compiler;
+class CodeGenerator;
 
 /// CompilerDelegate is an interface class, which is used by Compiler to notify about certain events, like
 /// compiler errors.
@@ -49,34 +50,118 @@ public:
     virtual ~CompilerDelegate() = default;
 };
 
-/// The Compiler class is the main interface to the compiler.
+/// The Compiler manages the compilation.
 ///
-/// It manages the loading of packages, parses and optionally analyses and generates LLVM IR for the main package,
-/// emits it as an object file.
+/// The Compiler class is highly configurable and its steps are described by instance of Phase. To compile a package
+/// an instance of Compiler must be created and appropriate phases must be added. Normally, each instance requires at
+/// least ParsePhase.
 class Compiler final {
 public:
+    /// Abstract class representing compiler phase.
+    class Phase {
+    public:
+        virtual void perform(Compiler *compiler) = 0;
+        virtual ~Phase() = default;
+    };
+
+    /// Parses the main package.
+    class ParsePhase final : public Phase {
+        void perform(Compiler *compiler) override;
+    };
+
+    /// Analyses the main package. Must be preceded by ParsePhase.
+    class AnalysisPhase final : public Phase {
+    public:
+        /// @param standalone If the package is a standalone package a start flag block is required.
+        AnalysisPhase(bool standalone) : standalone_(standalone) {}
+        void perform(Compiler *compiler) override;
+    private:
+        bool standalone_;
+    };
+
+    /// Prints the interface. Must be preceded by AnalysisPhase.
+    class PrintInterfacePhase final : public Phase {
+    public:
+        /// @param path The path at which an interface file for the main package shall be created.
+        PrintInterfacePhase(std::string path) : path_(std::move(path)) {}
+        void perform(Compiler *compiler) override;
+    private:
+        std::string path_;
+    };
+
+    /// Generates code. Must be preceded by AnalysisPhase. Must only be added once per Compiler.
+    class GenerationPhase final : public Phase {
+    public:
+        /// @param optimize Whether optimizations should be run.
+        GenerationPhase(bool optimize) : optimize_(optimize) {}
+        void perform(Compiler *compiler) override;
+    private:
+        bool optimize_;
+    };
+
+    /// Emits the generated code to an object file. Must be preceded by GenerationPhase.
+    class ObjectFileEmissionPhase final : public Phase {
+    public:
+        ObjectFileEmissionPhase(std::string path) : path_(std::move(path)) {}
+        void perform(Compiler *compiler) override;
+    private:
+        std::string path_;
+    };
+
+    /// Emits the generated code to an object file. Must be preceded by GenerationPhase.
+    class LLVMIREmissionPhase final : public Phase {
+    public:
+        LLVMIREmissionPhase(std::string path) : path_(std::move(path)) {}
+        void perform(Compiler *compiler) override;
+    private:
+        std::string path_;
+    };
+
+    /// Links an object file with the archives of the imported packages of the Compiler.
+    class LinkPhase final : public Phase {
+    public:
+        /// @param objectFilePath Where the object file of the main package is located.
+        /// @param outPath Where the linked binary shall be placed.
+        /// @param linker Name of or path to the linker to use.
+        LinkPhase(std::string objectFilePath, std::string outPath, std::string linker)
+            : objectFilePath_(std::move(objectFilePath)), outPath_(std::move(outPath)), linker_(std::move(linker)) {}
+        void perform(Compiler *compiler) override;
+    private:
+        std::string objectFilePath_;
+        std::string outPath_;
+        std::string linker_;
+    };
+
+    class ArchivePhase final : public Phase {
+    public:
+        /// @param objectFilePath Where the object file of the main package is located.
+        /// @param outPath Where the archive shall be placed.
+        /// @param ar Name of or path to the archiver to use.
+        ArchivePhase(std::string objectFilePath, std::string outPath, std::string ar)
+            : objectFilePath_(std::move(objectFilePath)), outPath_(std::move(outPath)), ar_(std::move(ar)) {}
+        void perform(Compiler *compiler) override;
+    private:
+        std::string objectFilePath_;
+        std::string outPath_;
+        std::string ar_;
+    };
+
     /// Constructs an Compiler instance.
     /// @param mainPackage The name of the main package. This is the package for which the compiler can produce
     ///                    an object file, interface, executable and/or archive.
     /// @param mainFile The main package’s main file. (See Package::Package.)
-    /// @param interfaceFile The path at which an interface file for the main package shall be created. Pass an empty
-    ///                      string to prevent the creation of an interface file.
-    /// @param linker The name or path of an executable that can be used to link object files and static libraries.
     /// @param pkgSearchPaths The paths the compiler will search for a requested package.
-    /// @param standalone Whether the package is a package to be imported into another package or a standalone program.
-    ///                   The latter requires no version and a start flag block.
-    /// @param pack Whether an executable/archive should be created.
-    /// @param objectPath The path at which the object file will be placed.
-    /// @param outPath The path at which the ‘packed’ output (executable/archive) will be placed.
-    Compiler(std::string mainPackage, std::string mainFile, std::string interfaceFile, std::string outPath,
-             std::string objectPath, std::string linker, std::string ar, std::vector<std::string> pkgSearchPaths,
-             std::unique_ptr<CompilerDelegate> delegate, bool pack, bool standalone);
-    /// Compile the application.
-    /// @param parseOnly If this argument is true, the main package is only parsed and not semantically analysed.
-    /// @returns True iff the application has been successfully parsed and — optionally — analysed.
-    bool compile(bool parseOnly, bool optimize, bool printIr);
+    Compiler(std::string mainPackage, std::string mainFile, std::vector<std::string> pkgSearchPaths,
+             std::unique_ptr<CompilerDelegate> delegate);
 
-    RecordingPackage *mainPackage() const { return mainPackage_.get(); }
+    template <typename Phase, typename... Args>
+    void add(Args&&... args) { phases_.emplace_back(std::make_unique<Phase>(std::forward<Args>(args)...)); }
+
+    /// Compiles the application by running all phases added with add().
+    /// @return True iff the compilation completed without error.
+    bool compile();
+
+    RecordingPackage* mainPackage() const { return mainPackage_.get(); }
 
     std::vector<Package *> importedPackages() const { return packageImportOrder_; }
 
@@ -117,9 +202,7 @@ public:
     ~Compiler();
 
 private:
-    void generateCode(bool optimize, bool printIr);
-    void analyse();
-    void linkToExecutable();
+    std::vector<std::unique_ptr<Phase>> phases_;
     std::string searchPackage(const std::string &name, const SourcePosition &p);
     std::string findBinaryPathPackage(const std::string &packagePath, const std::string &packageName);
 
@@ -131,17 +214,10 @@ private:
     std::vector<Package *> packageImportOrder_;
 
     bool hasError_ = false;
-    bool pack_;
-    bool standalone_;
     std::string mainFile_;
-    std::string interfaceFile_;
-    const std::string outPath_;
-    const std::string mainPackageName_;
     const std::vector<std::string> packageSearchPaths_;
-    const std::string linker_;
-    const std::string ar_;
-    const std::string objectPath_;
     const std::unique_ptr<CompilerDelegate> delegate_;
+    std::unique_ptr<CodeGenerator> generator_;
     std::unique_ptr<RecordingPackage> mainPackage_;
     SourceManager sourceManager_;
     void archive();

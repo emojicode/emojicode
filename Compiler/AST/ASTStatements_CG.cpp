@@ -9,7 +9,7 @@
 #include "AST/ASTMemory.hpp"
 #include "ASTStatements.hpp"
 #include "Generation/CallCodeGenerator.hpp"
-#include "Generation/Declarator.hpp"
+#include "Generation/RunTimeHelper.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Scoping/IDScoper.hpp"
 #include "Types/Class.hpp"

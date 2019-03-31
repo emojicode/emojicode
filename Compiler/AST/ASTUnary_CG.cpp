@@ -7,7 +7,7 @@
 //
 
 #include "ASTUnary.hpp"
-#include "Generation/Declarator.hpp"
+#include "Generation/RunTimeHelper.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Lex/SourceManager.hpp"
 #include "Generation/CallCodeGenerator.hpp"
@@ -33,7 +33,7 @@ Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
         std::stringstream str;
         str << "Unwrapped an optional that contained no value. (" << position().toRuntimeString() << ")";
         auto string = fg->builder().CreateGlobalStringPtr(str.str());
-        fg->builder().CreateCall(fg->generator()->declarator().panic(), string);
+        fg->builder().CreateCall(fg->generator()->runTime().panic(), string);
         fg->builder().CreateUnreachable();
         return false;
     }, []() { return true; });

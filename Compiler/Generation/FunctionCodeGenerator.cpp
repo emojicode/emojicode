@@ -9,7 +9,7 @@
 #include "FunctionCodeGenerator.hpp"
 #include "AST/ASTStatements.hpp"
 #include "Compiler.hpp"
-#include "Declarator.hpp"
+#include "RunTimeHelper.hpp"
 #include "Functions/Function.hpp"
 #include "Generation/CallCodeGenerator.hpp"
 #include "Package/Package.hpp"
@@ -327,7 +327,7 @@ llvm::ConstantInt* FunctionCodeGenerator::int64(int64_t value) {
 }
 
 llvm::Value* FunctionCodeGenerator::alloc(llvm::PointerType *type) {
-    auto alloc = builder().CreateCall(generator()->declarator().alloc(), sizeOfReferencedType(type), "alloc");
+    auto alloc = builder().CreateCall(generator()->runTime().alloc(), sizeOfReferencedType(type), "alloc");
     return builder().CreateBitCast(alloc, type);
 }
 
@@ -372,10 +372,10 @@ void FunctionCodeGenerator::release(llvm::Value *value, const Type &otype) {
     auto type = otype.resolveOnSuperArgumentsAndConstraints(*typeContext_);
     if (type.type() == TypeType::Class || type.type() == TypeType::Someobject) {
         auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(ctx()));
-        builder().CreateCall(generator()->declarator().release(), opc);
+        builder().CreateCall(generator()->runTime().release(), opc);
     }
     else if (type.type() == TypeType::ValueType && type.valueType() == compiler()->sMemory) {
-        builder().CreateCall(generator()->declarator().releaseMemory(), value);
+        builder().CreateCall(generator()->runTime().releaseMemory(), value);
     }
     else if (type.type() == TypeType::ValueType) {
         builder().CreateCall(type.valueType()->deinitializer()->unspecificReification().function, value);
@@ -405,7 +405,7 @@ void FunctionCodeGenerator::release(llvm::Value *value, const Type &otype) {
         }
     }
     else if (type.type() == TypeType::Callable) {
-        builder().CreateCall(generator()->declarator().releaseCapture(), builder().CreateExtractValue(value, 1));
+        builder().CreateCall(generator()->runTime().releaseCapture(), builder().CreateExtractValue(value, 1));
     }
 }
 
@@ -414,10 +414,10 @@ void FunctionCodeGenerator::retain(llvm::Value *value, const Type &otype) {
     if (type.type() == TypeType::Class || type.type() == TypeType::Someobject ||
         (type.type() == TypeType::ValueType && type.valueType() == compiler()->sMemory)) {
         auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(ctx()));
-        builder().CreateCall(generator()->declarator().retain(), { opc });
+        builder().CreateCall(generator()->runTime().retain(), { opc });
     }
     else if (type.type() == TypeType::Callable) {
-        builder().CreateCall(generator()->declarator().retain(), builder().CreateExtractValue(value, 1));
+        builder().CreateCall(generator()->runTime().retain(), builder().CreateExtractValue(value, 1));
     }
     else if (type.type() == TypeType::ValueType) {
         builder().CreateCall(type.valueType()->copyRetain()->unspecificReification().function, value);
@@ -472,7 +472,7 @@ void FunctionCodeGenerator::releaseByReference(llvm::Value *ptr, const Type &typ
 
 llvm::Value* FunctionCodeGenerator::buildFindProtocolConformance(llvm::Value *box, llvm::Value *boxInfo,
                                                                  llvm::Value *protocolRTTI) {
-    auto objBoxInfo = builder().CreateBitCast(generator()->declarator().boxInfoForObjects(),
+    auto objBoxInfo = builder().CreateBitCast(generator()->runTime().boxInfoForObjects(),
                                               typeHelper().boxInfo()->getPointerTo());
     auto conformanceEntries = createIfElsePhi(builder().CreateICmpEQ(boxInfo, objBoxInfo), [&]() {
         auto obj = builder().CreateLoad(buildGetBoxValuePtr(box, typeHelper().someobject()->getPointerTo()));
@@ -483,7 +483,7 @@ llvm::Value* FunctionCodeGenerator::buildFindProtocolConformance(llvm::Value *bo
         return builder().CreateLoad(conformanceEntriesPtr);
     });
 
-    return builder().CreateCall(generator()->declarator().findProtocolConformance(),
+    return builder().CreateCall(generator()->runTime().findProtocolConformance(),
                                     { conformanceEntries, protocolRTTI });
 }
 

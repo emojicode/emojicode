@@ -13,6 +13,7 @@
 #include "Types/Class.hpp"
 #include "Types/Type.hpp"
 #include "Types/ValueType.hpp"
+#include "Types/Protocol.hpp"
 #include <sstream>
 
 namespace EmojicodeCompiler {
@@ -143,9 +144,10 @@ std::string mangleProtocolConformance(const Type &type, const Type &protocol) {
     return stream.str();
 }
 
-std::string mangleProtocolRunTimeTypeInfo(const Type &type) {
+std::string mangleProtocolRunTimeTypeInfo(Protocol *protocol) {
     std::stringstream stream;
-    mangleTypeName(stream, type);
+    stream << protocol->package()->name() << ".";
+    mangleIdentifier(stream, protocol->name());
     stream << "_rtti";
     return stream.str();
 }

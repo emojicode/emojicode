@@ -7,8 +7,8 @@
 
 #include <llvm/IR/Function.h>
 #include <llvm/IR/LLVMContext.h>
-#include <llvm/IR/LegacyPassManager.h>
 #include <llvm/IR/Module.h>
+#include "RunTimeTypeInfoFlags.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -16,14 +16,18 @@ class CodeGenerator;
 class Class;
 class Function;
 class Package;
-struct Parameter;
 class Type;
 class ReificationContext;
+class TypeDefinition;
 
-/// The declarator is responsible for declaring functions etc. in an LLVM module.
-class Declarator {
+/// This class provides the Emojicode run-time library interface, and helps declare and manage run-time infomration
+/// such as run-time type information.
+class RunTimeHelper {
 public:
-    Declarator(CodeGenerator *generator);
+    RunTimeHelper(CodeGenerator *generator);
+
+    /// @pre This function depends on that the associated CodeGenerator was initialized.
+    void declareRunTime();
 
     /// The allocator function that is called to allocate all heap memory. (ejcAlloc)
     llvm::Function* alloc() const { return alloc_; }
@@ -58,16 +62,18 @@ public:
 
     llvm::GlobalVariable* ignoreBlockPtr() const { return ignoreBlock_; }
 
-    /// Declares an LLVM function for each reification of the provided function.
-    void declareLlvmFunction(Function *function) const;
-
-    void declareImportedClassInfo(Class *klass);
-
     /// Declares the box info with the provided name. This is a global variable without initializer.
     llvm::GlobalVariable* declareBoxInfo(const std::string &name);
 
     llvm::GlobalVariable* boxInfoForObjects() { return boxInfoClassObjects_; }
     llvm::GlobalVariable* boxInfoForCallables() { return boxInfoCallables_; }
+
+    std::pair<llvm::Function*, llvm::Function*> classObjectRetainRelease() const { return classObjectRetainRelease_; }
+
+    llvm::Constant* createRtti(TypeDefinition *generic, RunTimeTypeInfoFlags::Flags flag);
+
+    llvm::GlobalVariable *somethingRtti() const { return somethingRTTI_; }
+    llvm::GlobalVariable *someobjectRtti() const { return someobjectRTTI_; }
 
 private:
     CodeGenerator *generator_;
@@ -92,15 +98,18 @@ private:
     llvm::Function *releaseWithoutDeinit_ = nullptr;
     llvm::Function *isOnlyReference_ = nullptr;
 
+    llvm::GlobalVariable *somethingRTTI_ = nullptr;
+    llvm::GlobalVariable *someobjectRTTI_ = nullptr;
+
+    std::pair<llvm::Function*, llvm::Function*> classObjectRetainRelease_ = { nullptr, nullptr };
+
     llvm::Function* declareRunTimeFunction(const char *name, llvm::Type *returnType, llvm::ArrayRef<llvm::Type *> args);
     llvm::Function* declareMemoryRunTimeFunction(const char *name);
-    void declareRunTime();
+    llvm::GlobalVariable* createAbstractRtti(const char *name);
 
-    void addParamAttrs(const Parameter &param, size_t index, llvm::Function *function) const;
-    void addParamDereferenceable(const Type &type, size_t index, llvm::Function *function, bool ret) const;
-
-    llvm::Function::LinkageTypes linkageForFunction(Function *function) const;
-    llvm::Function* createLlvmFunction(Function *function, ReificationContext reificationContext) const;
+    std::pair<llvm::Function*, llvm::Function*> buildRetainRelease(const Type &prototype, const char *retainName,
+                                                                   const char *releaseName,
+                                                                   llvm::GlobalVariable *boxInfo);
 };
 
 }  // namespace EmojicodeCompiler

@@ -20,93 +20,87 @@
 
 namespace EmojicodeCompiler {
 
-Compiler::Compiler(std::string mainPackage, std::string mainFile, std::string interfaceFile, std::string outPath,
-                   std::string objectPath, std::string linker, std::string ar, std::vector<std::string> pkgSearchPaths,
-                   std::unique_ptr<CompilerDelegate> delegate, bool pack, bool standalone)
-        : pack_(pack), standalone_(standalone), mainFile_(std::move(mainFile)),
-          interfaceFile_(std::move(interfaceFile)),
-          outPath_(std::move(outPath)),
-          mainPackageName_(std::move(mainPackage)), packageSearchPaths_(std::move(pkgSearchPaths)),
-          linker_(std::move(linker)), ar_(std::move(ar)), objectPath_(std::move(objectPath)),
+Compiler::Compiler(std::string mainPackage, std::string mainFile, std::vector<std::string> pkgSearchPaths,
+                   std::unique_ptr<CompilerDelegate> delegate)
+        : mainFile_(std::move(mainFile)), packageSearchPaths_(std::move(pkgSearchPaths)),
           delegate_(std::move(delegate)),
-          mainPackage_(std::make_unique<RecordingPackage>(mainPackageName_, mainFile_, this, false)) {}
+          mainPackage_(std::make_unique<RecordingPackage>(mainPackage, mainFile_, this, false)) {}
 
 Compiler::~Compiler() = default;
 
-bool Compiler::compile(bool parseOnly, bool optimize, bool printIr) {
+bool Compiler::compile() {
     delegate_->begin();
-
     try {
-        mainPackage_->parse(mainFile_);
-        if (parseOnly) {
-            return !hasError_;
-        }
-
-        analyse();
-
-        if (!hasError_) {
-            if (!interfaceFile_.empty()) {
-                PrettyPrinter(mainPackage_.get()).printInterface(interfaceFile_);
+        for (auto &phase : phases_) {
+            phase->perform(this);
+            if (hasError_) {
+                break;
             }
-
-            generateCode(optimize, printIr);
-
-            if (pack_) {
-                if (standalone_) {
-                    linkToExecutable();
-                }
-                else {
-                    archive();
-                }
-            }
-
         }
     }
     catch (CompilerError &ce) {
         error(ce);
     }
-
     delegate_->finish();
     return !hasError_;
 }
 
-void Compiler::analyse() {
-    SemanticAnalyser(mainPackage_.get(), false).analyse(standalone_);
-    if (!hasError_) {
-        MFAnalyser(mainPackage_.get()).analyse();
-    }
+void Compiler::ParsePhase::perform(Compiler *compiler) {
+    compiler->mainPackage_->parse(compiler->mainFile_);
 }
 
-void Compiler::generateCode(bool optimize, bool printIr) {
-    CodeGenerator(this).generate(mainPackage_.get(), objectPath_, printIr, optimize);
+void Compiler::AnalysisPhase::perform(Compiler *compiler) {
+    SemanticAnalyser(compiler->mainPackage(), false).analyse(standalone_);
+    if (compiler->hasError_) return;
+    MFAnalyser(compiler->mainPackage()).analyse();
 }
 
-void Compiler::linkToExecutable() {
+void Compiler::PrintInterfacePhase::perform(Compiler *compiler) {
+    PrettyPrinter(compiler->mainPackage()).printInterface(path_);
+}
+
+void Compiler::GenerationPhase::perform(Compiler *compiler) {
+    assert(compiler->generator_ == nullptr);
+    compiler->generator_ = std::make_unique<CodeGenerator>(compiler, optimize_);
+    compiler->generator_->generate();
+}
+
+void Compiler::ObjectFileEmissionPhase::perform(Compiler *compiler) {
+    assert(compiler->generator_ != nullptr && "ObjectFileEmissionPhase must be run after GenerationPhase");
+    compiler->generator_->emit(false, path_);
+}
+
+void Compiler::LLVMIREmissionPhase::perform(Compiler *compiler) {
+    assert(compiler->generator_ != nullptr && "LLVMIREmissionPhase must be run after GenerationPhase");
+    compiler->generator_->emit(true, path_);
+}
+
+void Compiler::LinkPhase::perform(Compiler *compiler) {
     std::stringstream cmd;
 
-    cmd << linker_ << " " << objectPath_;
+    cmd << linker_ << " " << objectFilePath_;
 
-    for (auto it = packageImportOrder_.rbegin(); it != packageImportOrder_.rend(); it++) {
+    for (auto it = compiler->packageImportOrder_.rbegin(); it != compiler->packageImportOrder_.rend(); it++) {
         auto package = *it;
-        auto path = findBinaryPathPackage(package->path(), package->name());
+        auto path = compiler->findBinaryPathPackage(package->path(), package->name());
         cmd << " " << path;
         for (auto &hint : package->linkHints()) {
             cmd << " -l" << hint;
         }
     }
 
-    auto runtimeLib = findBinaryPathPackage(searchPackage("runtime", SourcePosition()), "runtime");
+    auto runtimeLib = compiler->findBinaryPathPackage(compiler->searchPackage("runtime", SourcePosition()), "runtime");
     cmd << " " << runtimeLib << " -o " << outPath_;
 
     system(cmd.str().c_str());
 }
 
-void Compiler::archive() {
+void Compiler::ArchivePhase::perform(Compiler *compiler) {
     std::string cmd = ar_;
     cmd.append(" cr ");
     cmd.append(outPath_);
     cmd.append(" ");
-    cmd.append(objectPath_);
+    cmd.append(objectFilePath_);
     system(cmd.c_str());
 }
 

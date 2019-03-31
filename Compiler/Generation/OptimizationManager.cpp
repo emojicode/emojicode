@@ -12,7 +12,9 @@ namespace EmojicodeCompiler {
 
 OptimizationManager::OptimizationManager(llvm::Module *module, bool optimize)
         : optimize_(optimize), functionPassManager_(std::make_unique<llvm::legacy::FunctionPassManager>(module)),
-            passManager_(std::make_unique<llvm::legacy::PassManager>()) {}
+            passManager_(std::make_unique<llvm::legacy::PassManager>()) {
+                initialize();
+            }
 
 void OptimizationManager::initialize() {
     if (optimize_) {

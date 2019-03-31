@@ -28,28 +28,35 @@ class Package;
 class Class;
 class Function;
 class TypeDefinition;
-class ProtocolsTableGenerator;
 class StringPool;
-class Declarator;
+class RunTimeHelper;
 class OptimizationManager;
+struct Parameter;
 
-/// Manages the generation of IR for a package. Each package is compiled to one LLVM module.
+/// Manages code generation.
+///
+/// A CodeGenerator instance is bound to a Compiler and always generates code for its main package including any
+/// relevant declaration and inline functions from all imported packages.
 class CodeGenerator {
 public:
-    CodeGenerator(Compiler *compiler);
-
-    /// Generates an object file for the package.
-    /// @param outPath The path at which the object file will be placed.
+    /// Creates a CodeGenerator bound to the provided Compiler.
     /// @param optimize Whether optimizations should be run.
-    void generate(Package *package, const std::string &outPath, bool printIr, bool optimize);
+    CodeGenerator(Compiler *compiler, bool optimize);
+
+    /// Generates the package.
+    void generate();
+
+    /// Emits the generated code to `outPath`
+    /// @param ir If this parameter is true, IR is emitted.
+    /// @pre Call generate().
+    void emit(bool ir, const std::string &outPath);
 
     /// The LLVM module that represents the package.
     llvm::Module* module() const { return module_.get(); }
 
     LLVMTypeHelper& typeHelper() { return typeHelper_; }
     StringPool& stringPool() { return *pool_; }
-    Declarator& declarator() { return *declarator_; }
-    ProtocolsTableGenerator& protocolsTG() { return *protocolsTableGenerator_; }
+    RunTimeHelper& runTime() { return *runTime_; }
     llvm::LLVMContext& context() { return context_; }
 
     Compiler* compiler() const;
@@ -63,10 +70,8 @@ public:
     /// @returns An LLVM value representing the box info that must be stored in the box info field.
     llvm::Constant* boxInfoFor(const Type &type);
 
-    llvm::Constant* runTimeTypeInfoForProtocol(const Type &type);
-
-    llvm::GlobalVariable *somethingRTTI() const;
-    llvm::GlobalVariable *someobjectRTTI() const;
+    /// Declares an LLVM function for each reification of the provided function.
+    void declareLlvmFunction(Function *function);
 
     ~CodeGenerator();
 
@@ -77,35 +82,19 @@ private:
 
     LLVMTypeHelper typeHelper_;
     std::unique_ptr<StringPool> pool_;
-    std::unique_ptr<Declarator> declarator_;
-    std::unique_ptr<ProtocolsTableGenerator> protocolsTableGenerator_;
+    std::unique_ptr<RunTimeHelper> runTime_;
     std::unique_ptr<OptimizationManager> optimizationManager_;
-
-    void declareAndCreate(Package *package, bool imported);
 
     llvm::TargetMachine *targetMachine_ = nullptr;
 
-    std::pair<llvm::Function*, llvm::Function*> classObjectRetainRelease_ = { nullptr, nullptr };
-
-    std::pair<llvm::Function*, llvm::Function*> buildBoxRetainRelease(const Type &type);
-    void buildClassObjectBoxInfo();
-    void buildCallableBoxInfo();
-    void buildAbstractRTTI();
-
-    llvm::GlobalVariable *somethingRTTI_;
-    llvm::GlobalVariable *someobjectRTTI_;
-
-    void emitModule(const std::string &outPath, bool printIr);
     void generateFunctions(Package *package, bool imported);
-
     void generateFunction(Function *function);
-    void createClassInfo(Class *klass);
 
-    void createProtocolFunctionTypes(Protocol *protocol);
+    void addParamAttrs(const Parameter &param, size_t index, llvm::Function *function);
+    void addParamDereferenceable(const Type &type, size_t index, llvm::Function *function, bool ret);
 
-    void prepareModule(Package *package, bool optimize);
-
-    std::map<Type, llvm::Constant*> protocolIds_;
+    llvm::Function::LinkageTypes linkageForFunction(Function *function) const;
+    llvm::Function* createLlvmFunction(Function *function, ReificationContext reificationContext);
 };
 
 llvm::Constant* buildConstant00Gep(llvm::Type *type, llvm::Constant *value, llvm::LLVMContext &context);

@@ -8,7 +8,6 @@
 
 #include "ASTClosure.hpp"
 #include "Generation/ClosureCodeGenerator.hpp"
-#include "Generation/Declarator.hpp"
 #include "Compiler.hpp"
 #include "Types/TypeContext.hpp"
 #include "Functions/Function.hpp"
@@ -27,7 +26,7 @@ Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
     }
 
     closure_->createUnspecificReification();
-    fg->generator()->declarator().declareLlvmFunction(closure_.get());
+    fg->generator()->declareLlvmFunction(closure_.get());
 
     auto thisValue = capture_.capturesSelf() ? fg->thisValue()->getType() : nullptr;
     auto capture = capture_;
@@ -111,7 +110,7 @@ llvm::Value* ASTClosure::storeCapturedVariables(FunctionCodeGenerator *fg, const
 
 llvm::Value* ASTCallableBox::generate(FunctionCodeGenerator *fg) const {
     thunk_->createUnspecificReification();
-    fg->generator()->declarator().declareLlvmFunction(thunk_.get());
+    fg->generator()->declareLlvmFunction(thunk_.get());
 
     ClosureCodeGenerator closureGenerator(thunk_.get(), fg->generator());
     closureGenerator.generate();

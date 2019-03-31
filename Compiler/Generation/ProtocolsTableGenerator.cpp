@@ -5,7 +5,7 @@
 #include "ProtocolsTableGenerator.hpp"
 #include "CodeGenerator.hpp"
 #include "Functions/Function.hpp"
-#include "Generation/Declarator.hpp"
+#include "Generation/RunTimeHelper.hpp"
 #include "Generation/Mangler.hpp"
 #include "LLVMTypeHelper.hpp"
 #include "Types/Class.hpp"
@@ -23,7 +23,7 @@ llvm::Constant* ProtocolsTableGenerator::createProtocolTable(TypeDefinition *typ
     entries.reserve(typeDef->protocolTables().size());
     for (auto &entry : typeDef->protocolTables()) {
         entries.emplace_back(llvm::ConstantStruct::get(generator_->typeHelper().protocolConformanceEntry(), {
-            generator_->runTimeTypeInfoForProtocol(entry.first), entry.second
+            entry.first.protocol()->rtti(), entry.second
         }));
     }
 
@@ -50,7 +50,7 @@ void ProtocolsTableGenerator::generate(const Type &type) {
 void ProtocolsTableGenerator::declareImported(const Type &type) {
     std::map<Type, llvm::Constant *> tables;
     if (type.type() != TypeType::Class) {
-        type.unboxed().valueType()->setBoxInfo(generator_->declarator().declareBoxInfo(mangleBoxInfoName(type)));
+        type.unboxed().valueType()->setBoxInfo(generator_->runTime().declareBoxInfo(mangleBoxInfoName(type)));
     }
 
     for (auto &protocol : type.typeDefinition()->protocols()) {

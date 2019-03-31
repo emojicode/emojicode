@@ -24,6 +24,12 @@ public:
     bool canResolve(TypeDefinition *resolutionConstraint) const override {
         return resolutionConstraint == this;
     }
+
+    llvm::GlobalVariable* rtti() const { return rtti_; }
+    void setRtti(llvm::GlobalVariable *rtti) { rtti_ = rtti; }
+
+private:
+    llvm::GlobalVariable* rtti_ = nullptr;
 };
 
 }  // namespace EmojicodeCompiler

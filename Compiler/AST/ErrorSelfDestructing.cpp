@@ -7,7 +7,7 @@
 
 #include "ErrorSelfDestructing.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
-#include "Generation/Declarator.hpp"
+#include "Generation/RunTimeHelper.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Scoping/SemanticScoper.hpp"
 #include "Types/Class.hpp"
@@ -38,7 +38,7 @@ void ErrorSelfDestructing::buildDestruct(FunctionCodeGenerator *fg) const {
         }
         auto clInf = fg->buildGetClassInfoFromObject(fg->thisValue());
         fg->createIf(fg->builder().CreateICmpEQ(clInf, class_->classInfo()), [&] {
-            fg->builder().CreateCall(fg->generator()->declarator().releaseWithoutDeinit(),
+            fg->builder().CreateCall(fg->generator()->runTime().releaseWithoutDeinit(),
                                      fg->builder().CreateBitCast(fg->thisValue(),
                                                                  llvm::Type::getInt8PtrTy(fg->ctx())));
         });

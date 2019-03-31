@@ -6,7 +6,7 @@
 //
 
 #include "ASTCast.hpp"
-#include "Generation/Declarator.hpp"
+#include "Generation/RunTimeHelper.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Types/ValueType.hpp"
 #include "Types/Class.hpp"
@@ -36,7 +36,7 @@ Value* ASTCast::downcast(FunctionCodeGenerator *fg) const {
     auto toType = typeExpr_->expressionType();
     auto classInfo = fg->builder().CreateBitCast(getRtti(fg, typeExpr_->generate(fg)),
                                                  fg->typeHelper().classInfo()->getPointerTo());
-    auto inheritsFrom = fg->builder().CreateCall(fg->generator()->declarator().inheritsFrom(),
+    auto inheritsFrom = fg->builder().CreateCall(fg->generator()->runTime().inheritsFrom(),
                                                  { info, classInfo });
     return fg->createIfElsePhi(inheritsFrom, [&] {
         auto casted = fg->builder().CreateBitCast(value, fg->typeHelper().llvmTypeFor(toType));
@@ -116,7 +116,7 @@ llvm::Value* checkGeneric(FunctionCodeGenerator *fg, llvm::Value *mainCheck, llv
         auto rttiType = fg->typeHelper().runTimeTypeInfo();
         auto ownGeneric = fg->builder().CreateLoad(fg->builder().CreateConstInBoundsGEP2_32(rttiType, rtti, 0, 0));
         return fg->createIfElsePhi(fg->builder().CreateIsNotNull(ownGeneric), [&] {
-            auto genericsOk = fg->builder().CreateCall(fg->generator()->declarator().checkGenericArgs(), {
+            auto genericsOk = fg->builder().CreateCall(fg->generator()->runTime().checkGenericArgs(), {
                 genericArgs,
                 fg->builder().CreateConstInBoundsGEP1_32(fg->typeHelper().typeDescription(), typeDescription, 1),
                 ownGeneric,
@@ -151,7 +151,7 @@ Value* ASTCast::castToValueType(FunctionCodeGenerator *fg, Value *box, Value *ty
 
 Value* ASTCast::castToClass(FunctionCodeGenerator *fg, Value *box, Value *typeDescription,
                             Value *boxInfo, llvm::Value *rtti) {
-    auto isExpBoxInfo = fg->builder().CreateICmpEQ(boxInfo, fg->generator()->declarator().boxInfoForObjects());
+    auto isExpBoxInfo = fg->builder().CreateICmpEQ(boxInfo, fg->generator()->runTime().boxInfoForObjects());
     auto strct = llvm::StructType::get(llvm::Type::getInt8PtrTy(fg->ctx()),
                                        fg->typeHelper().classInfo()->getPointerTo(),
                                        fg->typeHelper().typeDescription()->getPointerTo());
@@ -159,7 +159,7 @@ Value* ASTCast::castToClass(FunctionCodeGenerator *fg, Value *box, Value *typeDe
     return fg->createIfElsePhi(isExpBoxInfo, [&]() -> llvm::Value* {
         auto obj = fg->builder().CreateLoad(fg->buildGetBoxValuePtr(box, strct->getPointerTo()->getPointerTo()));
         auto ci = fg->builder().CreateBitCast(rtti, fg->typeHelper().classInfo()->getPointerTo());
-        auto inherits = fg->builder().CreateCall(fg->generator()->declarator().inheritsFrom(),
+        auto inherits = fg->builder().CreateCall(fg->generator()->runTime().inheritsFrom(),
                                                  { fg->buildGetClassInfoFromObject(obj), ci });
         auto genericArgs = fg->builder().CreateLoad(fg->builder().CreateConstInBoundsGEP2_32(strct, obj, 0, 2));
         return checkGeneric(fg, inherits, genericArgs, 2, typeDescription, box, rtti);

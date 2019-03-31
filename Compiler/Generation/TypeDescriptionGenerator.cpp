@@ -10,8 +10,9 @@
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Types/Class.hpp"
 #include "Types/ValueType.hpp"
+#include "Types/Protocol.hpp"
 #include "Compiler.hpp"
-#include "Generation/Declarator.hpp"
+#include "Generation/RunTimeHelper.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -23,17 +24,17 @@ void TypeDescriptionGenerator::addType(const Type &type) {
             genericInfo = buildConstant00Gep(fg_->typeHelper().classInfo(), notype.klass()->classInfo(), fg_->ctx());
             break;
         case TypeType::Protocol:
-            genericInfo = fg_->generator()->runTimeTypeInfoForProtocol(notype);
+            genericInfo = notype.protocol()->rtti();
             break;
         case TypeType::ValueType:
         case TypeType::Enum:
             genericInfo = buildConstant00Gep(fg_->typeHelper().boxInfo(), fg_->boxInfoFor(notype), fg_->ctx());
             break;
         case TypeType::Something:
-            genericInfo = fg_->generator()->somethingRTTI();
+            genericInfo = fg_->generator()->runTime().somethingRtti();
             break;
         case TypeType::Someobject:
-            genericInfo = fg_->generator()->someobjectRTTI();
+            genericInfo = fg_->generator()->runTime().someobjectRtti();
             break;
         case TypeType::GenericVariable:
             addDynamic(fg_->builder().CreateLoad(fg_->genericArgsPtr()), notype.genericVariableIndex());
@@ -44,7 +45,7 @@ void TypeDescriptionGenerator::addType(const Type &type) {
         case TypeType::Callable:
         case TypeType::TypeAsValue:
         case TypeType::MultiProtocol:
-            genericInfo = fg_->generator()->someobjectRTTI();
+            genericInfo = fg_->generator()->runTime().someobjectRtti();
             fg_->compiler()->warn(SourcePosition(), "Run-time type information for multiprotocols, callables and type "\
                                   "values is not available yet. Casts and other reflection may not behave as "\
                                   "expected with these types.");
@@ -70,9 +71,9 @@ void TypeDescriptionGenerator::addType(const Type &type) {
 
 void TypeDescriptionGenerator::addDynamic(llvm::Value *gargs, size_t index) {
     dynamic_++;
-    auto idf = fg_->generator()->declarator().indexTypeDescription();
+    auto idf = fg_->generator()->runTime().indexTypeDescription();
     auto td = index > 0 ? fg_->builder().CreateCall(idf, { gargs, fg_->int64(index) }) : gargs;
-    auto size = fg_->builder().CreateCall(fg_->generator()->declarator().typeDescriptionLength(), td);
+    auto size = fg_->builder().CreateCall(fg_->generator()->runTime().typeDescriptionLength(), td);
     types_.emplace_back(td, size);
 }
 
@@ -109,7 +110,7 @@ llvm::Value* TypeDescriptionGenerator::finish() {
         }
     }
 
-    llvm::Value *array = fg_->builder().CreateBitCast(fg_->builder().CreateCall(fg_->generator()->declarator().alloc(),
+    llvm::Value *array = fg_->builder().CreateBitCast(fg_->builder().CreateCall(fg_->generator()->runTime().alloc(),
                                                                                 fg_->builder().CreateMul(fg_->sizeOf(typeDesc), size), "alloc"), typeDesc->getPointerTo());
     auto current = array;
 

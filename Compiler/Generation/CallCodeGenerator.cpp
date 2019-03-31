@@ -65,8 +65,7 @@ llvm::Value *CallCodeGenerator::generate(llvm::Value *callee, const Type &type, 
 llvm::Value* CallCodeGenerator::buildFindProtocolConformance(const std::vector<llvm::Value *> &args,
                                                              const Type &protocol) {
     auto boxInfo = fg()->builder().CreateLoad(fg()->buildGetBoxInfoPtr(args.front()));
-    auto id = fg()->generator()->runTimeTypeInfoForProtocol(protocol);
-    return fg()->buildFindProtocolConformance(args.front(), boxInfo, id);
+    return fg()->buildFindProtocolConformance(args.front(), boxInfo, protocol.protocol()->rtti());
 }
 
 std::vector<Value *> CallCodeGenerator::createArgsVector(llvm::Value *callee, const ASTArguments &args,

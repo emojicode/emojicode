@@ -10,7 +10,7 @@
 #include "ASTInitialization.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Generation/ProtocolsTableGenerator.hpp"
-#include "Types/TypeDefinition.hpp"
+#include "Types/Protocol.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -36,9 +36,9 @@ Value* ASTRebox::generate(FunctionCodeGenerator *fg) const {
     }
 
     auto box = getAllocaTheBox(fg);
-    auto protocolId = fg->generator()->runTimeTypeInfoForProtocol(expressionType().boxedFor());
+    auto protocolRtti = expressionType().boxedFor().protocol()->rtti();
     auto conformance = fg->buildFindProtocolConformance(box, fg->builder().CreateLoad(fg->buildGetBoxInfoPtr(box)),
-                                                        protocolId);
+                                                        protocolRtti);
     auto confPtrTy = fg->typeHelper().protocolConformance()->getPointerTo();
     auto infoPtr = fg->buildGetBoxInfoPtr(box);
     fg->builder().CreateStore(conformance, fg->builder().CreateBitCast(infoPtr, confPtrTy->getPointerTo()));
@@ -157,7 +157,7 @@ void ASTToBox::setBoxInfo(Value *box, FunctionCodeGenerator *fg) const {
         llvm::Type *type;
         if (boxedFor.type() == TypeType::MultiProtocol) {
             type = fg->typeHelper().multiprotocolConformance(boxedFor);
-            table = fg->generator()->protocolsTG().multiprotocol(boxedFor, expr_->expressionType());
+            table = ProtocolsTableGenerator(fg->generator()).multiprotocol(boxedFor, expr_->expressionType());
         }
         else {
             type = fg->typeHelper().protocolConformance();

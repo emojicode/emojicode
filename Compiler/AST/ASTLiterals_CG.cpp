@@ -11,7 +11,7 @@
 #include "Generation/TypeDescriptionGenerator.hpp"
 #include "Compiler.hpp"
 #include "Generation/CallCodeGenerator.hpp"
-#include "Generation/Declarator.hpp"
+#include "Generation/RunTimeHelper.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Generation/StringPool.hpp"
 #include "Types/Class.hpp"

@@ -9,7 +9,7 @@
 #include "ASTInitialization.hpp"
 #include "ASTMemory.hpp"
 #include "ASTVariables.hpp"
-#include "Generation/Declarator.hpp"
+#include "Generation/RunTimeHelper.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Types/ValueType.hpp"
 
@@ -123,7 +123,7 @@ Value* ASTIsOnlyReference::generate(FunctionCodeGenerator *fg) const {
         val = fg->builder().CreateLoad(localVariable);
     }
     auto ptr = fg->builder().CreateBitCast(val, llvm::Type::getInt8PtrTy(fg->ctx()));
-    return fg->builder().CreateCall(fg->generator()->declarator().isOnlyReference(), ptr);
+    return fg->builder().CreateCall(fg->generator()->runTime().isOnlyReference(), ptr);
 }
 
 }  // namespace EmojicodeCompiler

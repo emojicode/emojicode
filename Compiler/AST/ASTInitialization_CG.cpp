@@ -12,7 +12,7 @@
 #include "Functions/CallType.h"
 #include "Generation/CallCodeGenerator.hpp"
 #include "Generation/TypeDescriptionGenerator.hpp"
-#include "Generation/Declarator.hpp"
+#include "Generation/RunTimeHelper.hpp"
 #include "Types/Class.hpp"
 #include "Types/Enum.hpp"
 
@@ -87,7 +87,7 @@ Value* ASTInitialization::initObject(FunctionCodeGenerator *fg, const ASTArgumen
 Value* ASTInitialization::generateMemoryAllocation(FunctionCodeGenerator *fg) const {
     auto size = fg->builder().CreateAdd(args_.args()[0]->generate(fg),
                                         fg->sizeOf(llvm::Type::getInt8PtrTy(fg->ctx())));
-    return fg->builder().CreateCall(fg->generator()->declarator().alloc(), size, "alloc");
+    return fg->builder().CreateCall(fg->generator()->runTime().alloc(), size, "alloc");
 }
 
 }  // namespace EmojicodeCompiler

@@ -9,7 +9,7 @@
 #include "StringPool.hpp"
 #include "CodeGenerator.hpp"
 #include "Compiler.hpp"
-#include "Generation/Declarator.hpp"
+#include "Generation/RunTimeHelper.hpp"
 #include "Package/Package.hpp"
 #include "Types/Class.hpp"
 #include <llvm/IR/Constants.h>
@@ -30,7 +30,7 @@ llvm::Value* StringPool::pool(const std::u32string &string) {
 llvm::Value* StringPool::addToPool(const std::string &string) {
     auto data = llvm::ArrayRef<uint8_t>(reinterpret_cast<const uint8_t*>(string.data()), string.size());
     auto constant = llvm::ConstantStruct::getAnon({
-        codeGenerator_->declarator().ignoreBlockPtr(),
+        codeGenerator_->runTime().ignoreBlockPtr(),
         llvm::ConstantDataArray::get(codeGenerator_->context(), data)
     });
     auto var = new llvm::GlobalVariable(*codeGenerator_->module(), constant->getType(), true,
@@ -45,7 +45,7 @@ llvm::Value* StringPool::addToPool(const std::string &string) {
     auto varCast = llvm::ConstantExpr::getBitCast(var, llvm::Type::getInt8PtrTy(codeGenerator_->context()));
 
     auto stringStruct = llvm::ConstantStruct::get(stringLlvm, {
-        codeGenerator_->declarator().ignoreBlockPtr(),
+        codeGenerator_->runTime().ignoreBlockPtr(),
         compiler->sString->classInfo(),
         varCast,
         llvm::ConstantInt::get(llvm::Type::getInt64Ty(codeGenerator_->context()), string.size())
