@@ -411,10 +411,12 @@ void FunctionCodeGenerator::release(llvm::Value *value, const Type &otype) {
 
 void FunctionCodeGenerator::retain(llvm::Value *value, const Type &otype) {
     auto type = otype.resolveOnSuperArgumentsAndConstraints(*typeContext_);
-    if (type.type() == TypeType::Class || type.type() == TypeType::Someobject ||
-        (type.type() == TypeType::ValueType && type.valueType() == compiler()->sMemory)) {
+    if (type.type() == TypeType::Class || type.type() == TypeType::Someobject) {
         auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(ctx()));
         builder().CreateCall(generator()->runTime().retain(), { opc });
+    }
+    else if (type.type() == TypeType::ValueType && type.valueType() == compiler()->sMemory) {
+        builder().CreateCall(generator()->runTime().retainMemory(), value);
     }
     else if (type.type() == TypeType::Callable) {
         builder().CreateCall(generator()->runTime().retain(), builder().CreateExtractValue(value, 1));

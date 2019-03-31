@@ -78,6 +78,7 @@ void RunTimeHelper::declareRunTime() {
     indexTypeDescription_->addParamAttr(0, llvm::Attribute::NonNull);
 
     retain_ = declareMemoryRunTimeFunction("ejcRetain");
+    retainMemory_ = declareMemoryRunTimeFunction("ejcRetainMemory");
     release_ = declareMemoryRunTimeFunction("ejcRelease");
     releaseMemory_ = declareMemoryRunTimeFunction("ejcReleaseMemory");
     releaseWithoutDeinit_ = declareMemoryRunTimeFunction("ejcReleaseWithoutDeinit");

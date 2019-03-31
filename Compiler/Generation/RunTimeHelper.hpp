@@ -37,10 +37,12 @@ public:
     llvm::Function* inheritsFrom() const { return inheritsFrom_; }
     /// The function called to retain any value. (ejcRetain)
     llvm::Function* retain() const { return retain_; }
+    /// The function that is to be used to release memory areas that do not represent objects and are not stack allocated.
+    llvm::Function* retainMemory() const { return retainMemory_; }
     /// The function that must be used to release objects.
     /// @note Use releaseMemory() to release memory areas that do not represent class instances!
     llvm::Function* release() const { return release_; }
-    /// The function that is to be used to release memory area that do not represent objects.
+    /// The function that is to be used to release memory areas that do not represent objects and are not stack allocated.
     /// (ejcReleaseMemory)
     /// @see release
     llvm::Function* releaseMemory() const { return releaseMemory_; }
@@ -92,6 +94,7 @@ private:
     llvm::GlobalVariable *ignoreBlock_ = nullptr;
 
     llvm::Function *retain_ = nullptr;
+    llvm::Function *retainMemory_ = nullptr;
     llvm::Function *release_ = nullptr;
     llvm::Function *releaseMemory_ = nullptr;
     llvm::Function *releaseCapture_ = nullptr;

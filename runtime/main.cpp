@@ -43,6 +43,12 @@ extern "C" void ejcRetain(runtime::Object<void> *object) {
     controlBlock->strongCount.fetch_add(1, std::memory_order_relaxed);
 }
 
+extern "C" void ejcRetainMemory(runtime::Object<void> *object) {
+    runtime::internal::ControlBlock *controlBlock = object->controlBlock();
+    if (controlBlock == &ejcIgnoreBlock) return;
+    controlBlock->strongCount.fetch_add(1, std::memory_order_relaxed);
+}
+
 bool releaseLocal(void *object) {
     auto &ptr = *reinterpret_cast<int64_t *>(reinterpret_cast<uint8_t *>(object) - 8);
     ptr--;
