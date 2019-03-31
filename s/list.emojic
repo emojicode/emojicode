@@ -64,7 +64,7 @@
 
   📗 Expand the storage area if it is full. 📗
   ❗️ ↕️ 🍇
-    ↪️ size 🙌 count 🍇
+    ↪️ size 🙌 count 🎍🐌🍇
       size ⬅️✖️ 2
       ☣️ 🍇
         🏗 data size✖️⚖️Element❗️
@@ -104,7 +104,7 @@
 
   📗 Prepare this list for mutation. 📗
   🖍🔒❗️📝 🍇
-    ↪️ ❎🏮data❗️ 🍇
+    ↪️ ❎🏮data❗️🎍🐌🍇
       🆕🍧🐚Element🍆👥 data❗️ ➡️ 🖍data
     🍉
   🍉
@@ -154,7 +154,7 @@
     to 0 and less than [[🐔❗️]] or the program will panic.
   📗
   ❗️ 🐽 index 🔢 ➡️ ✴️Element 🍇
-    ↪️ index ▶️🙌 🐔data❓ 👐 index ◀️ 0 🍇
+    ↪️ index ▶️🙌 🐔data❓ 👐 index ◀️ 0 🎍🐌🍇
       🤯🐇💻 🔤Index out of bounds in 🍨🐽🔤 ❗️
     🍉
     ☣️ 🍇
@@ -168,7 +168,7 @@
   📗
   🖍➡️ 🐽 value Element index 🔢 🍇
     📝🐕❗️
-    ↪️ index ▶️🙌 🐔data❓ 👐 index ◀️ 0 🍇
+    ↪️ index ▶️🙌 🐔data❓ 👐 index ◀️ 0 🎍🐌🍇
       🤯🐇💻 🔤Index out of bounds in 🍨🐷❗️🔤 ❗️
     🍉
     ☣️ 🍇
