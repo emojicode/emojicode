@@ -25,7 +25,7 @@ class TokenStream;
 enum class Attribute : char32_t {
     Deprecated = E_WARNING_SIGN, Final = E_LOCK_WITH_INK_PEN, Override = E_BLACK_NIB, StaticOnType = E_RABBIT,
     Required = E_KEY, Export = E_EARTH_GLOBE_EUROPE_AFRICA, Foreign = E_RADIO, Unsafe = E_BIOHAZARD,
-    Mutating = E_CRAYON, Escaping = E_LEFT_LUGGAGE, Inline = E_BAGEL,
+    Mutating = E_CRAYON, Escaping = E_TAKEOUT_BOX, Inline = E_BAGEL,
 };
 
 template <Attribute ...Attributes>
@@ -65,6 +65,8 @@ private:
                 return stream->consumeTokenIf(TokenType::Unsafe);
             case Attribute::StaticOnType:
                 return stream->consumeTokenIf(TokenType::Class);
+            case Attribute::Escaping:
+                return stream->consumeTokenIf(E_TAKEOUT_BOX, TokenType::Decorator);
             default:
                 return stream->consumeTokenIf(static_cast<char32_t>(attr));
         }

@@ -105,7 +105,7 @@ void PrettyPrinter::printArguments(Function *function) {
                 prettyStream_ << "🍼 ";
             }
             if (arg.memoryFlowType.isEscaping()) {
-                prettyStream_ << "🛅 ";
+                prettyStream_ << "🎍🥡 ";
             }
             prettyStream_ << arg.name << " " << arg.type << " ";
         }
@@ -113,7 +113,7 @@ void PrettyPrinter::printArguments(Function *function) {
     }
     for (auto &arg : function->parameters()) {
         if (arg.memoryFlowType.isEscaping()) {
-            prettyStream_ << "🛅 ";
+            prettyStream_ << "🎍🥡 ";
         }
         prettyStream_ << arg.name << " " << arg.type << " ";
     }
@@ -121,7 +121,7 @@ void PrettyPrinter::printArguments(Function *function) {
 
 void PrettyPrinter::printClosure(Function *function, bool escaping) {
     prettyStream_ << "🍇";
-    if (escaping) prettyStream_ << "🛅 ";
+    if (escaping) prettyStream_ << "🎍🥡 ";
     printArguments(function);
     printReturnType(function);
     printErrorType(function);
@@ -304,7 +304,7 @@ void PrettyPrinter::printFunctionAttributes(Function *function, bool noMutate) {
         }
     }
     if (!function->memoryFlowTypeForThis().isUnknown() && function->memoryFlowTypeForThis().isEscaping()) {
-        prettyStream_ << "🛅 ";
+        prettyStream_ << "🎍🥡 ";
     }
 }
 

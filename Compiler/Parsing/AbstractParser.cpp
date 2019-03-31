@@ -139,7 +139,7 @@ void AbstractParser::parseParameters(Function *function, bool initializer, bool 
             }
         }
 
-        bool escaping = allowEscaping && stream_.consumeTokenIf(E_LEFT_LUGGAGE);
+        bool escaping = allowEscaping && stream_.consumeTokenIf(E_TAKEOUT_BOX, TokenType::Decorator);
         if (!argumentToVariable && !stream_.nextTokenIs(TokenType::Variable)) {
             break;
         }

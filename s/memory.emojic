@@ -27,7 +27,7 @@
     >!H If the memory area represented is smaller than `⚖️T ➕ offset` bytes,
     >!H undefined behavior is caused!
   📗
-  ☣️️ ➡️ 🐽🐚☣️️T⚪️🍆 🛅 value T offset 🔢 📻 🔤ejcBuiltIn🔤
+  ☣️️ ➡️ 🐽🐚☣️️T⚪️🍆 🎍🥡 value T offset 🔢 📻 🔤ejcBuiltIn🔤
 
   📗
     Reads a value of type T starting *bytes* bytes past the address

@@ -357,7 +357,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {
                                                package_, token.position(), false, std::u32string(), false, false,
                                                Mood::Imperative, false, FunctionType::Function, false);
 
-    bool escaping = stream_.consumeTokenIf(E_LEFT_LUGGAGE);
+    bool escaping = stream_.consumeTokenIf(E_TAKEOUT_BOX, TokenType::Decorator);
 
     parseParameters(function.get(), false, false);
     parseReturnType(function.get());

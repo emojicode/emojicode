@@ -6,7 +6,7 @@
     Creates an new thread and calls the provided callback on the newly
     created thread.
   📗
-  🛅 🆕 🛅 callback 🍇🍉 📻 🔤sThreadNew🔤
+  🎍🥡 🆕 🎍🥡 callback 🍇🍉 📻 🔤sThreadNew🔤
 
   📗
     Blocks the calling thread until this thread has finished work.

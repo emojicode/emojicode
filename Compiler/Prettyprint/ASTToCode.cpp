@@ -89,11 +89,28 @@ void ASTUnsafeBlock::toCode(PrettyStream &pretty) const {
     pretty.indent() << "☣️ " << block_;
 }
 
+void printBranchSpeed(PrettyStream &pretty, ASTIf::BranchSpeed speed) {
+    switch (speed) {
+        case ASTIf::BranchSpeed::Fast:
+            pretty << "🎍🏎";
+            break;
+        case ASTIf::BranchSpeed::Slow:
+            pretty << "🎍🐌";
+            break;
+        default:
+            break;
+    }
+}
+
 void ASTIf::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty.indent() << "↪️ " << conditions_.front() << " " << blocks_.front().block;
+    pretty.indent() << "↪️ " << conditions_.front() << " ";
+    printBranchSpeed(pretty, blocks_.front().speed);
+    pretty << blocks_.front().block;
     for (size_t i = 1; i < conditions_.size(); i++) {
-        pretty.indent() << "🙅↪️ " << conditions_[i] << " " << blocks_[i].block;
+        pretty.indent() << "🙅↪️ " << conditions_[i] << " ";
+        printBranchSpeed(pretty, blocks_[i].speed);
+        pretty << blocks_[i].block;
     }
     if (hasElse()) {
         pretty.indent() << "🙅 " << blocks_.back().block;
