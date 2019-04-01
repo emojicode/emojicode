@@ -1,4 +1,4 @@
-find_package(LLVM 7.0 REQUIRED CONFIG)
+find_package(LLVM 8.0 REQUIRED CONFIG)
 include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

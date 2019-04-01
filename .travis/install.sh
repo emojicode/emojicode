@@ -1,16 +1,16 @@
 if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then
   wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-  echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main" >> /etc/apt/sources.list
-  echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main" >> /etc/apt/sources.list
+  echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main" >> /etc/apt/sources.list
+  echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main" >> /etc/apt/sources.list
   sudo apt-get update
-  sudo apt-get install -y cmake libllvm7 libz-dev llvm-7 llvm-7-dev llvm-7-runtime ninja-build python3 rsync
+  sudo apt-get install -y cmake libllvm8 libz-dev llvm-8 llvm-8-dev llvm-8-runtime ninja-build python3 rsync
 
   if [ $CC = "clang" ]
   then
   	# Clang 6
-  	sudo apt-get install -y clang-7 libclang-common-7-dev libclang1-7 libclang-7-dev
-  	export CC=clang-7
-  	export CXX=clang++-7
+  	sudo apt-get install -y clang-8 libclang-common-8-dev libclang1-8 libclang-8-dev
+  	export CC=clang-8
+  	export CXX=clang++-8
   else
   	# GCC 7
   	sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
@@ -20,7 +20,7 @@ if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then
   	export CXX=g++-7
   fi
 else
-  export LLVM_DIR=/usr/local/opt/llvm@7/lib/cmake
+  export LLVM_DIR=/usr/local/opt/llvm@8/lib/cmake
   export CC=$CC_FOR_BUILD
   export CXX=$CXX_FOR_BUILD
 fi
