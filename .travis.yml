@@ -30,6 +30,7 @@ addons:
     packages:
     - llvm
     - ninja
+    update: true
 
 before_install:
 - source .travis/install.sh
