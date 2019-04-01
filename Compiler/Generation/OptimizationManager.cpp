@@ -29,6 +29,8 @@ void OptimizationManager::initialize() {
         functionPassManager_->add(llvm::createInductiveRangeCheckEliminationPass());
         functionPassManager_->add(llvm::createLICMPass());
         functionPassManager_->doInitialization();
+
+        passManager_->add(llvm::createMergeFunctionsPass());
     }
 }
 

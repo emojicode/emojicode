@@ -183,6 +183,10 @@ llvm::Function* CodeGenerator::createLlvmFunction(Function *function, Reificatio
     size_t i = function->isClosure() ? 1 : 0;
     if (hasThisArgument(function) && !function->isClosure()) {
         addParamDereferenceable(function->typeContext().calleeType(), i, fn, false);
+        if (function->functionType() == FunctionType::ObjectInitializer ||
+            function->functionType() == FunctionType::ValueTypeInitializer) {
+            fn->addParamAttr(0, llvm::Attribute::NoAlias);
+        }
         if (function->functionType() == FunctionType::ObjectInitializer) {
             if (!function->errorProne()) {
                 fn->addParamAttr(i, llvm::Attribute::Returned);

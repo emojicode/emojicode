@@ -17,11 +17,13 @@ namespace EmojicodeCompiler {
 
 std::pair<llvm::Function*, llvm::Function*> buildBoxRetainRelease(CodeGenerator *cg, const Type &type) {
     auto release = llvm::Function::Create(cg->typeHelper().boxRetainRelease(),
-                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, mangleBoxRelease(type),
+                                          llvm::GlobalValue::LinkageTypes::PrivateLinkage, mangleBoxRelease(type),
                                           cg->module());
     auto retain = llvm::Function::Create(cg->typeHelper().boxRetainRelease(),
-                                         llvm::GlobalValue::LinkageTypes::ExternalLinkage, mangleBoxRetain(type),
+                                         llvm::GlobalValue::LinkageTypes::PrivateLinkage, mangleBoxRetain(type),
                                          cg->module());
+    release->setUnnamedAddr(llvm::GlobalVariable::UnnamedAddr::Global);
+    retain->setUnnamedAddr(llvm::GlobalVariable::UnnamedAddr::Global);
 
     FunctionCodeGenerator releaseFg(release, cg, std::make_unique<TypeContext>(type));
     releaseFg.createEntry();
