@@ -42,6 +42,9 @@ public:
     /// The function that must be used to release objects.
     /// @note Use releaseMemory() to release memory areas that do not represent class instances!
     llvm::Function* release() const { return release_; }
+    /// The function that can be used to release objects that have been allocated on the stack.
+    /// @note Use releaseMemory() to release memory areas that do not represent class instances!
+    llvm::Function* releaseLocal() const { return releaseLocal_; }
     /// The function that is to be used to release memory areas that do not represent objects and are not stack allocated.
     /// (ejcReleaseMemory)
     /// @see release
@@ -99,6 +102,7 @@ private:
     llvm::Function *releaseMemory_ = nullptr;
     llvm::Function *releaseCapture_ = nullptr;
     llvm::Function *releaseWithoutDeinit_ = nullptr;
+    llvm::Function *releaseLocal_ = nullptr;
     llvm::Function *isOnlyReference_ = nullptr;
 
     llvm::GlobalVariable *somethingRTTI_ = nullptr;

@@ -55,6 +55,12 @@ bool releaseLocal(void *object) {
     return ptr == 0;
 }
 
+extern "C" void ejcReleaseLocal(runtime::Object<void> *object) {
+    if (releaseLocal(object)) {
+        object->classInfo()->dispatch<void>(0, object);
+    }
+}
+
 extern "C" void ejcRelease(runtime::Object<void> *object) {
     runtime::internal::ControlBlock *controlBlock = object->controlBlock();
     if (controlBlock == nullptr) {

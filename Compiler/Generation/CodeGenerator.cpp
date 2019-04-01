@@ -38,10 +38,10 @@
 namespace EmojicodeCompiler {
 
 CodeGenerator::CodeGenerator(Compiler *compiler, bool optimize)
-: compiler_(compiler), typeHelper_(context(), this), pool_(std::make_unique<StringPool>(this)),
-  optimizationManager_(std::make_unique<OptimizationManager>(module_.get(), optimize)),
+: compiler_(compiler), typeHelper_(context(), this),
   module_(std::make_unique<llvm::Module>(compiler->mainPackage()->name(), context())),
-  runTime_(std::make_unique<RunTimeHelper>(this)) {
+  pool_(std::make_unique<StringPool>(this)), runTime_(std::make_unique<RunTimeHelper>(this)),
+  optimizationManager_(std::make_unique<OptimizationManager>(module_.get(), optimize, runTime_.get())) {
     runTime_->declareRunTime();
 
     llvm::InitializeAllTargetInfos();

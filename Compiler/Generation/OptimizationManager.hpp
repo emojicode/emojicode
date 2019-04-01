@@ -14,12 +14,14 @@ class Function;
 
 namespace EmojicodeCompiler {
 
+class RunTimeHelper;
+
 class OptimizationManager {
 public:
-    explicit OptimizationManager(llvm::Module *module, bool optimize);
+    explicit OptimizationManager(llvm::Module *module, bool optimize, RunTimeHelper *runTime);
     void optimize(llvm::Function *function);
     void optimize(llvm::Module *module);
-    void initialize();
+    void initialize(RunTimeHelper *runTime);
 private:
     bool optimize_;
     std::unique_ptr<llvm::legacy::FunctionPassManager> functionPassManager_;

@@ -83,6 +83,7 @@ void RunTimeHelper::declareRunTime() {
     releaseMemory_ = declareMemoryRunTimeFunction("ejcReleaseMemory");
     releaseWithoutDeinit_ = declareMemoryRunTimeFunction("ejcReleaseWithoutDeinit");
     releaseCapture_ = declareMemoryRunTimeFunction("ejcReleaseCapture");
+    releaseLocal_ = declareMemoryRunTimeFunction("ejcReleaseLocal");
 
     isOnlyReference_ = declareRunTimeFunction("ejcIsOnlyReference", llvm::Type::getInt1Ty(generator_->context()),
                                      llvm::Type::getInt8PtrTy(generator_->context()));
