@@ -90,6 +90,9 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGe
     captureDeinit_ = llvm::FunctionType::get(llvm::Type::getVoidTy(context_),
                                              llvm::Type::getInt8PtrTy(context_), false);
 
+    callableBoxCapture_ = llvm::StructType::get(llvm::Type::getInt8PtrTy(context_),
+                                                captureDeinit()->getPointerTo(), callable());
+
     auto compiler = codeGenerator_->compiler();
     compiler->sInteger->createUnspecificReification().type = llvm::Type::getInt64Ty(context_);
     compiler->sReal->createUnspecificReification().type = llvm::Type::getDoubleTy(context_);

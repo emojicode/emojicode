@@ -18,7 +18,7 @@ namespace EmojicodeCompiler {
 Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
     if (!allocatesOnStack() && !isEscaping_) {
         auto ce = CompilerError(position(), "Using non-escaping closure as escaping value.");
-        ce.addNotes(position(), "Add 🛅 after 🍇 to make closure escaping.");
+        ce.addNotes(position(), "Add 🎍🥡 after 🍇 to make closure escaping.");
         throw ce;
     }
     if (allocatesOnStack() && isEscaping_) {
@@ -108,6 +108,25 @@ llvm::Value* ASTClosure::storeCapturedVariables(FunctionCodeGenerator *fg, const
     return fg->builder().CreateBitCast(captures, llvm::Type::getInt8PtrTy(fg->ctx()));
 }
 
+llvm::Function *ASTCallableBox::kRelease = nullptr;
+
+llvm::Function* ASTCallableBox::getRelease(CodeGenerator *cg) {
+    if (kRelease != nullptr) return kRelease;
+    kRelease = llvm::Function::Create(cg->typeHelper().captureDeinit(),
+                                      llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage, "callableBoxRelease",
+                                      cg->module());
+    FunctionCodeGenerator fg(kRelease, cg, std::make_unique<TypeContext>());
+    fg.createEntry();
+
+    auto capture = fg.builder().CreateBitCast(kRelease->args().begin(),
+                                              fg.typeHelper().callableBoxCapture()->getPointerTo());
+    auto callable = fg.builder().CreateConstInBoundsGEP2_32(fg.typeHelper().callableBoxCapture(), capture, 0, 2);
+    fg.release(fg.builder().CreateLoad(callable), Type(Type::noReturn(), {}, Type::noReturn()));
+
+    fg.builder().CreateRetVoid();
+    return kRelease;
+}
+
 llvm::Value* ASTCallableBox::generate(FunctionCodeGenerator *fg) const {
     thunk_->createUnspecificReification();
     fg->generator()->declareLlvmFunction(thunk_.get());
@@ -115,14 +134,18 @@ llvm::Value* ASTCallableBox::generate(FunctionCodeGenerator *fg) const {
     ClosureCodeGenerator closureGenerator(thunk_.get(), fg->generator());
     closureGenerator.generate();
 
-    auto captures = allocate(fg, fg->typeHelper().callable());
-    fg->builder().CreateStore(expr_->generate(fg), captures);
+    auto captureIn = fg->typeHelper().callableBoxCapture();
+    auto captures = allocate(fg, captureIn);
 
-    auto callable = fg->builder().CreateInsertValue(llvm::UndefValue::get(fg->typeHelper().callable()),
-                                                    thunk_->unspecificReification().function, 0);
+    fg->builder().CreateStore(expr_->generate(fg), fg->builder().CreateConstInBoundsGEP2_32(captureIn, captures, 0, 2));
+    fg->builder().CreateStore(getRelease(fg->generator()),
+                              fg->builder().CreateConstInBoundsGEP2_32(captureIn, captures, 0, 1));
 
+    auto bitcast = fg->builder().CreateBitCast(thunk_->unspecificReification().function,
+                                               llvm::Type::getInt8PtrTy(fg->ctx()));
+    auto wcallable = fg->builder().CreateInsertValue(llvm::UndefValue::get(fg->typeHelper().callable()), bitcast, 0);
     auto cp = fg->builder().CreateBitCast(captures, llvm::Type::getInt8PtrTy(fg->ctx()));
-    return fg->builder().CreateInsertValue(callable, cp, 1);
+    return handleResult(fg, fg->builder().CreateInsertValue(wcallable, cp, 1));
 }
 
 llvm::Value* ASTCallableThunkDestination::generate(FunctionCodeGenerator *fg) const {

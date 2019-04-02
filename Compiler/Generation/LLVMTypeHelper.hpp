@@ -80,6 +80,8 @@ public:
     /// third is a flag describing the kind of type this is (see RunTimeTypeInfoFlag).
     llvm::StructType* runTimeTypeInfo() const { return runTimeTypeInfo_; }
 
+    llvm::StructType* callableBoxCapture() const { return callableBoxCapture_; }
+
     /// Wraps the provided type into an anonymous struct where the first element is a control block pointer and the
     /// second the type.
     ///
@@ -103,6 +105,7 @@ private:
     llvm::FunctionType *boxRetainRelease_;
     llvm::FunctionType *captureDeinit_;
     llvm::StructType *protocolConformanceEntry_;
+    llvm::StructType *callableBoxCapture_;
 
     llvm::Type* getSimpleType(const Type &type);
 

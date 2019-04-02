@@ -14,6 +14,10 @@
 #include "Scoping/CapturingSemanticScoper.hpp"
 #include "MemoryFlowAnalysis/MFHeapAllocates.hpp"
 
+namespace llvm {
+class Function;
+}
+
 namespace EmojicodeCompiler {
 
 class CodeGenerator;
@@ -63,6 +67,8 @@ public:
     ~ASTCallableBox();
 
 private:
+    static llvm::Function* getRelease(CodeGenerator *cg);
+    static llvm::Function *kRelease;
     std::unique_ptr<Function> thunk_;
 };
 

@@ -54,13 +54,13 @@ Type ASTClosure::analyse(ExpressionAnalyser *analyser, const TypeExpectation &ex
 
 void ASTClosure::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     analyseAllocation(type);
+    MFFunctionAnalyser(closure_.get()).analyse();
     for (auto &capture : capture_.captures) {
-        analyser->recordVariableGet(capture.sourceId, type);
+        analyser->recordVariableGet(capture.sourceId, MFFlowCategory::Escaping);
     }
     if (capture_.capturesSelf()) {
         analyser->recordThis(MFFlowCategory::Escaping);
     }
-    MFFunctionAnalyser(closure_.get()).analyse();
 }
 
 void ASTClosure::applyBoxingFromExpectation(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
@@ -127,6 +127,7 @@ ASTCallableBox::~ASTCallableBox() = default;
 
 void ASTCallableBox::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     analyseAllocation(type);
+    analyser->take(expr_.get());
     expr_->analyseMemoryFlow(analyser, type);
     
     MFFunctionAnalyser(thunk_.get()).analyse();
