@@ -132,7 +132,7 @@ void PrettyPrinter::printClosure(Function *function, bool escaping) {
 
 void PrettyPrinter::printReturnType(Function *function) {
     auto type = function->returnType();
-    if (type == nullptr || (type->wasAnalysed() && type->type().type() == TypeType::NoReturn)) {
+    if (type == nullptr) {
         return;
     }
     prettyStream_ << "➡️ " << type;
@@ -337,12 +337,13 @@ void PrettyPrinter::print(const char *key, Function *function, bool body, bool n
     }
     printDocumentation(function->documentation());
 
+    auto initializer = dynamic_cast<Initializer *>(function);
     prettyStream_.withTypeContext(function->typeContext(), [&]() {
         prettyStream_.indent();
         printFunctionAttributes(function, noMutate);
         printFunctionAccessLevel(function);
 
-        if (auto initializer = dynamic_cast<Initializer *>(function)) {
+        if (initializer != nullptr) {
             prettyStream_ << key;
             if (initializer->name().front() != E_NEW_SIGN) {
                 prettyStream_ << " " << function->name() << " ";
@@ -358,7 +359,9 @@ void PrettyPrinter::print(const char *key, Function *function, bool body, bool n
 
         printGenericParameters(function);
         printArguments(function);
-        printReturnType(function);
+        if (initializer == nullptr) {
+            printReturnType(function);
+        }
         printErrorType(function);
 
         if (!function->externalName().empty()) {
@@ -379,7 +382,6 @@ void PrettyPrinter::print(const char *key, Function *function, bool body, bool n
             else {
                 prettyStream_.setLastCommentQueryPlace(function->position());
                 function->ast()->toCode(prettyStream_);
-
             }
         }
         prettyStream_ << "\n";

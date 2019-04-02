@@ -599,7 +599,7 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
             string.append("🍱");
             return;
         case TypeType::NoReturn:
-            string.append("(no return)");
+            string.append("◼️");
             return;
         case TypeType::Something:
             string.append("⚪️");
