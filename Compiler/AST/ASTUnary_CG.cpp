@@ -19,6 +19,11 @@
 
 namespace EmojicodeCompiler {
 
+llvm::Value* createExpectFalse(FunctionCodeGenerator *fg, llvm::Value *value) {
+    return fg->builder().CreateIntrinsic(llvm::Intrinsic::expect, llvm::Type::getInt1Ty(fg->ctx()),
+                                         { value, fg->builder().getInt1(false) });
+}
+
 Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
     if (error_) {
         return generateErrorUnwrap(fg);
@@ -29,7 +34,8 @@ Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
     auto hasNoValue = isBox ? fg->buildHasNoValueBox(optional)
                             : fg->buildOptionalHasNoValue(optional, expr_->expressionType());
 
-    fg->createIfElseBranchCond(hasNoValue, [this, fg]() {
+
+    fg->createIfElseBranchCond(createExpectFalse(fg, hasNoValue), [this, fg]() {
         std::stringstream str;
         str << "Unwrapped an optional that contained no value. (" << position().toRuntimeString() << ")";
         auto string = fg->builder().CreateGlobalStringPtr(str.str());
@@ -46,7 +52,7 @@ Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
 Value* ASTUnwrap::generateErrorUnwrap(FunctionCodeGenerator *fg) const {
     auto errorDest = prepareErrorDestination(fg, expr_.get());
     auto value = expr_->generate(fg);
-    fg->createIfElseBranchCond(isError(fg, errorDest), [this, fg, errorDest]() {
+    fg->createIfElseBranchCond(createExpectFalse(fg, isError(fg, errorDest)), [this, fg, errorDest]() {
         auto error = fg->compiler()->sError;
         auto string = std::make_shared<ASTCGUTF8Literal>(position().toRuntimeString(), position());
         CallCodeGenerator(fg, CallType::StaticDispatch).generate(fg->builder().CreateLoad(errorDest),
@@ -61,7 +67,7 @@ Value* ASTUnwrap::generateErrorUnwrap(FunctionCodeGenerator *fg) const {
 Value* ASTReraise::generate(FunctionCodeGenerator *fg) const {
     dynamic_cast<ASTCall *>(expr_.get())->setErrorPointer(fg->errorPointer());
     auto value = expr_->generate(fg);
-    fg->createIfElseBranchCond(isError(fg, fg->errorPointer()), [this, fg]() {
+    fg->createIfElseBranchCond(createExpectFalse(fg, isError(fg, fg->errorPointer())), [this, fg]() {
         fg->releaseTemporaryObjects(false, expr_->producesTemporaryObject());
         release(fg);
         fg->buildErrorReturn();

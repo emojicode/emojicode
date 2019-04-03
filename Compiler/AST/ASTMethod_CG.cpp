@@ -14,8 +14,7 @@
 namespace EmojicodeCompiler {
 
 llvm::Value* callIntrinsic(FunctionCodeGenerator *fg, llvm::Intrinsic::ID id, llvm::ArrayRef<llvm::Value *> args) {
-    return fg->builder().CreateCall(llvm::Intrinsic::getDeclaration(fg->generator()->module(), id,
-                                                                    args.front()->getType()), args);
+    return fg->builder().CreateIntrinsic(id, args.front()->getType(), args);
 }
 
 Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
