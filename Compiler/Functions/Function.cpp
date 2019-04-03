@@ -46,7 +46,7 @@ TypeContext Function::typeContext() {
 }
 
 bool Function::isInline() const {
-    return forceInline_ || (ast() != nullptr && ast()->stmtsSize() == 1 && accessLevel() != AccessLevel::Private &&
+    return forceInline_ || (ast() != nullptr && ast()->stmtsSize() <= 2 &&
                             functionType() != FunctionType::Deinitializer &&
                             functionType() != FunctionType::CopyRetainer);
 }

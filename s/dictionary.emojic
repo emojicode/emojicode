@@ -167,14 +167,14 @@
   🍉
 
   📗 Prepare this dictionary for mutation. 📗
-  🖍🔒❗️📝 🍇
+  🥯🖍🔒❗️📝 🍇
     ↪️ ❎🏮data❗️🎍🐌🍇
       🆕🌸🐚Element🍆👥 data❗️ ➡️ 🖍data
     🍉
   🍉
 
   📗 Creates an empty 🍯. 📗
-  🆕 🐸 🍇
+  🥯🆕 🐸 🍇
     0 ➡️ 🖍count
     🆕🌸🐚Element🍆️🆕 7❗️➡️ 🖍data
   🍉
@@ -192,7 +192,7 @@
     ↩️ 👎
   🍉
 
-  🔒❗ 🔍 key 🔡 ➡️ 🍬🐝🐚🔡Element🍆 🍇
+  🥯🔒❗ 🔍 key 🔡 ➡️ 🍬🐝🐚🔡Element🍆 🍇
     ⚗️key❗➡️ hash
     hash🚮🐴data❓ ➡️ index
 
@@ -214,7 +214,7 @@
     Returns the value assigned to *key*. If key is not in the 🍯 no value is
     returned.
   📗
-  ❗️ 🐽 key 🔡 ➡️ 🍬Element 🍇
+  🥯❗️ 🐽 key 🔡 ➡️ 🍬Element 🍇
     ↪️ 🔍🐕 key❗️ ➡️ entry 🍇
       ↩️ 🐽entry❗
     🍉
@@ -225,7 +225,7 @@
     Removes *key* and its assigned value from the 🍯. No action is performed if
     *key* is not in the 🍯.
   📗
-  🖍❗️ 🐨 key 🔡 🍇
+  🥯🖍❗️ 🐨 key 🔡 🍇
     📝🐕❗️
     ⚗️key❗➡️ hash
     hash🚮🐴data❓ ➡️ index
@@ -258,7 +258,7 @@
   🍉
 
   📗 Assings a value to the provided key. 📗
-  🖍➡️🐽 value Element key 🔡 🍇
+  🥯🖍➡️🐽 value Element key 🔡 🍇
     📝🐕❗️
     ↪️ 🔍🐕 key❗️➡️ entry 🍇
       🐷 entry value❗️
@@ -288,7 +288,7 @@
     🍉
   🍉
 
-  🖍🔒❗🦕️ 🍇
+  🥯🖍🔒❗🦕️ 🍇
     ↪️ 💯count❗️➗💯🐴data❓❗▶️ 0.75 🎍🐌🍇️
       data ➡️ oldData
       🐴data❓ ➡️ oldCapacity

@@ -292,7 +292,7 @@ string, but those themselves are then immutable again.
   🖍🆕 size 🔢
 
   📗 Creates an empty 🔠 with an initial capacity of 16. 📗
-  🆕 🍇
+  🥯🆕 🍇
     0 ➡️ 🖍count
     16 ➡️ 🖍size
     ☣️ 🍇
@@ -304,7 +304,7 @@ string, but those themselves are then immutable again.
     Creates a 🔠 with the contents of the provided string and a capacity of
     the length of the string plus 16.
   📗
-  🆕 🔡 string 🔡 🍇
+  🥯🆕 🔡 string 🔡 🍇
     0 ➡️ 🖍count
     📐string❗️➕ 16 ➡️ 🖍size
     ☣️ 🍇
@@ -314,7 +314,7 @@ string, but those themselves are then immutable again.
   🍉
 
   📗 Creates an empty 🔠 with the provided *capacity*. 📗
-  🆕 🐧 capacity 🔢 🍇
+  🥯🆕 🐧 capacity 🔢 🍇
     0 ➡️ 🖍count
     capacity ➡️ 🖍size
     ☣️ 🍇
@@ -323,7 +323,7 @@ string, but those themselves are then immutable again.
   🍉
 
   📗 Adds the contents of *string* to this 🔠. 📗
-  ❗️ 🐻 string 🔡 🍇
+  🥯❗️ 🐻 string 🔡 🍇
     📐string❗️ ➡️ stringSize
     ☣️ 🍇
       🍜🐕 stringSize❗️
@@ -332,11 +332,11 @@ string, but those themselves are then immutable again.
   🍉
 
   📗
-    Ensures their is enough space left to append a `stringSize` bytes.
+    Ensures their is enough space left to append `stringSize` bytes.
   📗
-  ☣️🔒❗️ 🍜 stringSize 🔢 🍇
+  🥯☣️🔒❗️ 🍜 stringSize 🔢 🍇
     count ➕ stringSize ➡️ minimumSize
-    ↪️ minimumSize ▶️ size 🍇
+    ↪️ minimumSize ▶️ size 🎍🐌🍇
       size ⬅️✖️ 2
       ↪️ minimumSize ▶️ size 🍇
         minimumSize ➡️ 🖍size
@@ -345,7 +345,7 @@ string, but those themselves are then immutable again.
     🍉
   🍉
 
-  ☣️🔒❗️ 🦘 string 🔡 🍇
+  🥯☣️🔒❗️ 🦘 string 🔡 🍇
     📐string❗️ ➡️ stringSize
     🚜 data count 🧠 string❗️ 0 stringSize❗️
     count ⬅️➕ stringSize
