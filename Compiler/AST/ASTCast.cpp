@@ -9,6 +9,7 @@
 #include "Analysis/ExpressionAnalyser.hpp"
 #include "CompilerError.hpp"
 #include "Types/TypeExpectation.hpp"
+#include "Types/TypeDefinition.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -49,9 +50,14 @@ Type ASTCast::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expec
     }
 
     if (type.type() != TypeType::Class && type.type() != TypeType::ValueType && type.type() != TypeType::Enum){
-        auto typeString = type.toString(analyser->typeContext());
-        throw CompilerError(position(), "You cannot cast to ", typeString, ".");
+        throw CompilerError(position(), "You cannot cast to ", type.toString(analyser->typeContext()), ".");
     }
+
+    if (type.typeDefinition()->isGenericDynamismDisabled()) {
+        throw CompilerError(position(), "You cannot cast to ", type.toString(analyser->typeContext()),
+                            " because generic type dynamism was disabled for this type.");
+    }
+
     return type.optionalized().boxedFor(originalType.boxedFor());
 }
 

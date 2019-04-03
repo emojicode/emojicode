@@ -152,7 +152,13 @@ void PrettyPrinter::printTypeDef(const Type &type) {
     if (typeDef->exported()) {
         prettyStream_ << "🌍 ";
     }
+    if (typeDef->isGenericDynamismDisabled()) {
+        prettyStream_ << "🎍🛢 ";
+    }
     if (auto klass = type.klass()) {
+        if (klass->final()) {
+            prettyStream_ << "🔏 ";
+        }
         if (klass->foreign()) {
             prettyStream_ << "📻 ";
         }

@@ -37,6 +37,9 @@ void TypeDescriptionGenerator::addType(const Type &type) {
             genericInfo = fg_->generator()->runTime().someobjectRtti();
             break;
         case TypeType::GenericVariable:
+            if (fg_->calleeType().typeDefinition()->isGenericDynamismDisabled()) {
+                throw CompilerError(fg_->position(), "Generic dynamism is disabled in this type.");
+            }
             addDynamic(fg_->builder().CreateLoad(fg_->genericArgsPtr()), notype.genericVariableIndex());
             return;
         case TypeType::LocalGenericVariable:

@@ -16,7 +16,8 @@
 
 namespace EmojicodeCompiler {
 
-using PackageAttributeParser = AttributeParser<Attribute::Export, Attribute::Final, Attribute::Foreign>;
+using PackageAttributeParser = AttributeParser<Attribute::Export, Attribute::NoGenericDynamism,
+    Attribute::Final, Attribute::Foreign>;
 
 /// DocumentParser instances parse the direct output from the lexer for one source code document (one source file).
 /// parse() therefore expects $document-statement$s.
@@ -34,14 +35,15 @@ private:
     TypeIdentifier parseAndValidateNewTypeName();
     
     /// Called if a $class$ has been detected. The first token has already been parsed.
-    void parseClass(const std::u32string &documentation, const Token &theToken, bool exported, bool final,
-                    bool foreign);
+    Class* parseClass(const std::u32string &documentation, const Token &theToken, bool exported, bool final,
+                      bool foreign);
     /// Called if a $enum$ has been detected. The first token has already been parsed.
     void parseEnum(const std::u32string &documentation, const Token &theToken, bool exported);
     /// Called if a $protocol$ has been detected. The first token has already been parsed.
     void parseProtocol(const std::u32string &documentation, const Token &theToken, bool exported);
     /// Called if a $value-type$ has been detected. The first token has already been parsed.
-    void parseValueType(const std::u32string &documentation, const Token &theToken, bool exported, bool primitive);
+    ValueType* parseValueType(const std::u32string &documentation, const Token &theToken, bool exported,
+                              bool primitive);
     /// Called if a $package-import$ has been detected. The first token has already been parsed.
     void parsePackageImport(const SourcePosition &p);
     /// Called if an $include$ has been detected. The first token has already been parsed.
@@ -50,6 +52,8 @@ private:
     void parseStartFlag(const Documentation &documentation, const SourcePosition &p);
 
     void parseLinkHints(const SourcePosition &p);
+
+    void setGenericTypeDynamism(TypeDefinition *typDef, bool disable);
 
     template <typename TypeDef>
     void offerAndParseBody(TypeDef *typeDef, const TypeIdentifier &id, const SourcePosition &p) {

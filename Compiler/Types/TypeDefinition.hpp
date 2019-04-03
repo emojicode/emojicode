@@ -122,6 +122,9 @@ public:
 
     Function* deinitializer();
 
+    bool isGenericDynamismDisabled() const { return genericDynamismDisabled_; }
+    void disableGenericDynamism() { genericDynamismDisabled_ = true; }
+
     const std::pair<llvm::Function*, llvm::Function*>& boxRetainRelease() const { return boxRetainRelease_; }
     void setBoxRetainRelease(std::pair<llvm::Function*, llvm::Function*> pair) { boxRetainRelease_ = pair; }
 
@@ -174,6 +177,7 @@ private:
     std::u32string documentation_;
     SourcePosition position_;
     bool exported_;
+    bool genericDynamismDisabled_ = false;
 
     std::map<Type, llvm::Constant*> protocolTables_;
 

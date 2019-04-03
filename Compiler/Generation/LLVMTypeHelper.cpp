@@ -177,9 +177,11 @@ bool LLVMTypeHelper::isRemote(const Type &type) {
 
 bool LLVMTypeHelper::storesGenericArgs(const Type &type) const {
     if (type.type() == TypeType::Class) {
+        if (type.typeDefinition()->isGenericDynamismDisabled()) return false;
         return !type.typeDefinition()->genericParameters().empty() || type.klass()->offset() > 0;
     }
     if (type.type() == TypeType::ValueType) {
+        if (type.typeDefinition()->isGenericDynamismDisabled()) return false;
         return !type.typeDefinition()->genericParameters().empty();
     }
     return false;

@@ -26,10 +26,12 @@ void DocumentParser::parse() {
         auto theToken = stream_.consumeToken();
 
         switch (theToken.type()) {
-            case TokenType::Class:
-                parseClass(documentation.get(), theToken, attributes.has(Attribute::Export),
-                           attributes.has(Attribute::Final), attributes.has(Attribute::Foreign));
+            case TokenType::Class: {
+                auto klass = parseClass(documentation.get(), theToken, attributes.has(Attribute::Export),
+                                        attributes.has(Attribute::Final), attributes.has(Attribute::Foreign));
+                setGenericTypeDynamism(klass, attributes.has(Attribute::NoGenericDynamism));
                 continue;
+            }
             case TokenType::Protocol:
                 attributes.allow(Attribute::Export).check(theToken.position(), package_->compiler());
                 parseProtocol(documentation.get(), theToken, attributes.has(Attribute::Export));
@@ -38,12 +40,14 @@ void DocumentParser::parse() {
                 attributes.allow(Attribute::Export).check(theToken.position(), package_->compiler());
                 parseEnum(documentation.get(), theToken, attributes.has(Attribute::Export));
                 continue;
-            case TokenType::ValueType:
-                attributes.allow(Attribute::Export).allow(Attribute::Foreign)
+            case TokenType::ValueType: {
+                attributes.allow(Attribute::Export).allow(Attribute::Foreign).allow(Attribute::NoGenericDynamism)
                     .check(theToken.position(), package_->compiler());
-                parseValueType(documentation.get(), theToken, attributes.has(Attribute::Export),
-                               attributes.has(Attribute::Foreign));
+                auto valueType = parseValueType(documentation.get(), theToken, attributes.has(Attribute::Export),
+                                                attributes.has(Attribute::Foreign));
+                setGenericTypeDynamism(valueType, attributes.has(Attribute::NoGenericDynamism));
                 continue;
+            }
             case TokenType::PackageDocumentationComment:
                 attributes.check(theToken.position(), package_->compiler());
                 documentation.disallow();
@@ -88,6 +92,24 @@ TypeIdentifier DocumentParser::parseAndValidateNewTypeName() {
     }
 
     return parsedTypeName;
+}
+
+void DocumentParser::setGenericTypeDynamism(TypeDefinition *typDef, bool disable) {
+    if (disable) {
+        if (typDef->genericParameters().empty()) {
+            package_->compiler()->error(CompilerError(typDef->position(), "🎍🛢 can only be applied to generic types."));
+        }
+        if (auto klass = dynamic_cast<Class*>(typDef)) {
+            if (!klass->final()) {
+                package_->compiler()->error(CompilerError(typDef->position(), "Class with 🎍🛢 must be 🔏."));
+            }
+            if (klass->superType() != nullptr) {
+                package_->compiler()->error(CompilerError(typDef->position(),
+                                                          "Class with 🎍🛢 must not have a superclass."));
+            }
+        }
+        typDef->disableGenericDynamism();
+    }
 }
 
 void DocumentParser::parsePackageImport(const SourcePosition &p) {
@@ -159,8 +181,8 @@ void DocumentParser::parseEnum(const std::u32string &documentation, const Token 
     offerAndParseBody(enumeration, parsedTypeName, theToken.position());
 }
 
-void DocumentParser::parseClass(const std::u32string &documentation, const Token &theToken, bool exported, bool final,
-                                bool foreign) {
+Class* DocumentParser::parseClass(const std::u32string &documentation, const Token &theToken, bool exported, bool final,
+                                  bool foreign) {
     auto parsedTypeName = parseAndValidateNewTypeName();
 
     auto eclass = package_->add(std::make_unique<Class>(parsedTypeName.name, package_, theToken.position(),
@@ -173,16 +195,18 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
     }
 
     offerAndParseBody(eclass, parsedTypeName, theToken.position());
+    return eclass;
 }
 
-void DocumentParser::parseValueType(const std::u32string &documentation, const Token &theToken, bool exported,
-                                    bool primitive) {
+ValueType* DocumentParser::parseValueType(const std::u32string &documentation, const Token &theToken, bool exported,
+                                          bool primitive) {
     auto parsedTypeName = parseAndValidateNewTypeName();
 
     auto valueType = package_->add(std::make_unique<ValueType>(parsedTypeName.name, package_, theToken.position(),
                                                                documentation, exported, primitive));
     parseGenericParameters(valueType);
     offerAndParseBody(valueType, parsedTypeName, theToken.position());
+    return valueType;
 }
 
 }  // namespace EmojicodeCompiler
