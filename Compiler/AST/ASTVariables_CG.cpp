@@ -53,9 +53,11 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
         }
         auto val = fg->builder().CreateLoad(ptr);
         setTbaaMetadata(fg, val);
-        if (expressionType().isManaged() && !isTemporary()) {
+        if (expressionType().isManaged()) {
             fg->retain(fg->isManagedByReference(expressionType()) ? ptr : val, expressionType());
-            handleResult(fg, val, ptr);
+            // We cannot provide the variable address for releasing as another part of the statement could modify the
+            // variable and thus might contain a different value when releasing.
+            handleResult(fg, val);
         }
         return val;
     }
@@ -69,7 +71,7 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
     setTbaaMetadata(fg, val);
     if (!returned_ && !isTemporary() && expressionType().isManaged()) {
         fg->retain(fg->isManagedByReference(expressionType()) ? localVariable : val, expressionType());
-        handleResult(fg, val, localVariable);
+        handleResult(fg, val);  // See above
     }
     return val;
 }

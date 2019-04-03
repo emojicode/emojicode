@@ -93,6 +93,7 @@ compilation_tests = [
     "rcTempOrder",
     "rcInstanceVariable",
     "rcOnlyReference",
+    "rcIvarArgMut"
     "references",
     "identifierTest",
     "shortCircuit",
