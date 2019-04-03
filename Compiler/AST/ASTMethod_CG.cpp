@@ -57,7 +57,12 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
                 auto type = args_.genericArguments().front()->type();
                 auto ptr = buildMemoryAddress(fg, v, args_.args()[1]->generate(fg), type);
                 auto val = args_.args().front()->generate(fg);
-                fg->builder().CreateStore(val, ptr);
+                auto store = fg->builder().CreateStore(val, ptr);
+                if (fg->typeHelper().shouldAddTbaa(type)) {
+                    auto tbaa = fg->typeHelper().tbaaNodeFor(type, false);
+                    auto accessTag = fg->typeHelper().mdBuilder()->createTBAAAccessTag(tbaa, tbaa, 0, 0);
+                    store->setMetadata(llvm::LLVMContext::MD_tbaa, accessTag);
+                }
                 if (type.isManaged()) {
                     fg->retain(fg->isManagedByReference(type) ? ptr : val, type);
                 }

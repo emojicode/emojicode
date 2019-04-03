@@ -13,6 +13,10 @@
 #include <utility>
 #include "Scoping/Variable.hpp"
 
+namespace llvm {
+class Instruction;
+}
+
 namespace EmojicodeCompiler {
 
 struct ResolvedVariable;
@@ -57,6 +61,8 @@ protected:
     void release(FunctionCodeGenerator *fg) const;
 
     Value* managementValue(FunctionCodeGenerator *fg) const;
+
+    void setTbaaMetadata(FunctionCodeGenerator *fg, llvm::Instruction *storeOrLoad) const;
 
 private:
     bool inInstanceScope_ = false;

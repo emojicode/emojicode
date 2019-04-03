@@ -37,6 +37,14 @@ void AccessesAnyVariable::release(FunctionCodeGenerator *fg) const {
     fg->release(managementValue(fg), variableType_);
 }
 
+void AccessesAnyVariable::setTbaaMetadata(FunctionCodeGenerator *fg, llvm::Instruction *storeOrLoad) const {
+    if (!inInstanceScope() || !fg->typeHelper().shouldAddTbaa(variableType_)) return;
+    auto varTbaa = fg->typeHelper().tbaaNodeFor(variableType_, false);
+    auto structTbaa = fg->typeHelper().tbaaNodeFor(fg->calleeType(), true);
+    auto accessTag = fg->typeHelper().mdBuilder()->createTBAAAccessTag(structTbaa, varTbaa, id(), 0);
+    storeOrLoad->setMetadata(llvm::LLVMContext::MD_tbaa, accessTag);
+}
+
 Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
     if (inInstanceScope()) {
         auto ptr = instanceVariablePointer(fg);
@@ -44,6 +52,7 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
             return ptr;
         }
         auto val = fg->builder().CreateLoad(ptr);
+        setTbaaMetadata(fg, val);
         if (expressionType().isManaged() && !isTemporary()) {
             fg->retain(fg->isManagedByReference(expressionType()) ? ptr : val, expressionType());
             handleResult(fg, val, ptr);
@@ -57,6 +66,7 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
     }
 
     auto val = fg->builder().CreateLoad(localVariable);
+    setTbaaMetadata(fg, val);
     if (!returned_ && !isTemporary() && expressionType().isManaged()) {
         fg->retain(fg->isManagedByReference(expressionType()) ? localVariable : val, expressionType());
         handleResult(fg, val, localVariable);
@@ -106,7 +116,7 @@ void ASTVariableAssignment::generateAssignment(FunctionCodeGenerator *fg) const 
         release(fg);
     }
     auto variablePtr = variablePointer(fg);
-    fg->builder().CreateStore(val, variablePtr);
+    setTbaaMetadata(fg, fg->builder().CreateStore(val, variablePtr));
 }
 
 void ASTConstantVariable::generateAssignment(FunctionCodeGenerator *fg) const {

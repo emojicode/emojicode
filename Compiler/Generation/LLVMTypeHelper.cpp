@@ -28,7 +28,7 @@ namespace EmojicodeCompiler {
 const unsigned kBoxSize = 32;
 
 LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGenerator)
-        : context_(context), codeGenerator_(codeGenerator) {
+        : context_(context), codeGenerator_(codeGenerator), mdBuilder_(context) {
 
     runTimeTypeInfo_ = llvm::StructType::create({
         llvm::Type::getInt16Ty(context_),  // generic parameter count
@@ -99,6 +99,8 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGe
     compiler->sBoolean->createUnspecificReification().type = llvm::Type::getInt1Ty(context_);
     compiler->sMemory->createUnspecificReification().type = llvm::Type::getInt8PtrTy(context_);
     compiler->sByte->createUnspecificReification().type = llvm::Type::getInt8Ty(context_);
+
+    tbaaRoot_ = mdBuilder_.createTBAARoot("something");
 }
 
 LLVMTypeHelper::~LLVMTypeHelper() = default;
@@ -243,7 +245,7 @@ llvm::Type* LLVMTypeHelper::llvmTypeForTypeDefinition(const Type &type) {
     reification.type = structType;
 
     std::vector<llvm::Type *> types;
-    if (type.type() == TypeType::Class) {
+    if (type.is<TypeType::Class>()) {
         types.emplace_back(llvm::Type::getInt8PtrTy(context_));
         types.emplace_back(classInfoType_->getPointerTo());
     }
@@ -262,6 +264,31 @@ llvm::Type* LLVMTypeHelper::llvmTypeForTypeDefinition(const Type &type) {
 
 llvm::StructType* LLVMTypeHelper::managable(llvm::Type *type) const {
     return llvm::StructType::get(context_, { llvm::Type::getInt8PtrTy(context_), type });
+}
+
+llvm::MDNode* LLVMTypeHelper::tbaaNodeFor(const Type &type, bool classAsStruct) {
+    if (type.is<TypeType::Enum>() || (type.is<TypeType::ValueType>() && type.valueType()->isPrimitive())) {
+        return mdBuilder_.createTBAAScalarTypeNode(mangleTypeName(type), tbaaRoot_);
+    }
+    if (!classAsStruct && type.is<TypeType::Class>()) {
+        auto superclass = type.klass()->superclass();
+        auto super = superclass != nullptr ? tbaaNodeFor(type.klass()->superType()->type(), false) : tbaaRoot_;
+        return mdBuilder_.createTBAAScalarTypeNode(mangleTypeName(type) + ".ref", super);
+    }
+    if (type.is<TypeType::ValueType>() || type.is<TypeType::Class>()) {
+        std::vector<std::pair<llvm::MDNode*, uint64_t>> elements;
+        uint64_t offset = 0;
+        for (auto &ivar : type.typeDefinition()->instanceVariables()) {
+            elements.emplace_back(tbaaNodeFor(ivar.type->type(), false), offset++);
+        }
+        return mdBuilder_.createTBAAStructTypeNode(mangleTypeName(type), elements);
+    }
+    return tbaaRoot_;
+}
+
+bool LLVMTypeHelper::shouldAddTbaa(const Type &loadStoreType) const {
+    return loadStoreType.is<TypeType::Class>() || loadStoreType.is<TypeType::Enum>() ||
+        (loadStoreType.is<TypeType::ValueType>() && loadStoreType.valueType()->isPrimitive());
 }
 
 }  // namespace EmojicodeCompiler

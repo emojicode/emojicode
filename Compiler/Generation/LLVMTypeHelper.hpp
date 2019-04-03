@@ -14,6 +14,7 @@
 #include <map>
 #include <memory>
 #include <functional>
+#include <llvm/IR/MDBuilder.h>
 
 namespace llvm {
 class Type;
@@ -91,6 +92,10 @@ public:
 
     void withReificationContext(ReificationContext context, std::function<void()> function);
 
+    llvm::MDBuilder* mdBuilder() { return &mdBuilder_; }
+    llvm::MDNode* tbaaNodeFor(const Type &type, bool classAsStruct);
+    bool shouldAddTbaa(const Type &loadStoreType) const;
+
     ~LLVMTypeHelper();
 
 private:
@@ -111,6 +116,8 @@ private:
 
     llvm::LLVMContext &context_;
     CodeGenerator *codeGenerator_;
+    llvm::MDBuilder mdBuilder_;
+    llvm::MDNode *tbaaRoot_;
 
     std::unique_ptr<ReificationContext> reifiContext_;
 

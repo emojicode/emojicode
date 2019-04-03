@@ -96,6 +96,9 @@ public:
     /// @returns The type of this type, i.e. Protocol, Class instance etc.
     TypeType type() const { return typeContent_; }
 
+    template <TypeType t>
+    bool is() const { return typeContent_ == t; }
+
     /// If this is a box, proxies to the boxed type.
     /// @pre type() == TypeType::Class
     Class* klass() const;

@@ -86,6 +86,10 @@ void FunctionCodeGenerator::declareArguments(llvm::Function *function) {
     }
 }
 
+const Type& FunctionCodeGenerator::calleeType() const {
+    return typeContext_->calleeType();
+}
+
 void FunctionCodeGenerator::setVariable(size_t id, llvm::Value *value, const llvm::Twine &name) {
     auto alloca = createEntryAlloca(value->getType(), name);
     builder().CreateStore(value, alloca);

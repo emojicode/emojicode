@@ -80,8 +80,13 @@ void RunTimeHelper::declareRunTime() {
 
     retain_ = declareMemoryRunTimeFunction("ejcRetain");
     retainMemory_ = declareMemoryRunTimeFunction("ejcRetainMemory");
-    release_ = declareMemoryRunTimeFunction("ejcRelease");
     releaseMemory_ = declareMemoryRunTimeFunction("ejcReleaseMemory");
+    retain_->addFnAttr(llvm::Attribute::InaccessibleMemOrArgMemOnly);
+    retainMemory_->addFnAttr(llvm::Attribute::InaccessibleMemOrArgMemOnly);
+    releaseMemory_->addFnAttr(llvm::Attribute::InaccessibleMemOrArgMemOnly);
+
+    /// All of these call deinitializers and we cannot make any predictions about their memory usage
+    release_ = declareMemoryRunTimeFunction("ejcRelease");
     releaseWithoutDeinit_ = declareMemoryRunTimeFunction("ejcReleaseWithoutDeinit");
     releaseCapture_ = declareMemoryRunTimeFunction("ejcReleaseCapture");
     releaseLocal_ = declareMemoryRunTimeFunction("ejcReleaseLocal");

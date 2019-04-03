@@ -72,6 +72,7 @@ public:
     virtual llvm::Value* thisValue() const { return &*function_->args().begin(); }
     llvm::Type* llvmReturnType() const { return function_->getReturnType(); }
     llvm::Value* errorPointer() const { return &*(function_->args().end() - 1); }
+    const Type& calleeType() const;
 
     void buildErrorReturn();
 
