@@ -26,6 +26,7 @@ void RunTimeHelper::declareRunTime() {
                                          llvm::Type::getInt64Ty(generator_->context()));
     alloc_->addAttribute(0, llvm::Attribute::NonNull);
     alloc_->addFnAttr(llvm::Attribute::getWithAllocSizeArgs(generator_->context(), 0, llvm::Optional<unsigned>()));
+    alloc_->addAttribute(llvm::AttributeList::ReturnIndex, llvm::Attribute::NoAlias);
 
     panic_ = declareRunTimeFunction("ejcPanic", llvm::Type::getVoidTy(generator_->context()),
                                     llvm::Type::getInt8PtrTy(generator_->context()));

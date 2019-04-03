@@ -451,16 +451,18 @@ void FunctionCodeGenerator::retain(llvm::Value *value, const Type &otype) {
 }
 
 void FunctionCodeGenerator::manageBox(bool retain, llvm::Value *boxInfo, llvm::Value *value, const Type &type) {
+    llvm::Value *fnPtr;
     if (type.boxedFor().type() == TypeType::Protocol) {
         auto conf = builder().CreateBitCast(boxInfo, typeHelper().protocolConformance()->getPointerTo());
-        auto rfptrptr = builder().CreateConstInBoundsGEP2_32(typeHelper().protocolConformance(), conf, 0,
-                                                             retain ? 3 : 4);
-        builder().CreateCall(builder().CreateLoad(rfptrptr, retain ? "retain" : "release"), value);
+        fnPtr = builder().CreateConstInBoundsGEP2_32(typeHelper().protocolConformance(), conf, 0, retain ? 3 : 4);
     }
     else {
-        auto rfptrptr = builder().CreateConstInBoundsGEP2_32(typeHelper().boxInfo(), boxInfo, 0, retain ? 1 : 2);
-        builder().CreateCall(builder().CreateLoad(rfptrptr, retain ? "retain" : "release"), value);
+        fnPtr = builder().CreateConstInBoundsGEP2_32(typeHelper().boxInfo(), boxInfo, 0, retain ? 1 : 2);
     }
+    auto call = builder().CreateCall(builder().CreateLoad(fnPtr, retain ? "retain" : "release"), value);
+    call->addParamAttr(0, llvm::Attribute::NoCapture);
+    call->addParamAttr(0, llvm::Attribute::ReadOnly);
+    call->addAttribute(llvm::AttributeList::FunctionIndex, llvm::Attribute::NoUnwind);
 }
 
 bool FunctionCodeGenerator::isManagedByReference(const Type &type) const {
