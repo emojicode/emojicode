@@ -53,7 +53,7 @@ extern "C" s::String* sRealToString(runtime::Real *real, runtime::Integer precis
     }
 
     auto a = std::abs(static_cast<long long>(integral));
-    bool negative = integral < 0;
+    bool negative = *real < 0;
 
     unsigned int d = (negative ? 3 : 2) + precision;
     auto ac = a;
