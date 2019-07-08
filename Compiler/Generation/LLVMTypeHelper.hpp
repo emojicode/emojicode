@@ -56,8 +56,6 @@ public:
     /// @returns True if this type cannot be directly stored in a box and memory must be allocated on the heap.
     bool isRemote(const Type &type);
 
-    bool storesGenericArgs(const Type &type) const;
-
     /// A pointer to a value of this type is stored in the first field of a box to identify its content.
     llvm::StructType* boxInfo() const { return boxInfoType_; }
     /// The class info stores the dispatch table as well as a pointer to the class info of the super class if this class
@@ -124,6 +122,8 @@ private:
     llvm::Type *typeForOrdinaryType(const Type &type);
 
     llvm::Type* llvmTypeForTypeDefinition(const Type &type);
+
+    llvm::Type* genericArgsStore(const Type &calleeType);
 };
 
 }  // namespace EmojicodeCompiler

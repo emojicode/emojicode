@@ -45,22 +45,6 @@ public:
     void generate(FunctionCodeGenerator *fg) const override;
 };
 
-/// ASTSuperDeinitializer is used in deinitializers to call the superclass’ deinitializer. The superclass’
-/// deinitializer is statically dispatched.
-class ASTSuperDeinitializer : public ASTStatement {
-public:
-    /// @param deinit The superclass’ deinitializer.
-    ASTSuperDeinitializer(Function *deinit, const SourcePosition &p) : ASTStatement(p), deinit_(deinit) {}
-
-    void analyseMemoryFlow(MFFunctionAnalyser *analyser) override {}
-    void analyse(FunctionAnalyser *) final {}
-    void toCode(PrettyStream &pretty) const override {}
-    void generate(FunctionCodeGenerator *fg) const override;
-
-private:
-    Function *deinit_;
-};
-
 }
 
 #endif /* ASTMemory_hpp */

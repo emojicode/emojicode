@@ -19,10 +19,4 @@ void ASTRetain::generate(FunctionCodeGenerator *fg) const {
     fg->retain(managementValue(fg), variableType());
 }
 
-void ASTSuperDeinitializer::generate(FunctionCodeGenerator *fg) const {
-    CallCodeGenerator(fg, CallType::StaticDispatch).generate(fg->thisValue(), Type::noReturn(),
-                                                             ASTArguments(position(), Mood::Imperative), deinit_,
-                                                             nullptr);
-}
-
 } // namespace EmojicodeCompiler

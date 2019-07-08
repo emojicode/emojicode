@@ -34,6 +34,8 @@ protected:
     virtual void createProtocolTables(const Type &type);
     virtual void createBoxInfo(ValueType *valueType);
     virtual void createFunction(Function *function);
+    virtual void createDestructor(Class *klass);
+    virtual void createDestructorRetain(ValueType *valueType);
 
 private:
     void createProtocol(Protocol *protocol);
@@ -49,6 +51,8 @@ protected:
     void createProtocolTables(const Type &type) override;
     void createBoxInfo(ValueType *valueType) override;
     void createFunction(Function *function) override;
+    void createDestructor(Class *klass) override;
+    void createDestructorRetain(ValueType *valueType) override;
 };
 
 }

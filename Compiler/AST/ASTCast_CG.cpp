@@ -137,16 +137,18 @@ Value* ASTCast::castToValueType(FunctionCodeGenerator *fg, Value *box, Value *ty
 
     auto boxPtr = fg->builder().CreateConstInBoundsGEP2_32(fg->typeHelper().box(), box, 0, 1);
     auto isLocalValueType = fg->builder().CreateICmpEQ(flag, fg->int8(RunTimeTypeInfoFlags::ValueType));
+
+    auto type = fg->typeHelper().managable(fg->typeHelper().typeDescription())->getPointerTo()->getPointerTo();
     auto genericArgs = fg->createIfElsePhi(isLocalValueType, [&] {
         // first element in generic value type must be generic arguments
-        return fg->builder().CreateBitCast(boxPtr, fg->typeHelper().typeDescription()->getPointerTo()->getPointerTo());
+        return fg->builder().CreateBitCast(boxPtr, type);
     }, [&] {
         // remote value types have one level of indirection
-        auto ptrType = fg->typeHelper().typeDescription()->getPointerTo()->getPointerTo()->getPointerTo();
-        auto rptr = fg->builder().CreateBitCast(boxPtr, ptrType);
-        return fg->builder().CreateLoad(rptr);
+        return fg->builder().CreateLoad(fg->builder().CreateBitCast(boxPtr, type->getPointerTo()));
     });
-    return checkGeneric(fg, bi, fg->builder().CreateLoad(genericArgs), 0, typeDescription, box, rtti);
+    auto argsPtr = fg->builder().CreateLoad(genericArgs);
+    auto tdPtr = fg->builder().CreateConstInBoundsGEP2_32(argsPtr->getType()->getPointerElementType(), argsPtr, 0, 1);
+    return checkGeneric(fg, bi, tdPtr, 0, typeDescription, box, rtti);
 }
 
 Value* ASTCast::castToClass(FunctionCodeGenerator *fg, Value *box, Value *typeDescription,

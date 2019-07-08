@@ -57,7 +57,7 @@ bool releaseLocal(void *object) {
 
 extern "C" void ejcReleaseLocal(runtime::Object<void> *object) {
     if (releaseLocal(object)) {
-        object->classInfo()->dispatch<void>(0, object);
+        object->classInfo()->destructor(object);
     }
 }
 
@@ -65,7 +65,7 @@ extern "C" void ejcRelease(runtime::Object<void> *object) {
     runtime::internal::ControlBlock *controlBlock = object->controlBlock();
     if (controlBlock == nullptr) {
         if (releaseLocal(object)) {
-            object->classInfo()->dispatch<void>(0, object);
+            object->classInfo()->destructor(object);
         }
         return;
     }
@@ -73,7 +73,7 @@ extern "C" void ejcRelease(runtime::Object<void> *object) {
 
     if (controlBlock->strongCount.fetch_sub(1, std::memory_order_acq_rel) - 1 != 0) return;
 
-    object->classInfo()->dispatch<void>(0, object);
+    object->classInfo()->destructor(object);
     delete controlBlock;
     free(object);
 }

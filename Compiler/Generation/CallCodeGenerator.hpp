@@ -24,6 +24,7 @@ class FunctionCodeGenerator;
 class Type;
 class Function;
 class ASTArguments;
+class TypeDescriptionGenerator;
 
 /// This class is responsible for generating IR to dispatch a provided method, initializer, type method or
 /// protocol method.
@@ -34,7 +35,7 @@ class ASTArguments;
 /// not boxed for the protocol in question.
 class CallCodeGenerator {
 public:
-    CallCodeGenerator(FunctionCodeGenerator *fg, CallType callType) : fg_(fg), callType_(callType) {}
+    CallCodeGenerator(FunctionCodeGenerator *fg, CallType callType);
 
     /// @param callee The callee on which the method shall be called. Becomes the (this) context of the function.
     ///               If the method does not have a context, pass `nullptr`.
@@ -52,10 +53,11 @@ public:
                           Function *function, llvm::Value *errorPointer,
                           const std::vector<llvm::Value *> &supplArgs = {});
 
+    ~CallCodeGenerator();
+
 protected:
     std::vector<llvm::Value *> createArgsVector(llvm::Value *callee, const ASTArguments &args,
-                                                llvm::Value *errorPointer,
-                                                const std::vector<llvm::Value *> &supplArgs) const;
+                                                llvm::Value *errorPointer, const std::vector<llvm::Value *> &supplArgs);
     FunctionCodeGenerator* fg() const { return fg_; }
     llvm::Value *createDynamicProtocolDispatch(Function *function, std::vector<llvm::Value *> args,
                                                const std::vector<Type> &genericArgs,
@@ -69,6 +71,7 @@ private:
                                               const std::vector<Type> &genericArguments);
     FunctionCodeGenerator *fg_;
     CallType callType_;
+    std::unique_ptr<TypeDescriptionGenerator> tdg_;
 
     llvm::Value *getProtocolCallee(std::vector<llvm::Value *> &args, llvm::Value *conformance) const;
 };

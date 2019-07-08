@@ -18,7 +18,7 @@ Value* ASTTypeFromExpr::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTStaticType::generate(FunctionCodeGenerator *fg) const {
-    return TypeDescriptionGenerator(fg).generate(type_->type());
+    return TypeDescriptionGenerator(fg, TypeDescriptionUser::Function).generate(type_->type());
 }
 
 }  // namespace EmojicodeCompiler

@@ -74,7 +74,8 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGe
         runTimeTypeInfo_,  // must be first so that we can cast back and forth between classInfo and runTimeTypeInfo
         llvm::Type::getInt8PtrTy(context_)->getPointerTo(),
         protocolConformanceEntry_->getPointerTo(),
-        classInfoType_->getPointerTo()
+        classInfoType_->getPointerTo(),
+        llvm::Type::getInt8PtrTy(context_)  // destructor pointer
     });
 
     callable_ = llvm::StructType::create({
@@ -141,8 +142,8 @@ llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
     });
     if (function->functionType() == FunctionType::ObjectInitializer ||
         function->functionType() == FunctionType::ValueTypeInitializer) {
-        if (storesGenericArgs(function->typeContext().calleeType())) {
-            args.emplace_back(typeDescription_->getPointerTo());
+        if (function->typeContext().calleeType().typeDefinition()->storesGenericArgs()) {
+            args.emplace_back(genericArgsStore(function->typeContext().calleeType()));
         }
     }
     if (!function->genericParameters().empty()) {
@@ -175,16 +176,11 @@ bool LLVMTypeHelper::isRemote(const Type &type) {
     return codeGenerator_->querySize(llvmTypeFor(type)) > kBoxSize;
 }
 
-bool LLVMTypeHelper::storesGenericArgs(const Type &type) const {
-    if (type.type() == TypeType::Class) {
-        if (type.typeDefinition()->isGenericDynamismDisabled()) return false;
-        return !type.typeDefinition()->genericParameters().empty() || type.klass()->offset() > 0;
+llvm::Type* LLVMTypeHelper::genericArgsStore(const Type &calleeType) {
+    if (calleeType.is<TypeType::ValueType>()) {
+        return managable(typeDescription_)->getPointerTo();
     }
-    if (type.type() == TypeType::ValueType) {
-        if (type.typeDefinition()->isGenericDynamismDisabled()) return false;
-        return !type.typeDefinition()->genericParameters().empty();
-    }
-    return false;
+    return llvm::StructType::get(typeDescription_->getPointerTo(), llvm::Type::getInt1Ty(context_));
 }
 
 llvm::Type* LLVMTypeHelper::llvmTypeFor(const Type &type) {
@@ -252,8 +248,8 @@ llvm::Type* LLVMTypeHelper::llvmTypeForTypeDefinition(const Type &type) {
         types.emplace_back(classInfoType_->getPointerTo());
     }
 
-    if (storesGenericArgs(type)) {
-        types.emplace_back(typeDescription_->getPointerTo());
+    if (type.typeDefinition()->storesGenericArgs()) {
+        types.emplace_back(genericArgsStore(type));
     }
 
     for (auto &ivar : type.typeDefinition()->instanceVariables()) {

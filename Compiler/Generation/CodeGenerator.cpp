@@ -134,21 +134,14 @@ void CodeGenerator::emit(bool ir, const std::string &outPath) {
 
 void CodeGenerator::generateFunctions(Package *package, bool imported) {
     for (auto &valueType : package->valueTypes()) {
-        valueType->eachFunction([this](auto *function) {
+        valueType->eachFunction([&](auto *function) {
             generateFunction(function);
         });
-        if (!imported && valueType->isManaged()) {
-            generateFunction(valueType->deinitializer());
-            generateFunction(valueType->copyRetain());
-        }
     }
     for (auto &klass : package->classes()) {
-        klass->eachFunction([this](auto *function) {
+        klass->eachFunction([&](auto *function) {
             generateFunction(function);
         });
-        if (!imported) {
-            generateFunction(klass->deinitializer());
-        }
     }
     for (auto &function : package->functions()) {
         generateFunction(function.get());
@@ -211,9 +204,8 @@ llvm::Function* CodeGenerator::createLlvmFunction(Function *function, Reificatio
         i++;
     }
 
-    if (function->functionType() == FunctionType::ObjectInitializer ||
-        function->functionType() == FunctionType::ValueTypeInitializer) {
-        if (typeHelper().storesGenericArgs(function->typeContext().calleeType())) {
+    if (function->functionType() == FunctionType::ValueTypeInitializer) {
+        if (function->typeContext().calleeType().typeDefinition()->storesGenericArgs()) {
             fn->addParamAttr(i, llvm::Attribute::NonNull);
             fn->addParamAttr(i, llvm::Attribute::ReadOnly);
             i++;

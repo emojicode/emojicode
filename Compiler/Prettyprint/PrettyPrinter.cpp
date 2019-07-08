@@ -191,12 +191,10 @@ void PrettyPrinter::printTypeDef(const Type &type) {
     printInstanceVariables(typeDef, context);
     printMethodsAndInitializers(typeDef);
 
-    if (!interface_) {
-        if (auto klass = type.klass()) {
-            auto block = klass->deinitializer()->ast();
-            if (block != nullptr) {
-                prettyStream_.indent() << "♻️" << block;
-            }
+    if (auto klass = type.klass()) {
+        if (klass->deinitializer() != nullptr) {
+            prettyStream_.indent() << "♻️";
+            printBody(klass->deinitializer());
         }
     }
 
@@ -338,7 +336,7 @@ void PrettyPrinter::printErrorType(Function *function) {
 }
 
 void PrettyPrinter::print(const char *key, Function *function, bool body, bool noMutate) {
-    if (function->isThunk()) {
+    if (function->isThunk() || function->functionType() == FunctionType::Deinitializer) {
         return;
     }
     printDocumentation(function->documentation());
@@ -370,28 +368,34 @@ void PrettyPrinter::print(const char *key, Function *function, bool body, bool n
         }
         printErrorType(function);
 
-        if (!function->externalName().empty()) {
-            prettyStream_ << " 📻 🔤" << function->externalName() << "🔤";
-        }
-        else if (body) {
-            if (interface_) {
-                if (function->isInline()) {
-                    auto str = function->position().file->file();
-                    auto code = str.substr(function->ast()->beginIndex(),
-                                           function->ast()->endIndex() - function->ast()->beginIndex() + 1);
-                    prettyStream_ << " 🍇\n";
-                    prettyStream_.increaseIndent();
-                    prettyStream_.indent() << code;
-                    prettyStream_.decreaseIndent();
-                }
-            }
-            else {
-                prettyStream_.setLastCommentQueryPlace(function->position());
-                function->ast()->toCode(prettyStream_);
-            }
+        if (body) {
+            printBody(function);
         }
         prettyStream_ << "\n";
     });
+}
+
+void PrettyPrinter::printBody(Function *function) {
+    if (!function->externalName().empty()) {
+        prettyStream_ << " 📻 🔤" << function->externalName() << "🔤";
+    }
+    else {
+        if (interface_) {
+            if (function->isInline()) {
+                auto str = function->position().file->file();
+                auto code = str.substr(function->ast()->beginIndex(),
+                                       function->ast()->endIndex() - function->ast()->beginIndex() + 1);
+                prettyStream_ << " 🍇\n";
+                prettyStream_.increaseIndent();
+                prettyStream_.indent() << code;
+                prettyStream_.decreaseIndent();
+            }
+        }
+        else {
+            prettyStream_.setLastCommentQueryPlace(function->position());
+            function->ast()->toCode(prettyStream_);
+        }
+    }
 }
 
 }  // namespace EmojicodeCompiler

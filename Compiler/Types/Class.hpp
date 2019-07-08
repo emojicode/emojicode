@@ -108,6 +108,11 @@ public:
     void setVirtualFunctionCount(size_t n) { virtualFunctionCount_ = n; }
     size_t virtualFunctionCount() { return virtualFunctionCount_; }
 
+    Function* deinitializer() { return deinitializer_; }
+    void setDeinitializer(Function *fn) { deinitializer_ = fn; }
+
+    bool storesGenericArgs() const override;
+
 private:
     std::set<std::u32string> requiredInitializers_;
 
@@ -127,6 +132,8 @@ private:
     bool hasSubclass_ = false;
 
     llvm::GlobalVariable *classInfo_ = nullptr;
+
+    Function *deinitializer_ = nullptr;
 
     void handleRequiredInitializer(Initializer *init) override;
 };

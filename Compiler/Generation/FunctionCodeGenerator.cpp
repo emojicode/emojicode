@@ -69,7 +69,7 @@ void FunctionCodeGenerator::declareArguments(llvm::Function *function) {
 
     if ((fn_->functionType() == FunctionType::ValueTypeInitializer ||
          fn_->functionType() == FunctionType::ObjectInitializer) &&
-        typeHelper().storesGenericArgs(typeContext_->calleeType())) {
+         typeContext_->calleeType().typeDefinition()->storesGenericArgs()) {
         auto llvmArg = (it++);
         llvmArg->setName("genericArgs");
         builder().CreateStore(llvmArg, genericArgsPtr());
@@ -386,7 +386,7 @@ void FunctionCodeGenerator::release(llvm::Value *value, const Type &otype) {
         builder().CreateCall(generator()->runTime().releaseMemory(), value);
     }
     else if (type.type() == TypeType::ValueType) {
-        builder().CreateCall(type.valueType()->deinitializer()->unspecificReification().function, value);
+        builder().CreateCall(type.valueType()->destructor(), value);
     }
     else if (type.type() == TypeType::Optional) {
         if (isManagedByReference(type)) {
@@ -430,7 +430,7 @@ void FunctionCodeGenerator::retain(llvm::Value *value, const Type &otype) {
         builder().CreateCall(generator()->runTime().retain(), builder().CreateExtractValue(value, 1));
     }
     else if (type.type() == TypeType::ValueType) {
-        builder().CreateCall(type.valueType()->copyRetain()->unspecificReification().function, value);
+        builder().CreateCall(type.valueType()->copyRetain(), value);
     }
     else if (type.type() == TypeType::Optional) {
         if (isManagedByReference(type)) {
@@ -502,14 +502,14 @@ llvm::Value* FunctionCodeGenerator::buildFindProtocolConformance(llvm::Value *bo
 llvm::Value* FunctionCodeGenerator::instanceVariablePointer(size_t id) {
     auto callee = typeContext_->calleeType();
     auto offset = callee.type() != TypeType::NoReturn ? (callee.type() == TypeType::Class ? 2 : 0) +
-                    (typeHelper().storesGenericArgs(callee) ? 1 : 0) : 0;
+                    (callee.typeDefinition()->storesGenericArgs() ? 1 : 0) : 0;
     auto type = llvm::cast<llvm::PointerType>(thisValue()->getType())->getElementType();
     return builder().CreateConstInBoundsGEP2_32(type, thisValue(), 0, offset + id);
 }
 
 llvm::Value* FunctionCodeGenerator::genericArgsPtr() {
     auto callee = typeContext_->calleeType();
-    assert(typeHelper().storesGenericArgs(callee));
+    assert(callee.typeDefinition()->storesGenericArgs());
     auto type = llvm::cast<llvm::PointerType>(thisValue()->getType())->getElementType();
     return builder().CreateConstInBoundsGEP2_32(type, thisValue(), 0, callee.type() == TypeType::Class ? 2 : 0);
 }

@@ -117,6 +117,9 @@ void Class::inherit(SemanticAnalyser *analyser) {
 }
 
 void Class::checkOverride(Function *function, SemanticAnalyser *analyser) {
+    if (function->functionType() == FunctionType::Deinitializer) {
+        return;
+    }
     auto superFunction = findSuperFunction(function);
     if (function->overriding()) {
         if (superFunction == nullptr) {
@@ -199,5 +202,9 @@ void Class::handleRequiredInitializer(Initializer *init) {
     requiredInitializers_.insert(init->name());
 }
 
+bool Class::storesGenericArgs() const {
+    if (isGenericDynamismDisabled()) return false;
+    return !genericParameters().empty() || offset() > 0;
+}
 
 }  // namespace EmojicodeCompiler

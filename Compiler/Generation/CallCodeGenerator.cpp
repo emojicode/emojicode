@@ -18,6 +18,9 @@
 
 namespace EmojicodeCompiler {
 
+CallCodeGenerator::CallCodeGenerator(FunctionCodeGenerator *fg, CallType callType) : fg_(fg), callType_(callType) {}
+CallCodeGenerator::~CallCodeGenerator() = default;
+
 llvm::Value *CallCodeGenerator::generate(llvm::Value *callee, const Type &type, const ASTArguments &astArgs,
                                          Function *function, llvm::Value *errorPointer,
                                          const std::vector<llvm::Value *> &supplArgs) {
@@ -60,6 +63,9 @@ llvm::Value *CallCodeGenerator::generate(llvm::Value *callee, const Type &type, 
         case CallType::None:
             throw std::domain_error("CallType::None is not a valid call type");
     }
+    if (tdg_ != nullptr) {
+        tdg_->restoreStack();
+    }
 }
 
 llvm::Value* CallCodeGenerator::buildFindProtocolConformance(const std::vector<llvm::Value *> &args,
@@ -70,7 +76,7 @@ llvm::Value* CallCodeGenerator::buildFindProtocolConformance(const std::vector<l
 
 std::vector<Value *> CallCodeGenerator::createArgsVector(llvm::Value *callee, const ASTArguments &args,
                                                          llvm::Value *errorPointer,
-                                                         const std::vector<llvm::Value *> &supplArgs) const {
+                                                         const std::vector<llvm::Value *> &supplArgs) {
     std::vector<Value *> argsVector;
     if (callType_ != CallType::StaticContextfreeDispatch) {
         argsVector.emplace_back(callee);
@@ -80,7 +86,8 @@ std::vector<Value *> CallCodeGenerator::createArgsVector(llvm::Value *callee, co
     }
     argsVector.insert(argsVector.end(), supplArgs.begin(), supplArgs.end());
     if (!args.genericArguments().empty()) {
-        argsVector.emplace_back(TypeDescriptionGenerator(fg_).generate(args.genericArguments()));
+        tdg_ = std::make_unique<TypeDescriptionGenerator>(fg_, TypeDescriptionUser::Function);
+        argsVector.emplace_back(tdg_->generate(args.genericArguments()));
     }
     if (errorPointer != nullptr) {
         argsVector.emplace_back(errorPointer);

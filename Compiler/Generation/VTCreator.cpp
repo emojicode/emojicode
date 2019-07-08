@@ -11,7 +11,7 @@ namespace EmojicodeCompiler {
 
 VTCreator::VTCreator(Class *klass, CodeGenerator *cg)
     : generator_(cg), klass_(klass), hasSuperClass_(klass->superclass() != nullptr),
-    vti_(hasSuperClass_ ? klass->superclass()->virtualFunctionCount() : 1) {}
+    vti_(hasSuperClass_ ? klass->superclass()->virtualFunctionCount() : 0) {}
 
 void VTCreator::assign(Function *function) {
     decltype(vti_) designatedVti;
@@ -56,16 +56,6 @@ void VTCreator::assign() {
         generator_->declareLlvmFunction(init);
     }
 
-    klass_->deinitializer()->createUnspecificReification();
-    generator_->declareLlvmFunction(klass_->deinitializer());
-    klass_->deinitializer()->unspecificReification().setVti(0);
-    if (functions_.empty()) {
-        functions_.emplace_back(klass_->deinitializer()->unspecificReification().function);
-    }
-    else {
-        functions_[0] = klass_->deinitializer()->unspecificReification().function;
-    }
-
     klass_->eachFunctionWithoutInitializers([this](auto *function) {
         function->createUnspecificReification();
         if (function->unspecificReification().function == nullptr) {
@@ -73,7 +63,8 @@ void VTCreator::assign() {
             generator_->declareLlvmFunction(function);
         }
 
-        if (function->accessLevel() == AccessLevel::Private) {
+        if (function->accessLevel() == AccessLevel::Private ||
+            function->functionType() == FunctionType::Deinitializer) {
             return;
         }
 

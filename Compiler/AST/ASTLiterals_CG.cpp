@@ -65,7 +65,7 @@ Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
     auto capacity = std::make_shared<ASTNumberLiteral>(static_cast<int64_t>(values_.size() / 2), U"", position());
 
     auto dict = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(type_));
-    auto td = TypeDescriptionGenerator(fg).generate(type_.genericArguments());
+    auto td = TypeDescriptionGenerator(fg, TypeDescriptionUser::ValueTypeOrValue).generate(type_.genericArguments());
     CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, ASTArguments(position(), { capacity }),
                                                              init, nullptr, { td });
     for (auto it = values_.begin(); it != values_.end(); it++) {
@@ -83,7 +83,7 @@ Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
     auto capacity = std::make_shared<ASTNumberLiteral>(static_cast<int64_t>(values_.size()), U"", position());
 
     auto list = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(type_));
-    auto td = TypeDescriptionGenerator(fg).generate(type_.genericArguments());
+    auto td = TypeDescriptionGenerator(fg, TypeDescriptionUser::ValueTypeOrValue).generate(type_.genericArguments());
     CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, ASTArguments(position(), { capacity }), init,
                                                              nullptr, { td });
     for (auto &value : values_) {

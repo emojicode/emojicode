@@ -130,6 +130,14 @@ std::string mangleBoxInfoName(const Type &type) {
     return mangleTypeName(type) + ".boxInfo";
 }
 
+std::string mangleCopyRetain(const Type &type) {
+    return mangleTypeName(type) + ".copyRetain";
+}
+
+std::string mangleDestructor(const Type &type) {
+    return mangleTypeName(type) + ".destructor";
+}
+
 std::string mangleTypeName(const Type &type) {
     std::stringstream stream;
     mangleTypeName(stream, type);

@@ -323,12 +323,18 @@ void TypeBodyParser<TypeDef>::parseDeinitializer(const SourcePosition &p) {
 
 template<>
 void TypeBodyParser<Class>::parseDeinitializer(const SourcePosition &p) {
-    if (typeDef_->deinitializer()->ast() != nullptr) {
+    auto deinit = std::make_unique<Function>(U"deinit", AccessLevel::Public, false, typeDef_, package_, p, false, U"",
+                                             false, false, Mood::Imperative, false, FunctionType::Deinitializer, false);
+    deinit->setReturnType(std::make_unique<ASTLiteralType>(Type::noReturn()));
+    parseFunctionBody(deinit.get());
+    if (typeDef_->deinitializer() != nullptr) {
         package_->compiler()->error(CompilerError(p, "Deinitializer was already specified."));
+        return;
     }
-    auto parser = FunctionParser(package_, stream_);
-    stream_.consumeToken(TokenType::BlockBegin);
-    typeDef_->deinitializer()->setAst(parser.parse());
+    if (deinit->isExternal()) {
+        deinit->setMemoryFlowTypeForThis(MFFlowCategory::Borrowing);
+    }
+    typeDef_->setDeinitializer(typeDef_->addMethod(std::move(deinit)));
 }
 
 template class TypeBodyParser<Enum>;

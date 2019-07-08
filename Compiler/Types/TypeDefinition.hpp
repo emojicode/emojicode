@@ -117,17 +117,26 @@ public:
     /// @retunrs A reference to the instance scope for SemanticAnalysis.
     Scope& instanceScope() { return *scope_.get(); }
 
-    /// Whether the type was exported in the package it was defined.
+    /// Whether the type was exported in the package it was defined in.
     bool exported() const { return exported_; }
 
-    Function* deinitializer();
+    /// The destructor is responsible for releasing all instance variables and releasing or freeing the generic
+    /// arguments if applicable. It is used for value types and classes.
+    /// In classes, the destructor calls the deinitializer of the class and all superclasses.
+    /// @see Class::deinitializer().
+    llvm::Function* destructor() { return destructor_; }
+    void setDestructor(llvm::Function *fn) { destructor_ = fn; }
 
+    virtual bool storesGenericArgs() const { return false; }
+    
     bool isGenericDynamismDisabled() const { return genericDynamismDisabled_; }
     void disableGenericDynamism() { genericDynamismDisabled_ = true; }
 
     const std::pair<llvm::Function*, llvm::Function*>& boxRetainRelease() const { return boxRetainRelease_; }
     void setBoxRetainRelease(std::pair<llvm::Function*, llvm::Function*> pair) { boxRetainRelease_ = pair; }
 
+    /// Contains the type’s instance variables. In a class, this will also contain inherited instance variables after
+    /// calling Class::inherit().
     const std::vector<InstanceVariableDeclaration>& instanceVariables() const { return instanceVariables_; }
 
     void setProtocolTables(std::map<Type, llvm::Constant*> &&tables) { protocolTables_ = std::move(tables); }
@@ -168,8 +177,6 @@ private:
     std::vector<Initializer *> initializerList_;
     std::vector<Function *> typeMethodList_;
 
-    std::unique_ptr<Function> deinitializer_;
-
     std::pair<llvm::Function*, llvm::Function*> boxRetainRelease_;
 
     std::u32string name_;
@@ -182,6 +189,8 @@ private:
     std::map<Type, llvm::Constant*> protocolTables_;
 
     std::vector<InstanceVariableDeclaration> instanceVariables_;
+
+    llvm::Function *destructor_ = nullptr;
 
     std::u32string methodTableName(const std::u32string &name, Mood mood) const;
 };

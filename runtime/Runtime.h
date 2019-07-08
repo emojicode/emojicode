@@ -53,6 +53,7 @@ struct ClassInfo {
     void **dispatchTable;
     void *protocolTable;
     ClassInfo *superclass;
+    void (*destructor)(void*);
 
     template <typename Return, typename ObjectType, typename ...Args>
     Return dispatch(size_t virtualTableIndex, ObjectType *object, Args... args) const {

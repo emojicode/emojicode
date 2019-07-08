@@ -22,6 +22,10 @@ class FunctionCodeGenerator;
 class Type;
 class ASTType;
 
+enum class TypeDescriptionUser {
+    Class, ValueTypeOrValue, Function,
+};
+
 /// The TypeDescriptionGenerator creates a %typeDescription* pointing to the first element of an array describing one or
 /// more types and their generic arguments.
 ///
@@ -39,12 +43,17 @@ class TypeDescriptionGenerator {
     };
 
 public:
+    using User = TypeDescriptionUser;
+
     /// Creates an instance. Each instance can only be used to generate one description.
-    TypeDescriptionGenerator(FunctionCodeGenerator *fg) : fg_(fg) {}
+    TypeDescriptionGenerator(FunctionCodeGenerator *fg, User user) : fg_(fg), user_(user) {}
 
     llvm::Value* generate(const std::vector<Type> &types);
     llvm::Value* generate(const Type &type);
     llvm::Value* generate(const std::vector<std::shared_ptr<ASTType>> &types);
+
+    /// Must be called when User is User::Function, after the called function has returned.
+    void restoreStack();
 
 private:
     void addType(const Type &type);
@@ -57,6 +66,12 @@ private:
     std::vector<TypeDescriptionValue> types_;
     /// Counts the type descriptions that are dynamic, i.e. copied from either the local or type generic arguments
     unsigned int dynamic_ = 0;
+    /// Whether the description is for a class
+    User user_;
+
+    llvm::Value* extractTypeDescriptionPtr();
+
+    llvm::Value *stack_ = nullptr;
 };
 
 }

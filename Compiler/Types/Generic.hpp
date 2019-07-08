@@ -157,7 +157,7 @@ public:
     const std::map<std::vector<Type>, Reification>& reificationMap() const { return reifications_; }
 
     /// Returns the offset at which this (sub)types arguments are stored (during compilation and run-time).
-    size_t offset() { return offset_; }
+    size_t offset() const { return offset_; }
 
 protected:
     /// Offsets the genericVariableIndex() of the Type instances returned by fetchVariable() by offset.

@@ -6,6 +6,7 @@ import sys
 import re
 
 quick = len(sys.argv) > 1 and sys.argv[1] == 'quick'
+valgrind = len(sys.argv) > 1 and sys.argv[1] == 'valgrind'
 
 compilation_tests = [
     "hello",
@@ -100,7 +101,7 @@ compilation_tests = [
     "errorReraisePrefix",
 ]
 
-if not quick:
+if not (quick or valgrind):
     compilation_tests.extend([
       "stressTest1",
       "stressTest2",
@@ -193,31 +194,49 @@ def prettyprint_test(name):
     os.rename(source_path + '_original', source_path)
 
 
-for test in compilation_tests:
-    avl_compilation_tests.remove(test)
-    compilation_test(test)
-
-if not quick:
+def test():
     for test in compilation_tests:
-        prettyprint_test(test)
+        avl_compilation_tests.remove(test)
+        compilation_test(test)
 
-    included = os.path.join(dist.source, "tests", "compilation", "included.emojic")
-    os.rename(included + '_original', included)
+    if not quick:
+        for test in compilation_tests:
+            prettyprint_test(test)
 
-for test in reject_tests:
-    reject_test(test)
-os.chdir(os.path.join(dist.source, "tests", "s"))
-os.environ["TEST_ENV_1"] = "The day starts like the rest I've seen"
-for test in library_tests:
-    library_test(test)
+        included = os.path.join(dist.source, "tests", "compilation", "included.emojic")
+        os.rename(included + '_original', included)
 
-for file in avl_compilation_tests:
-    print("☢️  {0} is not in compilation test list.".format(file))
+    for test in reject_tests:
+        reject_test(test)
+    os.chdir(os.path.join(dist.source, "tests", "s"))
+    os.environ["TEST_ENV_1"] = "The day starts like the rest I've seen"
+    for test in library_tests:
+        library_test(test)
 
-if len(failed_tests) == 0:
-    print("✅ ✅  All tests passed.")
-    sys.exit(0)
+    for file in avl_compilation_tests:
+        print("☢️  {0} is not in compilation test list.".format(file))
+
+    if len(failed_tests) == 0:
+        print("✅ ✅  All tests passed.")
+        sys.exit(0)
+    else:
+        print("🛑 🛑  {0} tests failed: {1}".format(len(failed_tests),
+                                                  ", ".join(failed_tests)))
+        sys.exit(1)
+
+
+def run_valgrind():
+    for test in compilation_tests:
+        source_path, binary_path = test_paths(test, 'compilation')
+        run([emojicodec, source_path, '-O'], check=True)
+        completed = run(['valgrind', '--error-exitcode=22', '--leak-check=full', binary_path], stdout=PIPE, stderr=PIPE)
+        if completed.returncode == 22:
+            print(completed.stdout.decode('utf-8'))
+            print(completed.stderr.decode('utf-8'))
+            fail_test(test)
+
+if valgrind:
+    run_valgrind()
 else:
-    print("🛑 🛑  {0} tests failed: {1}".format(len(failed_tests),
-                                              ", ".join(failed_tests)))
-    sys.exit(1)
+    test()
+

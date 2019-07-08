@@ -11,7 +11,6 @@
 
 #include "TypeDefinition.hpp"
 #include <utility>
-#include <memory>
 
 namespace EmojicodeCompiler {
 
@@ -38,10 +37,13 @@ public:
     /// Whether this Value Type has a deinitializer and a copy retainer that must be called to deinitialize 
     bool isManaged();
 
-    Function* copyRetain();
+    void setCopyRetain(llvm::Function *function) { copyRetain_ = function; }
+    llvm::Function* copyRetain() { return copyRetain_; }
 
     void setBoxInfo(llvm::GlobalVariable *boxInfo) { boxInfo_ = boxInfo; }
     llvm::GlobalVariable* boxInfo() { return boxInfo_; }
+
+    bool storesGenericArgs() const override;
 
     virtual ~ValueType();
 
@@ -49,7 +51,7 @@ private:
     enum class Managed { Unknown, Yes, No };
     bool primitive_;
     Managed managed_ = Managed::Unknown;
-    std::unique_ptr<Function> copyRetain_;
+    llvm::Function *copyRetain_ = nullptr;
     llvm::GlobalVariable *boxInfo_ = nullptr;
 };
 

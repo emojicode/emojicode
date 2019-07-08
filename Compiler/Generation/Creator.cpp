@@ -61,8 +61,16 @@ void PackageCreator::createClass(Class *klass) {
     VTCreator(klass, generator_).build();
     klass->setBoxRetainRelease(generator_->runTime().classObjectRetainRelease());
     createProtocolTables(Type(klass));
+    klass->setDestructor(createMemoryFunction(mangleDestructor(klass->type()), generator_, klass));
+    createDestructor(klass);
     createClassInfo(klass);
 }
+
+void PackageCreator::createDestructor(Class *klass) {
+    buildDestructor(generator_, klass);
+}
+
+void ImportedPackageCreator::createDestructor(Class *klass) {}
 
 void PackageCreator::createClassInfo(Class *klass) {
     auto type = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(generator_->context()), klass->virtualTable().size());
@@ -81,7 +89,8 @@ void PackageCreator::createClassInfo(Class *klass) {
     auto gep = buildConstant00Gep(virtualTable->getType()->getElementType(), virtualTable, generator_->context());
     auto rtti = generator_->runTime().createRtti(klass, RunTimeTypeInfoFlags::Class);
     auto initializer = llvm::ConstantStruct::get(generator_->typeHelper().classInfo(), {
-        rtti, gep, protocolTable, superclass });
+        rtti, gep, protocolTable, superclass,
+        llvm::ConstantExpr::getBitCast(klass->destructor(), llvm::Type::getInt8PtrTy(generator_->context())) });
     auto info = new llvm::GlobalVariable(*generator_->module(), generator_->typeHelper().classInfo(), true,
                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
                                          mangleClassInfoName(klass));
@@ -106,15 +115,22 @@ void ImportedPackageCreator::createClassInfo(Class *klass) {
 void PackageCreator::createValueType(ValueType *valueType) {
     valueType->createUnspecificReification();
     valueType->eachFunction([&](Function *function) { createFunction(function); });
+
     if (valueType->isManaged()) {
-        valueType->deinitializer()->createUnspecificReification();
-        generator_->declareLlvmFunction(valueType->deinitializer());
-        valueType->copyRetain()->createUnspecificReification();
-        generator_->declareLlvmFunction(valueType->copyRetain());
+        valueType->setDestructor(createMemoryFunction(mangleDestructor(valueType->type()), generator_, valueType));
+        valueType->setCopyRetain(createMemoryFunction(mangleCopyRetain(valueType->type()), generator_, valueType));
+        createDestructorRetain(valueType);
     }
 
     createBoxInfo(valueType);
 }
+
+void PackageCreator::createDestructorRetain(ValueType *valueType) {
+    buildDestructor(generator_, valueType);
+    buildCopyRetain(generator_, valueType);
+}
+
+void ImportedPackageCreator::createDestructorRetain(ValueType *valueType) {}
 
 void PackageCreator::createBoxInfo(ValueType *valueType) {
     valueType->setBoxInfo(generator_->runTime().declareBoxInfo(mangleBoxInfoName(Type(valueType))));

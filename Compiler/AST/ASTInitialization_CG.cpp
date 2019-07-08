@@ -34,13 +34,14 @@ Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTInitialization::genericArgs(FunctionCodeGenerator *fg) const {
-    return TypeDescriptionGenerator(fg).generate(typeExpr_->expressionType().selfResolvedGenericArgs());
+    auto user = initType_ == InitType::ValueType ? TypeDescriptionUser::ValueTypeOrValue : TypeDescriptionUser::Class;
+    return TypeDescriptionGenerator(fg, user).generate(typeExpr_->expressionType().selfResolvedGenericArgs());
 }
 
 Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
     llvm::Value *obj;
     if (typeExpr_->expressionType().isExact()) {
-        auto storesGenericArgs = fg->typeHelper().storesGenericArgs(typeExpr_->expressionType());
+        auto storesGenericArgs = typeExpr_->expressionType().klass()->storesGenericArgs();
         if (typeExpr_->expressionType().klass()->foreign()) {
             assert(!storesGenericArgs);
             obj = CallCodeGenerator(fg, CallType::StaticContextfreeDispatch)
@@ -66,7 +67,7 @@ Value* ASTInitialization::generateInitValueType(FunctionCodeGenerator *fg) const
         destination = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(typeExpr_->expressionType()));
     }
 
-    auto storesGenericArgs = fg->typeHelper().storesGenericArgs(typeExpr_->expressionType());
+    auto storesGenericArgs = typeExpr_->expressionType().valueType()->storesGenericArgs();
     auto suppl = storesGenericArgs ? std::vector<llvm::Value*> { genericArgs(fg) } : std::vector<llvm::Value*>();
     CallCodeGenerator(fg, CallType::StaticDispatch)
             .generate(destination, typeExpr_->expressionType(), args_, initializer_, errorPointer(), suppl);

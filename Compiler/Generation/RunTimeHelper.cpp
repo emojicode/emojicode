@@ -23,7 +23,7 @@ RunTimeHelper::RunTimeHelper(CodeGenerator *generator) : generator_(generator) {
 
 void RunTimeHelper::declareRunTime() {
     alloc_ = declareRunTimeFunction("ejcAlloc", llvm::Type::getInt8PtrTy(generator_->context()),
-                                         llvm::Type::getInt64Ty(generator_->context()));
+                                    llvm::Type::getInt64Ty(generator_->context()));
     alloc_->addAttribute(0, llvm::Attribute::NonNull);
     alloc_->addFnAttr(llvm::Attribute::getWithAllocSizeArgs(generator_->context(), 0, llvm::Optional<unsigned>()));
     alloc_->addAttribute(llvm::AttributeList::ReturnIndex, llvm::Attribute::NoAlias);
@@ -110,6 +110,18 @@ void RunTimeHelper::declareRunTime() {
     boxInfoCallables_ = declareBoxInfo("callable.boxInfo");
     buildRetainRelease(Type(Type::noReturn(), {}, Type::noReturn()), "callable.boxRetain", "callable.boxRelease",
                        boxInfoCallables_);
+
+    malloc_ = declareRunTimeFunction("malloc", llvm::Type::getInt8PtrTy(generator_->context()),
+                                    llvm::Type::getInt64Ty(generator_->context()));
+    malloc_->removeFnAttr(llvm::Attribute::NoRecurse);
+    malloc_->addAttribute(llvm::AttributeList::ReturnIndex, llvm::Attribute::NonNull);
+    malloc_->addFnAttr(llvm::Attribute::getWithAllocSizeArgs(generator_->context(), 0, llvm::Optional<unsigned>()));
+    malloc_->addAttribute(llvm::AttributeList::ReturnIndex, llvm::Attribute::NoAlias);
+
+    free_ = declareRunTimeFunction("free", llvm::Type::getVoidTy(generator_->context()),
+                                   llvm::Type::getInt8PtrTy(generator_->context()));
+    free_->removeFnAttr(llvm::Attribute::NoRecurse);
+    free_->addParamAttr(0, llvm::Attribute::NonNull);
 }
 
 llvm::Function* RunTimeHelper::declareRunTimeFunction(const char *name, llvm::Type *returnType,

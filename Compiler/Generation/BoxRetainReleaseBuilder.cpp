@@ -8,10 +8,15 @@
 #include "BoxRetainReleaseBuilder.hpp"
 #include "Types/Type.hpp"
 #include "Types/TypeContext.hpp"
+#include "Types/ValueType.hpp"
+#include "Types/Class.hpp"
+#include "Scoping/Scope.hpp"
 #include "FunctionCodeGenerator.hpp"
+#include "CallCodeGenerator.hpp"
 #include "CodeGenerator.hpp"
 #include "Mangler.hpp"
 #include "RunTimeHelper.hpp"
+#include "AST/ASTExpr.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -22,6 +27,75 @@ llvm::Function* createFunction(CodeGenerator *cg, const std::string &name) {
     fn->setUnnamedAddr(llvm::GlobalVariable::UnnamedAddr::Global);
     return fn;
 }
+
+llvm::Function* createMemoryFunction(const std::string &str, CodeGenerator *cg, TypeDefinition *typeDef) {
+    auto type = typeDef->type().is<TypeType::ValueType>() ? typeDef->type().referenced() : typeDef->type();
+    auto ft = llvm::FunctionType::get(llvm::Type::getVoidTy(cg->context()), llvm::ArrayRef<llvm::Type*>{ cg->typeHelper().llvmTypeFor(type) }, false);
+    auto fn = llvm::Function::Create(ft, llvm::GlobalValue::LinkageTypes::ExternalLinkage, str, cg->module());
+    fn->setUnnamedAddr(llvm::GlobalVariable::UnnamedAddr::Global);
+    return fn;
+}
+
+void buildCopyRetain(CodeGenerator *cg, ValueType *typeDef) {
+    FunctionCodeGenerator fg(typeDef->copyRetain(), cg, std::make_unique<TypeContext>(Type(typeDef)));
+    fg.createEntry();
+    for (auto &decl : typeDef->instanceVariables()) {
+        auto &var = typeDef->instanceScope().getLocalVariable(decl.name);
+        if (var.type().isManaged()) {
+            auto ptr = fg.instanceVariablePointer(var.id());
+            if (!fg.isManagedByReference(var.type())) {
+                ptr = fg.builder().CreateLoad(ptr);
+            }
+            fg.retain(ptr, var.type());
+        }
+    }
+
+    if (typeDef->storesGenericArgs()) {
+        auto opc = fg.builder().CreateBitCast(fg.builder().CreateLoad(fg.genericArgsPtr()),
+                                              llvm::Type::getInt8PtrTy(fg.ctx()));
+        fg.builder().CreateCall(fg.generator()->runTime().retain(), { opc });
+    }
+    fg.builder().CreateRetVoid();
+}
+
+void buildDestructor(CodeGenerator *cg, TypeDefinition *typeDef) {
+    FunctionCodeGenerator fg(typeDef->destructor(), cg, std::make_unique<TypeContext>(typeDef->type()));
+    fg.createEntry();
+    auto klass = dynamic_cast<Class *>(typeDef);
+    if (klass != nullptr && klass->deinitializer() != nullptr) {
+        CallCodeGenerator ccg(&fg, CallType::StaticDispatch);
+        for (auto aKlass = klass; aKlass != nullptr; aKlass = aKlass->superclass()) {
+            if (auto deinit = aKlass->deinitializer()) {
+                ccg.generate(fg.thisValue(), fg.calleeType(), ASTArguments(typeDef->position()), deinit, nullptr);
+            }
+        }
+    }
+
+    for (auto it = typeDef->instanceVariables().rbegin(); it < typeDef->instanceVariables().rend(); it++) {
+        auto &decl = *it;
+        auto &var = typeDef->instanceScope().getLocalVariable(decl.name);
+        if (var.type().isManaged()) {
+            fg.releaseByReference(fg.instanceVariablePointer(var.id()), var.type());
+        }
+    }
+
+    if (typeDef->storesGenericArgs()) {
+        auto val = fg.builder().CreateLoad(fg.genericArgsPtr());
+        if (fg.calleeType().is<TypeType::ValueType>()) {
+            auto opc = fg.builder().CreateBitCast(val, llvm::Type::getInt8PtrTy(fg.ctx()));
+            fg.builder().CreateCall(fg.generator()->runTime().releaseMemory(), { opc });
+        }
+        else {
+            fg.createIf(fg.builder().CreateIsNull(fg.builder().CreateExtractValue(val, { 1 })), [&] {
+                auto opc = fg.builder().CreateBitCast(fg.builder().CreateExtractValue(val, { 0 }),
+                                                      llvm::Type::getInt8PtrTy(fg.ctx()));
+                fg.builder().CreateCall(fg.generator()->runTime().free(), { opc });
+            });
+        }
+    }
+    fg.builder().CreateRetVoid();
+}
+
 
 std::pair<llvm::Function*, llvm::Function*> buildBoxRetainRelease(CodeGenerator *cg, const Type &type) {
     auto release = createFunction(cg, mangleBoxRelease(type));

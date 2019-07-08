@@ -68,6 +68,7 @@ private:
     void printLinkHints();
     void printErrorType(Function *function);
     std::string filePath(const std::string &path);
+    void printBody(Function *function);
 };
 
 }  // namespace EmojicodeCompiler

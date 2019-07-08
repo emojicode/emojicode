@@ -59,6 +59,9 @@ public:
     /// Used to find a protocol conformance in an array of ProtocolConformanceEntries. (ejcFindProtocolConformance)
     llvm::Function* findProtocolConformance() const { return findProtocolConformance_; }
 
+    llvm::Function* malloc() const { return malloc_; }
+    llvm::Function* free() const { return free_; }
+
     llvm::Function* checkGenericArgs() const { return checkGenericArgs_; }
     llvm::Function* typeDescriptionLength() const { return typeDescriptionLength_; }
     llvm::Function* indexTypeDescription() const { return indexTypeDescription_; }
@@ -104,6 +107,9 @@ private:
     llvm::Function *releaseWithoutDeinit_ = nullptr;
     llvm::Function *releaseLocal_ = nullptr;
     llvm::Function *isOnlyReference_ = nullptr;
+
+    llvm::Function *malloc_ = nullptr;
+    llvm::Function *free_ = nullptr;
 
     llvm::GlobalVariable *somethingRTTI_ = nullptr;
     llvm::GlobalVariable *someobjectRTTI_ = nullptr;

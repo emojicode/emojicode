@@ -14,8 +14,13 @@ namespace EmojicodeCompiler {
 
 class CodeGenerator;
 class Type;
+class ValueType;
+class TypeDefinition;
 
-std::pair<llvm::Function*, llvm::Function*> buildBoxRetainRelease(CodeGenerator *cg, const Type &type);
+std::pair<llvm::Function*, llvm::Function*> buildBoxRetainRelease(CodeGenerator *cg, const Type &type); 
+void buildCopyRetain(CodeGenerator *cg, ValueType *typeDef);
+void buildDestructor(CodeGenerator *cg, TypeDefinition *typeDef);
+llvm::Function* createMemoryFunction(const std::string &str, CodeGenerator *cg, TypeDefinition *typeDef);
 
 }
 
