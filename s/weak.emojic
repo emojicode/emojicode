@@ -1,11 +1,19 @@
 📗
   Weak reference.
+
+  To read more about weak references see
+  [Memory management](https://www.emojicode.org/docs/reference/memory.html).
 📗
 🌍 🎍🛢 🕊 📶🐚☣️️T🔵🍆  🍇
   🖍🆕 controlBlock 🔵
   🖍🆕 object 🔵
 
+  📗 Creates a weak reference to *object*. 📗
   🆕 🎍🥡 object T 📻 🔤ejcCreateWeak🔤
 
+  📗
+    Returns a strong reference to the object if it has not been deallocated.
+    Otherwise no value is returned.
+  📗
   ❗️🐽 ➡️ 🍬T 📻 🔤ejcAcquireStrong🔤
 🍉

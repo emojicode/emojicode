@@ -364,7 +364,7 @@ string, but those themselves are then immutable again.
   📗
     Appends a single byte to the end of the string. The caller is reponsible
     for ensuring that the resulting string is still valid UTF-8 or undefined
-    behavior is called.
+    behavior is caused.
   📗
   ☣️❗️🐻🔸💧byte💧 🍇
     🍜🐕 1❗️
@@ -374,7 +374,7 @@ string, but those themselves are then immutable again.
 
   📗
     Appends a single codepoint to the end of the string.
-    If the codepoint is not valid, the method returns 👎 and the sting builder
+    If the codepoint is not valid, the method returns 👎 and the string builder
     is not modified.
   📗
   ☣️❗️🐻🔸🔣 codepoint 🔢 ➡️ 👌 🍇
