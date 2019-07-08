@@ -1,4 +1,14 @@
-📘 This package allows you to parse JSON. 📘
+📘
+  This package allows you to parse JSON.
+
+  Example:
+
+  ```
+  🍺 🔲 🍺⚪️🕊🌸 🔤{"a": 32, "b": 43, "c": -92}🔤❗️🍯🐚⚪️🍆➡️ dict
+
+  🍺🔲🐽dict 🔤b🔤❗️🔢  💭 Gets the value for b
+  ```
+📘
 
 📗
   🚧🔸🌸 an error that occured when parsing a JSON text.
@@ -14,7 +24,7 @@
   with the shortcut type method ⚪️ that takes a string and returns the parsed
   value, or you can instantiate it yourself and then call the method ⚪️ yourself.
 
-  On error, [🚧🔸🌸] is raised.
+  On error, [[🚧🔸🌸]] is raised.
 📗
 🌍 🕊 🌸 🍇
   🖍🆕 string 🧠
@@ -38,7 +48,7 @@
   🍉
 
   📗
-    Parses the instances input and returns its value.
+    Parses the instance’s input and returns the represented value.
   📗
   🖍❗️⚪️➡️⚪️ 🚧🚧🔸🌸 🍇
     🔺🔎🐕❗️➡️value
@@ -57,7 +67,7 @@
   🍉
 
   📗
-    Parses `string` and returns its value.
+    Parses `string` and returns the represented value.
   📗
   🐇❗️⚪️ string 🔡 ➡️⚪️ 🚧🚧🔸🌸 🍇
     🆕🌸🆕 string❗️ ➡️ 🖍🆕g
@@ -366,7 +376,7 @@
     🚨🆕🚧🔸🌸🆕 🔤Invalid JSON.🔤❗️
   🍉
 
-  🖍❗️🔎➡️⚪️ 🚧🚧🔸🌸 🍇
+  🖍🔒❗️🔎➡️⚪️ 🚧🚧🔸🌸 🍇
     ☣️🍇
       ↩️🔺🌕🐕🔺⏭🐕❗️❗️
     🍉
