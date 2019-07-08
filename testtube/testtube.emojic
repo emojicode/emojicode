@@ -114,16 +114,25 @@
     🍉
   🍉
 
+  📗
+    Adds an assertion failure with the provided description.
+  📗
   🔐❗️🙁 description 🔡 🍇
     asserts ⬅️➕ 1
     😀 🍪🔤❌❌ Failed 🔤 description🍪❗️
     failed ⬅️➕ 1
   🍉
 
+  📗
+    Adds a passed assertion with the provided description.
+  📗
   🔐❗️✅ description 🔡 🍇
     asserts ⬅️➕ 1
   🍉
 
+  📗
+    Runs tests.
+  📗
   ❗️ 👔 ➡️ 🔢 🍇
     🏁🐕❗️
     😀 🍪🔡asserts 10❗️ 🔤 assertions, 🔤 🔡failed 10❗️ 🔤 failures🔤🍪❗️

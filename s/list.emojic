@@ -236,7 +236,7 @@
 
   📗
     Removes the last item from the list and returns it in `O(1)`.
-    If the list is empty ✨ is returned.
+    If the list is empty no value is returned.
   📗
   🥯🖍❗️ 🐼 ➡️ 🍬Element 🍇
     📝🐕❗️
