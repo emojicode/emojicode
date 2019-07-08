@@ -100,8 +100,12 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
         }
     }
 
-    return handleResult(fg, CallCodeGenerator(fg, callType_).generate(callee_->generate(fg), calleeType_,
-                                                                      args_, method_, errorPointer()));
+    auto ret = CallCodeGenerator(fg, callType_).generate(callee_->generate(fg), calleeType_,
+                                                         args_, method_, errorPointer());
+    if (!castTo_.is<TypeType::NoReturn>()) {
+        ret = fg->builder().CreateBitCast(ret, fg->typeHelper().llvmTypeFor(castTo_));
+    }
+    return handleResult(fg, ret);
 }
 
 Value* ASTMethod::buildAddOffsetAddress(FunctionCodeGenerator *fg, llvm::Value *memory, llvm::Value *offset) const {

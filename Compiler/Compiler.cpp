@@ -14,8 +14,9 @@
 #include "Parsing/AbstractParser.hpp"
 #include "Prettyprint/PrettyPrinter.hpp"
 #include <llvm/Support/FileSystem.h>
-
 #include "MemoryFlowAnalysis/MFAnalyser.hpp"
+#include "Types/ValueType.hpp"
+#include "Functions/Function.hpp"
 #include <utility>
 
 namespace EmojicodeCompiler {
@@ -194,7 +195,7 @@ void Compiler::assignSTypes(Package *s) {
     sReal = getStandardValueType(std::u32string(1, E_HUNDRED_POINTS_SYMBOL), s);
     sMemory = getStandardValueType(U"🧠", s);
     sByte = getStandardValueType(U"💧", s);
-
+    sWeak = getStandardValueType(U"📶", s);
     sString = getStandardClass(U"🔡", s);
     sError = getStandardClass(U"🚧", s);
     sList = getStandardValueType(U"🍨", s);

@@ -111,6 +111,7 @@ private:
     llvm::StructType *callableBoxCapture_;
 
     llvm::Type* getSimpleType(const Type &type);
+    llvm::Type* typeForFunction(const Type &type, Function *function);
 
     llvm::LLVMContext &context_;
     CodeGenerator *codeGenerator_;

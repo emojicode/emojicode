@@ -18,6 +18,7 @@
 #include "RunTimeHelper.hpp"
 #include "ProtocolsTableGenerator.hpp"
 #include "BoxRetainReleaseBuilder.hpp"
+#include "Compiler.hpp"
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Constants.h>
 
@@ -116,7 +117,11 @@ void PackageCreator::createValueType(ValueType *valueType) {
     valueType->createUnspecificReification();
     valueType->eachFunction([&](Function *function) { createFunction(function); });
 
-    if (valueType->isManaged()) {
+    if (valueType == package_->compiler()->sWeak) {
+        valueType->setDestructor(createMemoryFunction("ejcReleaseWeak", generator_, valueType));
+        valueType->setCopyRetain(createMemoryFunction("ejcRetainWeak", generator_, valueType));
+    }
+    else if (valueType->isManaged()) {
         valueType->setDestructor(createMemoryFunction(mangleDestructor(valueType->type()), generator_, valueType));
         valueType->setCopyRetain(createMemoryFunction(mangleCopyRetain(valueType->type()), generator_, valueType));
         createDestructorRetain(valueType);

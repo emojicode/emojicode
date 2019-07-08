@@ -129,16 +129,37 @@ llvm::ArrayType* LLVMTypeHelper::multiprotocolConformance(const Type &type) {
     return llvm::ArrayType::get(protocolConformance()->getPointerTo(), type.protocols().size());
 }
 
+llvm::Type* LLVMTypeHelper::typeForFunction(const Type &type, Function *function) {
+    if (reifiContext_ != nullptr && type.type() == TypeType::LocalGenericVariable &&
+        reifiContext_->providesActualTypeFor(type.genericVariableIndex())) {
+        return llvmTypeFor(reifiContext_->actualType(type.genericVariableIndex()));
+    }
+    if (type.type() == TypeType::LocalGenericVariable) {
+        return llvmTypeFor(function->constraintForIndex(type.genericVariableIndex()));
+    }
+    if (type.type() == TypeType::GenericVariable && function->owner()->canResolve(type.resolutionConstraint())) {
+        return llvmTypeFor(function->owner()->constraintForIndex(type.genericVariableIndex()));
+    }
+    if (type.unoptionalized().type() == TypeType::LocalGenericVariable) {
+        return llvmTypeFor(function->constraintForIndex(type.unoptionalized().genericVariableIndex()).optionalized());
+    }
+    if (type.unoptionalized().type() == TypeType::GenericVariable &&
+        function->owner()->canResolve(type.unoptionalized().resolutionConstraint())) {
+        return llvmTypeFor(function->owner()->constraintForIndex(type.unoptionalized().genericVariableIndex()).optionalized());
+    }
+    return llvmTypeFor(type);
+}
+
 llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
     std::vector<llvm::Type *> args;
     if (function->isClosure()) {
         args.emplace_back(llvm::Type::getInt8PtrTy(context_));
     }
     else if (hasThisArgument(function)) {
-        args.emplace_back(llvmTypeFor(function->typeContext().calleeType()));
+        args.emplace_back(typeForFunction(function->typeContext().calleeType(), function));
     }
-    std::transform(function->parameters().begin(), function->parameters().end(), std::back_inserter(args), [this](auto &arg) {
-        return llvmTypeFor(arg.type->type());
+    std::transform(function->parameters().begin(), function->parameters().end(), std::back_inserter(args), [&](auto &arg) {
+        return typeForFunction(arg.type->type(), function);
     });
     if (function->functionType() == FunctionType::ObjectInitializer ||
         function->functionType() == FunctionType::ValueTypeInitializer) {
@@ -150,15 +171,15 @@ llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
         args.emplace_back(typeDescription_->getPointerTo());
     }
     if (function->errorProne()) {
-        args.emplace_back(llvmTypeFor(function->errorType()->type())->getPointerTo());
+        args.emplace_back(typeForFunction(function->errorType()->type(), function)->getPointerTo());
     }
     llvm::Type *returnType;
     if (function->functionType() == FunctionType::ObjectInitializer) {
         auto init = dynamic_cast<Initializer *>(function);
-        returnType = llvmTypeFor(init->constructedType(init->typeContext().calleeType()));
+        returnType = typeForFunction(init->constructedType(init->typeContext().calleeType()), function);
     }
     else {
-        returnType = llvmTypeFor(function->returnType()->type());
+        returnType = typeForFunction(function->returnType()->type(), function);
     }
     return llvm::FunctionType::get(returnType, args, false);
 }
@@ -184,11 +205,6 @@ llvm::Type* LLVMTypeHelper::genericArgsStore(const Type &calleeType) {
 }
 
 llvm::Type* LLVMTypeHelper::llvmTypeFor(const Type &type) {
-    if (reifiContext_ != nullptr && type.type() == TypeType::LocalGenericVariable &&
-            reifiContext_->providesActualTypeFor(type.genericVariableIndex())) {
-        return llvmTypeFor(reifiContext_->actualType(type.genericVariableIndex()));
-    }
-
     auto llvmType = typeForOrdinaryType(type);
     assert(llvmType != nullptr);
     return type.isReference() ? llvmType->getPointerTo() : llvmType;

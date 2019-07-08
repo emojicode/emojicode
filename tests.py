@@ -99,6 +99,7 @@ compilation_tests = [
     "identifierTest",
     "shortCircuit",
     "errorReraisePrefix",
+    "weak"
 ]
 
 if not (quick or valgrind):

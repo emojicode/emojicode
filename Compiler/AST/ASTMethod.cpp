@@ -49,7 +49,15 @@ Type ASTMethodable::analyseMethodCall(ExpressionAnalyser *analyser, const std::u
 
     checkMutation(analyser, callee);
     ensureErrorIsHandled(analyser);
-    return analyser->analyseFunctionCall(&args_, calleeType_, method_);
+    auto rt = analyser->analyseFunctionCall(&args_, calleeType_, method_);
+    if (method_->owner() != analyser->compiler()->sMemory &&
+        (method_->returnType()->type().is<TypeType::GenericVariable>() ||
+         method_->returnType()->type().is<TypeType::LocalGenericVariable>() ||
+         method_->returnType()->type().unoptionalized().is<TypeType::GenericVariable>() ||
+         method_->returnType()->type().unoptionalized().is<TypeType::LocalGenericVariable>())) {  // i.e. not boxed
+        castTo_ = rt;
+    }
+    return rt;
 }
 
 const Type& ASTMethodable::errorType() const {

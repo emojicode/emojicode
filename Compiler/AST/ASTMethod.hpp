@@ -49,6 +49,7 @@ protected:
     Type calleeType_ = Type::noReturn();
     size_t multiprotocolN_ = 0;
     Function *method_ = nullptr;
+    Type castTo_ = Type::noReturn();
 
     bool isErrorProne() const override;
     const Type& errorType() const override;

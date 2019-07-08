@@ -13,6 +13,7 @@
 #include "SemanticAnalyser.hpp"
 #include "ThunkBuilder.hpp"
 #include "Types/Class.hpp"
+#include "Types/ValueType.hpp"
 #include "Types/CommonTypeFinder.hpp"
 #include "Types/TypeExpectation.hpp"
 
@@ -90,7 +91,18 @@ Type ExpressionAnalyser::analyseFunctionCall(ASTArguments *node, const Type &typ
     function->requestReificationAndCheck(typeContext, genericArgs, node->position());
 
     for (size_t i = 0; i < function->parameters().size(); i++) {
-        expectType(function->parameters()[i].type->type().resolveOn(typeContext), &node->args()[i]);
+        auto &paramType = function->parameters()[i].type->type();
+        auto exprType = expectType(paramType.resolveOn(typeContext), &node->args()[i]);
+        if (function->owner() != compiler()->sMemory) {
+            if (paramType.is<TypeType::GenericVariable>()) {  // i.e. the value is not boxed
+                insertNode<ASTUpcast>(&node->args()[i], exprType,
+                                      type.typeDefinition()->constraintForIndex(paramType.genericVariableIndex()));
+            }
+            if (paramType.is<TypeType::LocalGenericVariable>()) {  // i.e. the value is not boxed
+                insertNode<ASTUpcast>(&node->args()[i], exprType,
+                                      function->constraintForIndex(paramType.genericVariableIndex()));
+            }
+        }
     }
     checkFunctionUse(function, node->position());
     node->setGenericArgumentTypes(genericArgs);

@@ -61,6 +61,12 @@ extern "C" void ejcReleaseLocal(runtime::Object<void> *object) {
     }
 }
 
+void deleteControlBlock(runtime::internal::ControlBlock *block) {
+    if (block->weakCount == 0) {
+        delete block;
+    }
+}
+
 extern "C" void ejcRelease(runtime::Object<void> *object) {
     runtime::internal::ControlBlock *controlBlock = object->controlBlock();
     if (controlBlock == nullptr) {
@@ -74,7 +80,7 @@ extern "C" void ejcRelease(runtime::Object<void> *object) {
     if (controlBlock->strongCount.fetch_sub(1, std::memory_order_acq_rel) - 1 != 0) return;
 
     object->classInfo()->destructor(object);
-    delete controlBlock;
+    deleteControlBlock(controlBlock);
     free(object);
 }
 
@@ -90,7 +96,7 @@ extern "C" void ejcReleaseCapture(runtime::internal::Capture *capture) {
     if (controlBlock->strongCount.fetch_sub(1, std::memory_order_acq_rel) - 1 != 0) return;
 
     capture->deinit(capture);
-    delete controlBlock;
+    deleteControlBlock(controlBlock);
     free(capture);
 }
 
@@ -113,8 +119,51 @@ extern "C" void ejcReleaseWithoutDeinit(runtime::Object<void> *object) {
     }
     if (controlBlock->strongCount.fetch_sub(1, std::memory_order_acq_rel) - 1 != 0) return;
 
-    delete controlBlock;
+    deleteControlBlock(controlBlock);
     free(object);
+}
+
+struct WeakReference {
+    runtime::internal::ControlBlock *block;
+    void *object;
+};
+
+void releaseWeakReference(WeakReference *ref) {
+    ref->block->weakCount--;
+    if (ref->block->strongCount == 0) {
+        deleteControlBlock(ref->block);
+    }
+    ref->block = nullptr;
+}
+
+extern "C" void ejcCreateWeak(WeakReference *ref, runtime::Object<void> *object) {
+    ref->object = object;
+    object->controlBlock()->weakCount++;
+    ref->block = object->controlBlock();
+}
+
+extern "C" void ejcRetainWeak(WeakReference *ref) {
+    if (ref->block != nullptr) {
+        ref->block->weakCount++;
+    }
+}
+
+extern "C" void ejcReleaseWeak(WeakReference *ref) {
+    if (ref->block != nullptr) {
+        releaseWeakReference(ref);
+    }
+}
+
+extern "C" runtime::SimpleOptional<void*> ejcAcquireStrong(WeakReference *ref) {
+    if (ref->block == nullptr) {
+        return runtime::NoValue;
+    }
+    if (ref->block->strongCount == 0) {
+        releaseWeakReference(ref);
+        return runtime::NoValue;
+    }
+    ref->block->strongCount++;
+    return ref->object;
 }
 
 extern "C" bool ejcInheritsFrom(runtime::ClassInfo *classInfo, runtime::ClassInfo *from) {

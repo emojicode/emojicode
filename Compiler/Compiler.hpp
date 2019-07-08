@@ -198,6 +198,7 @@ public:
     ValueType *sReal = nullptr;
     ValueType *sMemory = nullptr;
     ValueType *sByte = nullptr;
+    ValueType *sWeak = nullptr;
 
     ~Compiler();
 

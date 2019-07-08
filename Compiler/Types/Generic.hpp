@@ -29,6 +29,7 @@ struct GenericParameter {
     std::u32string name;
     std::unique_ptr<ASTType> constraint;
     bool useBox;
+    bool reifies = false;
 };
 
 template <typename T, typename Entity>
@@ -121,7 +122,7 @@ public:
 
     bool requiresCopyReification() const {
         return std::any_of(genericParameters_.begin(), genericParameters_.end(), [](auto &param) {
-            return !param.useBox;
+            return param.reifies;
         });
     }
 
@@ -182,7 +183,7 @@ private:
     std::vector<Type> buildKey(const std::vector<Type> &arguments) {
         std::vector<Type> key;
         for (size_t i = 0; i < genericParameters_.size(); i++) {
-            if (!genericParameters_[i].useBox) {
+            if (genericParameters_[i].reifies) {
                 key.emplace_back(arguments[i].type() == TypeType::Class ? Type::someobject() : arguments[i]);
             }
         }
@@ -196,7 +197,7 @@ private:
         }
         auto &reification = reifications_[key] = Reification();
         for (size_t i = 0; i < genericParameters_.size(); i++) {
-            if (!genericParameters_[i].useBox) {
+            if (genericParameters_[i].reifies) {
                 reification.arguments.emplace(i + offset_, arguments[i]);
             }
         }

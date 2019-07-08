@@ -303,6 +303,8 @@ public:
     /// Returns true iff a value of the given type requires memory management.
     bool isManaged() const;
 
+    TypeDefinition* resolutionConstraint() const;
+
 protected:
     Type(bool isReference, bool isMutable)
         : typeContent_(TypeType::StorageExpectation), isReference_(isReference), mutable_(isMutable) {}
@@ -331,7 +333,6 @@ private:
     Function *localResolutionConstraint_ = nullptr;
     std::vector<Type> genericArguments_;
 
-    TypeDefinition* resolutionConstraint() const;
     Function* localResolutionConstraint() const;
 
     bool isReference_ = false;
