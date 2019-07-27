@@ -199,7 +199,7 @@ string, but those themselves are then immutable again.
         👎 ➡️ 🖍continue
       🍉
     🍉
-    🐻 list 🗡🐕 lastIndex  🤜📐🐕❗️🤛 ➖ lastIndex❗️❗️
+    🐻 list 🗡🐕 lastIndex  🤜📐❗️🤛 ➖ lastIndex❗️❗️
 
     ↩️ list
   🍉
@@ -281,7 +281,7 @@ string, but those themselves are then immutable again.
 
   📗 Returns an iterator to iterate over the graphemes of this string. 📗
   ❗️ 🍡 ➡️ 🍡🐚🔡🍆 🍇
-    ↩️ 🍡🎶🐕❗️❗️
+    ↩️ 🍡🎶❗️❗️
   🍉
 🍉
 

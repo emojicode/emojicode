@@ -79,7 +79,14 @@ std::pair<std::shared_ptr<ASTExpr>, ASTArguments>
 FunctionParser::parseCalleeAndArguments(const SourcePosition &position) {
     auto args = ASTArguments(position);
     parseGenericArguments(&args);
-    auto callee = parseExpr(0);
+    std::shared_ptr<ASTExpr> callee;
+    if (stream_.nextTokenIs(TokenType::EndArgumentList) ||
+        stream_.nextTokenIs(TokenType::EndInterrogativeArgumentList)) {
+        callee = std::make_unique<ASTThis>(position);
+    }
+    else {
+        callee = parseExpr(0);
+    }
     parseMainArguments(&args, position);
     return {callee, args};
 }

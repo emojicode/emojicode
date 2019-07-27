@@ -58,7 +58,7 @@
 
   ♻️ 🍇
     ☣️ 🍇
-      ♻️ 🐕❗️
+      ♻️❗️
     🍉
   🍉
 
@@ -141,7 +141,7 @@
 
   📗 Appends `item` to the end of the list in `O(1)`. 📗
   🥯🖍❗️ 🐻 item Element 🍇
-    📝🐕❗️
+    📝❗️
     ↕️data❗️
     ☣️ 🍇
       item ➡️ 🐽🐚Element🍆🧠data❗️ 🐔data❓✖️⚖️Element❗️
@@ -167,7 +167,7 @@
     to 0 and less than [[🐔❗️]] or the program will panic.
   📗
   🥯🖍➡️ 🐽 value Element index 🔢 🍇
-    📝🐕❗️
+    📝❗️
     ↪️ index ▶️🙌 🐔data❓ 👐 index ◀️ 0 🎍🐌🍇
       🤯🐇💻 🔤Index out of bounds in 🍨🐷❗️🔤 ❗️
     🍉
@@ -184,7 +184,7 @@
     Returns 👍 unless the index is out of range.
  📗
  🥯🖍❗️ 🐨 index 🔢 ➡️ 👌 🍇
-    📝🐕❗️
+    📝❗️
     ↪️ index ◀️ 🐔data❓ 🍇
       ☣️ 🍇
         ♻️🐚Element🍆 🧠data❗️ index✖️⚖️Element❗️
@@ -203,7 +203,7 @@
     then inserted at `index`. Complexity: `O(n)`.
  📗
  🥯🖍❗️ 🐵 index 🔢 item Element ➡️ 👌 🍇
-    📝🐕❗️
+    📝❗️
     ↕️data❗️
     ↪️ index ◀️ 🐔data❓ 🍇
       ☣️ 🍇
@@ -223,7 +223,7 @@
 
   📗 Appends the content of `list` to this list. Complexity: `O(n)`. 📗
   🥯🖍❗️ 🐥 list 🍨🐚Element🍆 🍇
-    📝🐕❗️
+    📝❗️
     🐔data❓ ➡️ oldCount
     🐔data 🐔list❗️❗️
     🐴data 🐔data❓❗️
@@ -239,7 +239,7 @@
     If the list is empty no value is returned.
   📗
   🥯🖍❗️ 🐼 ➡️ 🍬Element 🍇
-    📝🐕❗️
+    📝❗️
     🐔data -1❗️
     ☣️ 🍇
       🐽🐚Element🍆 🧠data❗️🐔data❓✖️⚖️Element❗️ ➡️ value
@@ -254,7 +254,7 @@
     This can be much more efficient than using a new list. Complexity: `O(n)`.
   📗
   🖍❗️ 🐗 🍇
-    📝🐕❗️
+    📝❗️
     ☣️ 🍇
       ♻️data❗️
     🍉
@@ -270,7 +270,7 @@
     Complexity: `O(n)`.
   📗
   🖍❗️ 🐴 capacity 🔢 🍇
-    📝🐕❗️
+    📝❗️
     🐴data capacity❗️
   🍉
 
@@ -287,8 +287,8 @@
     greater than the second.
   📗
   🖍❗️ 🦁 comparator 🍇Element Element➡️🔢🍉 🍇
-    📝🐕❗️
-    🥃🐕 0 🐔🐕❗️ ➖ 1 comparator❗️
+    📝❗️
+    🥃🐕 0 🐔❗️ ➖ 1 comparator❗️
   🍉
 
   🔒❗️✂️ first 🔢 last 🔢 comparator 🍇Element Element➡️🔢🍉 ➡️ 🔢 🍇
@@ -343,7 +343,7 @@
     Shuffles the list in place using a Fisher–Yates shuffle.
   📗
   🖍❗️ 🐹 🍇
-    📝🐕❗️
+    📝❗️
     🆕🎰🆕❗️ ➡️ prng
     🐔data❓ ➡️ count
 
@@ -361,7 +361,7 @@
     value to the end of a new list.
   📗
   ❗️ 🐰 🐚A⚪🍆️ callback 🍇Element➡️A🍉 ➡️ 🍨🐚A🍆 🍇
-    🆕🍨🐚A🍆🐴 🐔 🐕❗️❗️ ➡️ 🖍🆕g
+    🆕🍨🐚A🍆🐴 🐔❗️❗️ ➡️ 🖍🆕g
     🔂 element 🐕 🍇
       🐻 g ⁉️callback element❗️❗️
     🍉
@@ -411,11 +411,11 @@
 
   📗 Tests whether this array and `other` are equal. 📗
   🙌 🐚A😛🐚Element🍆🍆 other 🍨🐚A🍆 ➡️ 👌 🍇
-    ↪️ ❎ 🐔 🐕❗️ 🙌 🐔 other❗️ ❗️ 🍇
+    ↪️ ❎ 🐔❗️ 🙌 🐔 other❗️ ❗️ 🍇
       ↩️ 👎
     🍉
 
-    🔂 i 🆕⏩⏩  0 🐔🐕❗️ ❗️ 🍇
+    🔂 i 🆕⏩⏩  0 🐔❗️ ❗️ 🍇
       ↪️ ❎ 🐽 other i❗️ 🙌 🐽 🐕  i❗️ ❗️ 🍇
         ↩️ 👎
       🍉
@@ -425,7 +425,7 @@
 
   📗 Returns an iterator to iterate over the elements of this list. 📗
   ❗️ 🍡 ➡️ 🌳🐚Element🍆 🍇
-    ↩️ 🆕⚫️🆕 🐕❗️
+    ↩️ 🆕⚫️🆕🐕❗️
   🍉
 🍉
 
