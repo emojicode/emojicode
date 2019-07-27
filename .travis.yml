@@ -19,7 +19,7 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-    condition: $CC = clang-7 || "$TRAVIS_OS_NAME" == "osx"
+    condition: $CC == clang* || "$TRAVIS_OS_NAME" == "osx"
   draft: true
 
   file:

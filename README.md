@@ -119,7 +119,6 @@ If you don’t want to read the whole license, here’s a summary without legal 
 - Emojicode comes with absolutely no warranty.
 
 [2]:	https://gitter.im/emojicode/emojicode?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-[3]:	https://github.com/emojicode/emojicode/tree/emojicode-0.5
 [6]:	https://twitter.com/Real_Emojicode
 [7]:	https://github.com/emojicode/emojicode/blob/master/0.6.md#help-improving-emojicodes-syntax-
 [8]:	LICENSE
