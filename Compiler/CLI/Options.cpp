@@ -24,7 +24,7 @@ namespace CLI {
 #endif
 
 Options::Options(int argc, char *argv[]) {
-    args::ArgumentParser parser("Emojicode Compiler 0.9. Visit https://www.emojicode.org for help.");
+    args::ArgumentParser parser("Emojicode Compiler 1.0 beta 1. Visit https://www.emojicode.org for help.");
     args::Positional<std::string> file(parser, "file", "The main file of the package to be compiled", std::string(),
                                        args::Options::Required);
     args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
