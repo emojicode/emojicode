@@ -62,7 +62,7 @@ void buildDestructor(CodeGenerator *cg, TypeDefinition *typeDef) {
     FunctionCodeGenerator fg(typeDef->destructor(), cg, std::make_unique<TypeContext>(typeDef->type()));
     fg.createEntry();
     auto klass = dynamic_cast<Class *>(typeDef);
-    if (klass != nullptr && klass->deinitializer() != nullptr) {
+    if (klass != nullptr) {
         CallCodeGenerator ccg(&fg, CallType::StaticDispatch);
         for (auto aKlass = klass; aKlass != nullptr; aKlass = aKlass->superclass()) {
             if (auto deinit = aKlass->deinitializer()) {

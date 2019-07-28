@@ -89,6 +89,7 @@ compilation_tests = [
     "inferListLiteralFromExpec",
     "sequenceTypeNames",
     "typeValues",
+    "deinitializer",
     "rcOrder",
     "rcOrderVt",
     "rcTempOrder",
