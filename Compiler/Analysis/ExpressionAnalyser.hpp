@@ -103,7 +103,7 @@ private:
 
     /// Ensures that node has the required number of generic arguments for a call to function.
     /// If none are provided but function expects generic arguments, this method tries to infer them.
-    void ensureGenericArguments(ASTArguments *node, const Type &type, Function *function);
+    bool ensureGenericArguments(ASTArguments *node, const Type &type, Function *function);
 
     /// Checks that the function can be accessed or issues an error. Checks that the function is not deprecated
     /// and issues a warning otherwise.

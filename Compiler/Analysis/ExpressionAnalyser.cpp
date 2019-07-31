@@ -83,8 +83,7 @@ Type ExpressionAnalyser::analyseFunctionCall(ASTArguments *node, const Type &typ
                             " arguments but ", node->args().size(), " were supplied.");
     }
 
-    ensureGenericArguments(node, type, function);
-
+    auto inferedGenerics = ensureGenericArguments(node, type, function);
     auto genericArgs = transformTypeAstVector(node->genericArguments(), typeContext());
 
     TypeContext typeContext = TypeContext(type, function, &genericArgs);
@@ -92,7 +91,15 @@ Type ExpressionAnalyser::analyseFunctionCall(ASTArguments *node, const Type &typ
 
     for (size_t i = 0; i < function->parameters().size(); i++) {
         auto &paramType = function->parameters()[i].type->type();
-        auto exprType = expectType(paramType.resolveOn(typeContext), &node->args()[i]);
+        Type exprType = Type::noReturn();
+        if (inferedGenerics) {  // No node may be analysed more than once!
+            exprType = comply(node->args()[i]->expressionType(),
+                              TypeExpectation(paramType.resolveOn(typeContext)), &node->args()[i]);
+        }
+        else {
+            exprType = expectType(paramType.resolveOn(typeContext), &node->args()[i]);
+        }
+
         if (function->owner() != compiler()->sMemory) {
             if (paramType.is<TypeType::GenericVariable>()) {  // i.e. the value is not boxed
                 insertNode<ASTUpcast>(&node->args()[i], exprType,
@@ -152,19 +159,22 @@ void ExpressionAnalyser::deprecatedWarning(Function *function, const SourcePosit
     }
 }
 
-void ExpressionAnalyser::ensureGenericArguments(ASTArguments *node, const Type &type, Function *function) {
+bool ExpressionAnalyser::ensureGenericArguments(ASTArguments *node, const Type &type, Function *function) {
     if (node->genericArguments().empty() && !function->genericParameters().empty()) {
         std::vector<CommonTypeFinder> genericArgsFinders(function->genericParameters().size(), CommonTypeFinder());
         TypeContext typeContext = TypeContext(type, function, nullptr);
         size_t i = 0;
-        for (auto &arg : function->parameters()) {
-            expectType(arg.type->type().resolveOn(typeContext), &node->args()[i++], &genericArgsFinders);
+        for (auto &param : function->parameters()) {
+            auto &arg = node->args()[i++];
+            arg->setExpressionType(expectType(param.type->type().resolveOn(typeContext), &arg, &genericArgsFinders));
         }
         for (auto &finder : genericArgsFinders) {
             auto commonType = finder.getCommonType(node->position(), compiler());
             node->genericArguments().emplace_back(std::make_unique<ASTLiteralType>(commonType));
         }
+        return true;
     }
+    return false;
 }
 
 Type ExpressionAnalyser::comply(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {

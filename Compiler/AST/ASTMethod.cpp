@@ -183,7 +183,8 @@ void ASTMethodable::prepareBuiltIns(Compiler *c) {
     };
 }
 
-bool ASTMethodable::builtIn(ExpressionAnalyser *analyser, const Type &type, const std::u32string &name) {
+bool ASTMethodable::builtIn(ExpressionAnalyser *analyser, const Type &btype, const std::u32string &name) {
+    auto type = btype.unboxed();
     if (type.type() != TypeType::ValueType) {
         return false;
     }

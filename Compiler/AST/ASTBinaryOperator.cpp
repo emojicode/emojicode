@@ -50,7 +50,8 @@ Type ASTBinaryOperator::analyseIsNoValue(ExpressionAnalyser *analyser, std::shar
 }
 
 std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveOperator(ExpressionAnalyser *analyser,
-                                                                                        const Type &type) {
+                                                                                        const Type &btype) {
+    auto type = btype.unboxed();
     if ((type.type() == TypeType::ValueType || type.type() == TypeType::Enum) &&
         type.valueType()->isPrimitive()) {
         if (type.valueType() == analyser->compiler()->sReal) {
