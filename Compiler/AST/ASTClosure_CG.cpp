@@ -46,6 +46,7 @@ llvm::Value* ASTClosure::createDeinit(CodeGenerator *cg, const Capture &capture)
     auto deinit = llvm::Function::Create(cg->typeHelper().captureDeinit(),
                                          llvm::GlobalValue::LinkageTypes::PrivateLinkage, "captureDeinit",
                                          cg->module());
+    deinit->setUnnamedAddr(llvm::GlobalVariable::UnnamedAddr::Global);
 
     FunctionCodeGenerator fg(deinit, cg, std::make_unique<TypeContext>(closure_->typeContext()));
     fg.createEntry();

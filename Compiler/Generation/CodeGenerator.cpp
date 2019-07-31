@@ -224,6 +224,10 @@ llvm::Function* CodeGenerator::createLlvmFunction(Function *function, Reificatio
         i++;
     }
 
+    if (function->isClosure()) {
+        fn->setUnnamedAddr(llvm::GlobalVariable::UnnamedAddr::Global);
+    }
+
     addParamDereferenceable(function->returnType()->type(), 0, fn, true);
     return fn;
 }
