@@ -409,6 +409,53 @@
     ↩️ 👍
   🍉
 
+  📗
+    Combines all elements in this list by using the binary operation
+    described by `callable`. The first argument is the result of the
+    previous call of the callable, while the first value of the list is used as
+    the initial value and never passed as the second argument.
+  📗
+  ❗ 🐧 callable 🍇Element Element➡️Element🍉 ➡️ 🍬Element 🍇
+    ↪️ 0 🙌 🐔data❓ 🍇
+      ↩️🤷‍♂️
+    🍉
+
+    🐽🐕 0❗️ ➡️ 🖍🆕 result
+    🍡❗ ➡️ it
+    🔽it❗️
+
+    🔂 element it 🍇
+       ⁉️ callable result element❗ ➡️ 🖍result
+    🍉
+
+    ↩️ result
+  🍉
+
+  📗
+    Combines all elements in this list by using the binary operation
+    described by `callable`. The first argument is the result of the
+    previous call of the callable, with `start` used as the initial value passed
+    along with the first element of the list.
+  📗
+  ❗ 🐤🐚A⚪🍆️ start A callable 🍇A Element➡️A🍉 ➡️ A 🍇
+    start ➡️ 🖍🆕 result
+    🔂 element 🐕 🍇
+      ⁉️ callable result element❗ ➡️ 🖍result
+    🍉
+    ↩️ result
+  🍉
+
+  📗 Reverses the list in place. 📗
+  🖍❗ 🦔 🍇
+    📝❗️
+    🐔data❓ ➖ 1 ➡️ backIndex
+    🔂 i 🆕⏩⏩ 0 🐔data❓ ➗ 2 ❗ 🍇
+      ☣️ 🍇
+        🔄🐕 i backIndex ➖ i ❗
+      🍉
+    🍉
+  🍉
+
   📗 Tests whether this array and `other` are equal. 📗
   🙌 🐚A😛🐚Element🍆🍆 other 🍨🐚A🍆 ➡️ 👌 🍇
     ↪️ ❎ 🐔❗️ 🙌 🐔 other❗️ ❗️ 🍇
