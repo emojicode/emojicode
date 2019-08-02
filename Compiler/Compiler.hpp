@@ -205,6 +205,7 @@ public:
 private:
     std::vector<std::unique_ptr<Phase>> phases_;
     std::string searchPackage(const std::string &name, const SourcePosition &p);
+    void parseInterface(Package *pkg, const SourcePosition &p);
     std::string findBinaryPathPackage(const std::string &packagePath, const std::string &packageName);
 
     /// Searches the loaded packages for the package with the given name.

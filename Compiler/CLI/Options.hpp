@@ -65,6 +65,8 @@ private:
     std::string llvmIr_;
     std::vector<std::string> packageSearchPaths_;
     std::string mainPackageName_ = "_";
+    /// Path to the directory where the output files will be placed.
+    std::string outDir_;
     bool format_ = false;
     bool jsonOutput_ = false;
     bool pack_ = true;

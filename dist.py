@@ -17,7 +17,7 @@ def copy_packages(destination, source):
     for package in packages:
         dir_path = os.path.join(destination, package)
         make_dir(dir_path)
-        shutil.copy2(os.path.join(package, "interface.emojii"), dir_path)
+        shutil.copy2(os.path.join(package, "🏛"), dir_path)
         shutil.copy2(os.path.join(package, "lib" + package + ".a"), dir_path)
 
 

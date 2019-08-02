@@ -39,10 +39,9 @@ public:
     /// @param path The path to the directory of the package.
     Package(std::string name, std::string path, Compiler *app, bool imported);
 
-    /// Lexes and parses the package. The file interface.emojii in path() is used to begin compilation.
+    /// Lexes and parses the package.
     /// If this package is the s package the s loading procedure is invoked.
     /// If the package is not the @c s package, the s package is first imported via importPackage().
-    void parse();
     void parse(const std::string &mainFilePath);
 
     /// Tries to import the package identified by name into a namespace of this package.

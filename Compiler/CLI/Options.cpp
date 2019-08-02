@@ -104,43 +104,27 @@ void Options::printCliMessage(const std::string &message) {
 }
 
 void Options::configureOutPath() {
-    std::string parentPath = llvm::sys::path::parent_path(mainFile_);
+    outDir_ = outPath_.empty() ? llvm::sys::path::parent_path(mainFile_) :
+                                 llvm::sys::path::parent_path(outPath_);
+    if (!outDir_.empty()) {
+        outDir_.append("/");
+    }
 
     if (pack() && outPath_.empty()) {
         if (standalone()) {
-            outPath_ = mainFile_;
-
-            // Remove extension if any
-            if (llvm::sys::path::has_stem(mainFile_)) {
-                 if (!parentPath.empty()) {
-                    parentPath.append("/");
-                }
-                outPath_ = parentPath + std::string(llvm::sys::path::stem(mainFile_));
-            }
+            outPath_ = outDir_ + std::string(llvm::sys::path::stem(mainFile_));
         }
         else {
-            if (!parentPath.empty()) {
-                outPath_ = parentPath;
-                outPath_.append("/");
-            }
-            outPath_.append("lib" + mainPackageName_ + ".a");
+            outPath_ = outDir_ + "lib" + mainPackageName_ + ".a";
         }
     }
 
     if (!standalone() && interfaceFile_.empty()) {
-        if (!parentPath.empty()) {
-            interfaceFile_ = parentPath;
-            interfaceFile_.append("/");
-        }
-        interfaceFile_.append("interface.emojii");
+        interfaceFile_ = outDir_ + "🏛";
     }
 
     if (shouldReport()) {
-        if (!parentPath.empty()) {
-            reportPath_ = parentPath;
-            reportPath_.append("/");
-        }
-        reportPath_.append("documentation.json");
+        reportPath_ = outDir_ + "documentation.json";
     }
 }
 
@@ -169,22 +153,14 @@ std::string Options::objectPath() const {
     if (!pack() && !outPath_.empty()) {
         return outPath_;
     }
-    std::string parentPath = llvm::sys::path::parent_path(mainFile_);
-    if (!parentPath.empty()) {
-        parentPath.append("/");
-    }
-    return parentPath + std::string(llvm::sys::path::stem(mainFile_)) + ".o";
+    return outDir_ + std::string(llvm::sys::path::stem(mainFile_)) + ".o";
 }
 
 std::string Options::llvmIrPath() const {
     if (!printIr_) {
         return "";
     }
-    std::string parentPath = llvm::sys::path::parent_path(mainFile_);
-    if (!parentPath.empty()) {
-        parentPath.append("/");
-    }
-    return parentPath + std::string(llvm::sys::path::stem(mainFile_)) + ".ll";
+    return outDir_ + std::string(llvm::sys::path::stem(mainFile_)) + ".ll";
 }
 
 }  // namespace CLI

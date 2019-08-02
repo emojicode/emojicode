@@ -63,7 +63,7 @@ void Package::importPackage(const std::string &name, const std::u32string &ns, c
 }
 
 TokenStream Package::lexFile(const std::string &path) {
-    if (!endsWith(path, ".emojic") && !endsWith(path, ".🍇") && !endsWith(path, ".emojii")) {
+    if (!endsWith(path, ".emojic") && !endsWith(path, ".🍇") && !endsWith(path, "🏛") && !endsWith(path, ".emojii")) {
         throw CompilerError(SourcePosition(), "Emojicode files must be suffixed with .emojic or .🍇: ", path);
     }
 
@@ -78,11 +78,7 @@ TokenStream Package::lexFile(const std::string &path) {
 }
 
 void Package::includeDocument(const std::string &path, const std::string &relativePath) {
-    DocumentParser(this, lexFile(path), endsWith(path, "emojii")).parse();
-}
-
-void Package::parse() {
-    parse(path_ + "/interface.emojii");
+    DocumentParser(this, lexFile(path), endsWith(path, "🏛") || endsWith(path, "emojii")).parse();
 }
 
 void Package::parse(const std::string &mainFilePath) {

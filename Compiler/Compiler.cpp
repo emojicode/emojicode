@@ -145,12 +145,22 @@ Package *Compiler::loadPackage(const std::string &name, const SourcePosition &p,
     auto rawPtr = package.get();
     packageImportOrder_.emplace_back(rawPtr);
     packages_.emplace(name, std::move(package));
-    rawPtr->parse();
+    parseInterface(rawPtr, p);
+
     SemanticAnalyser(rawPtr, true).analyse(false);
     if (!hasError_) {
         MFAnalyser(rawPtr).analyse();
     }
     return rawPtr;
+}
+
+void Compiler::parseInterface(Package *pkg, const SourcePosition &p) {
+    std::string emojiPath = pkg->path() + "/🏛", textPath = pkg->path() + "/interface.emojii";
+    bool emojiExists = llvm::sys::fs::exists(emojiPath), textExists = llvm::sys::fs::exists(textPath);
+    if (emojiExists && textExists) {
+        throw CompilerError(p, "Package ", pkg->name(), " contains both a 🏛 file and interface.emojii.");
+    }
+    pkg->parse(textExists ? textPath : emojiPath);
 }
 
 void Compiler::error(const CompilerError &ce) {

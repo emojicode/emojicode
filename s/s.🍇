@@ -1,0 +1,28 @@
+📘
+  Emojicode’s standard library.
+
+  See [The s package](https://www.emojicode.org/docs/reference/the-s-package.html)
+  for an introduction.
+📘
+
+📜 🔤boolean.🍇🔤
+📜 🔤integer.🍇🔤
+📜 🔤memory.🍇🔤
+📜 🔤real.🍇🔤
+📜 🔤byte.🍇🔤
+📜 🔤iterator.🍇🔤
+📜 🔤comparable.🍇🔤
+📜 🔤random_access.🍇🔤
+📜 🔤system.🍇🔤
+📜 🔤range.🍇🔤
+📜 🔤list_iterator.🍇🔤
+📜 🔤prng.🍇🔤
+📜 🔤string.🍇🔤
+📜 🔤list.🍇🔤
+📜 🔤data.🍇🔤
+📜 🔤dictionary.🍇🔤
+📜 🔤thread.🍇🔤
+📜 🔤error.🍇🔤
+📜 🔤weak.🍇🔤
+
+🔗 🔤m🔤 🔤pthread🔤 🔗
