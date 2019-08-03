@@ -40,4 +40,9 @@ bool hasThisArgument(Function *function) {
               dynamic_cast<Class *>(function->owner())->foreign());
 }
 
+bool isTypeMethod(Function *function) {
+    return function->functionType() == FunctionType::ClassMethod ||
+            (function->functionType() == FunctionType::Function && function->owner() != nullptr);
+}
+
 } // namespace EmojicodeCompiler

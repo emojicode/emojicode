@@ -221,6 +221,7 @@ private:
     llvm::Function *const function_;
     CGScoper scoper_;
     llvm::Value *functionGenericArgs_ = nullptr;
+    llvm::Value *typeMethodGenericArgs_ = nullptr;
 
     CodeGenerator *const generator_;
     llvm::IRBuilder<> builder_;

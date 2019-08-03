@@ -39,7 +39,7 @@ TypeContext Function::typeContext() {
         type.setReference();
         type.setMutable(mutating());
     }
-    if (functionType() == FunctionType::ClassMethod) {
+    if (isTypeMethod(this)) {
         type = Type(MakeTypeAsValue, type);
     }
     return TypeContext(type.applyMinimalBoxing(), this);

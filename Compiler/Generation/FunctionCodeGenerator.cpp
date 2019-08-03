@@ -68,11 +68,16 @@ void FunctionCodeGenerator::declareArguments(llvm::Function *function) {
     }
 
     if ((fn_->functionType() == FunctionType::ValueTypeInitializer ||
-         fn_->functionType() == FunctionType::ObjectInitializer) &&
-         typeContext_->calleeType().typeDefinition()->storesGenericArgs()) {
+         fn_->functionType() == FunctionType::ObjectInitializer) && fn_->owner()->storesGenericArgs()) {
         auto llvmArg = (it++);
         llvmArg->setName("genericArgs");
         builder().CreateStore(llvmArg, genericArgsPtr());
+    }
+
+    if (isTypeMethod(fn_) && fn_->owner()->storesGenericArgs()) {
+        auto llvmArg = (it++);
+        llvmArg->setName("genericArgs");
+        typeMethodGenericArgs_ = llvmArg;
     }
 
     if (!fn_->genericParameters().empty()) {
@@ -508,6 +513,10 @@ llvm::Value* FunctionCodeGenerator::instanceVariablePointer(size_t id) {
 }
 
 llvm::Value* FunctionCodeGenerator::genericArgsPtr() {
+    if (fn_ != nullptr && isTypeMethod(fn_)) {
+        return typeMethodGenericArgs_;
+    }
+
     auto callee = typeContext_->calleeType();
     assert(callee.typeDefinition()->storesGenericArgs());
     auto type = llvm::cast<llvm::PointerType>(thisValue()->getType())->getElementType();

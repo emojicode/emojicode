@@ -33,6 +33,7 @@ bool isSelfAllowed(FunctionType);
 bool hasInstanceScope(FunctionType);
 bool isReturnForbidden(FunctionType);
 bool hasThisArgument(Function *function);
+bool isTypeMethod(Function *function);
 
 }  // namespace EmojicodeCompiler
 

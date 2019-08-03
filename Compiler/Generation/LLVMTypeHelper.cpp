@@ -161,11 +161,12 @@ llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
     std::transform(function->parameters().begin(), function->parameters().end(), std::back_inserter(args), [&](auto &arg) {
         return typeForFunction(arg.type->type(), function);
     });
-    if (function->functionType() == FunctionType::ObjectInitializer ||
-        function->functionType() == FunctionType::ValueTypeInitializer) {
-        if (function->typeContext().calleeType().typeDefinition()->storesGenericArgs()) {
-            args.emplace_back(genericArgsStore(function->typeContext().calleeType()));
-        }
+    if ((function->functionType() == FunctionType::ObjectInitializer ||
+         function->functionType() == FunctionType::ValueTypeInitializer) && function->owner()->storesGenericArgs()) {
+        args.emplace_back(genericArgsStore(function->typeContext().calleeType()));
+    }
+    if (isTypeMethod(function) && function->owner()->storesGenericArgs()) {
+        args.emplace_back(typeDescription_->getPointerTo());
     }
     if (!function->genericParameters().empty()) {
         args.emplace_back(typeDescription_->getPointerTo());

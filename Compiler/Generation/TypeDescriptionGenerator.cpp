@@ -37,7 +37,8 @@ void TypeDescriptionGenerator::addType(const Type &type) {
             genericInfo = fg_->generator()->runTime().someobjectRtti();
             break;
         case TypeType::GenericVariable:
-            if (fg_->calleeType().typeDefinition()->isGenericDynamismDisabled()) {
+            if (!fg_->calleeType().is<TypeType::TypeAsValue>() &&
+                fg_->calleeType().typeDefinition()->isGenericDynamismDisabled()) {
                 throw CompilerError(fg_->position(), "Generic dynamism is disabled in this type.");
             }
             addDynamic(extractTypeDescriptionPtr(), notype.genericVariableIndex());
@@ -73,6 +74,9 @@ void TypeDescriptionGenerator::addType(const Type &type) {
 }
 
 llvm::Value* TypeDescriptionGenerator::extractTypeDescriptionPtr() {
+    if (fg_->calleeType().is<TypeType::TypeAsValue>()) {
+        return fg_->genericArgsPtr();
+    }
     auto ptr = fg_->builder().CreateLoad(fg_->genericArgsPtr());
     if (fg_->calleeType().is<TypeType::Class>()) {
         return fg_->builder().CreateExtractValue(ptr, 0);
@@ -188,7 +192,7 @@ llvm::Value* TypeDescriptionGenerator::finishStatic() {
 void TypeDescriptionGenerator::restoreStack() {
     assert(user_ == User::Function);
     if (stack_ != nullptr) {
-        fg_->builder().CreateIntrinsic(llvm::Intrinsic::stackrestore, stack_->getType(), stack_);
+        fg_->builder().CreateIntrinsic(llvm::Intrinsic::stackrestore, {}, stack_);
     }
 }
 

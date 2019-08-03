@@ -10,6 +10,9 @@
 #include "ASTType.hpp"
 #include "Generation/CallCodeGenerator.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
+#include "Generation/TypeDescriptionGenerator.hpp"
+#include "Functions/Function.hpp"
+#include "Types/TypeDefinition.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -100,8 +103,19 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
         }
     }
 
+    std::vector<llvm::Value *> supplArgs;
+    auto tdg = TypeDescriptionGenerator(fg, TypeDescriptionGenerator::User::Function);
+    if (isTypeMethod(method_) && method_->owner()->storesGenericArgs()) {
+        supplArgs.emplace_back(tdg.generate(callee_->expressionType().typeOfTypeValue().selfResolvedGenericArgs()));
+    }
+
     auto ret = CallCodeGenerator(fg, callType_).generate(callee_->generate(fg), calleeType_,
-                                                         args_, method_, errorPointer());
+                                                         args_, method_, errorPointer(), supplArgs);
+
+    if (!supplArgs.empty()) {
+        tdg.restoreStack();
+    }
+
     if (!castTo_.is<TypeType::NoReturn>()) {
         ret = fg->builder().CreateBitCast(ret, fg->typeHelper().llvmTypeFor(castTo_));
     }
