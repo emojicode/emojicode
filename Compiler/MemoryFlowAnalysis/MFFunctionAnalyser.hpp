@@ -112,6 +112,9 @@ private:
 
     /// Determines whether the contents of the variable should be released at the end of a block.
     bool shouldReleaseVariable(const MFLocalVariable &var) const;
+
+    void analyseIfNecessary(Function *function) const;
+    void checkMFPromises() const;
 };
 
 }  // namespace EmojicodeCompiler

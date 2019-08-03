@@ -96,6 +96,8 @@ compilation_tests = [
     "rcInstanceVariable",
     "rcOnlyReference",
     "rcIvarArgMut",
+    "rcEscaping",
+    "classEscapingParamOverride",
     "references",
     "identifierTest",
     "shortCircuit",

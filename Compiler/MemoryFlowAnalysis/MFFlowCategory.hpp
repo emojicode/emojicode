@@ -36,6 +36,10 @@ public:
 
     bool isReturn() const { return category_ == Category::Return; }
 
+    bool fulfillsPromise(MFFlowCategory promise) const {
+        return category_ == Category::Borrowing || promise.isEscaping();
+    }
+
 private:
     MFFlowCategory(Category c) : category_(c) {}
 

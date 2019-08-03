@@ -16,6 +16,9 @@
 #include "Functions/Function.hpp"
 #include "MFHeapAllocates.hpp"
 #include "Scoping/SemanticScopeStats.hpp"
+#include "Types/Class.hpp"
+#include "Package/Package.hpp"
+#include "Compiler.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -36,17 +39,54 @@ void MFFunctionAnalyser::analyse() {
         auto &var = scope_.getVariable(i);
         var.isParam = true;
         var.param = i;
+        var.type = function_->parameters()[i].type->type();
     }
 
     function_->ast()->analyseMemoryFlow(this);
     function_->setMemoryFlowTypeForThis(thisEscapes_ ? MFFlowCategory::Escaping : MFFlowCategory::Borrowing);
+
     popScope(function_->ast());
+
+    checkMFPromises();
 }
 
-void MFFunctionAnalyser::analyseFunctionCall(ASTArguments *node, ASTExpr *callee, Function *function) {
+void MFFunctionAnalyser::checkMFPromises() const {
+    auto compiler = function_->package()->compiler();
+    if (function_->functionType() == FunctionType::Deinitializer) {
+        if (thisEscapes_) {
+            compiler->error(CompilerError(function_->position(), "🐕 must not escape from ♻️."));
+        }
+    }
+    else if (auto klass = dynamic_cast<Class *>(function_->owner())) {
+        if (klass->superclass() != nullptr) {
+            if (auto super = klass->findSuperFunction(function_)) {
+                analyseIfNecessary(super);
+
+                if (!function_->memoryFlowTypeForThis().fulfillsPromise(super->memoryFlowTypeForThis())) {
+                    compiler->error(CompilerError(function_->position(), "Function lets this context escape, which "\
+                                                  "violates the overriden function’s promise."));
+                }
+                for (size_t i = 0; i < super->parameters().size(); i++) {
+                    auto &param = function_->parameters()[i];
+                    if (!param.memoryFlowType.fulfillsPromise(super->parameters()[i].memoryFlowType)) {
+                        compiler->error(CompilerError(param.type->position(), "Function lets parameter \"",
+                                                      utf8(param.name),
+                                                      "\" escape, which violates the overriden function’s promise."));
+                    }
+                }
+            }
+        }
+    }
+}
+
+void MFFunctionAnalyser::analyseIfNecessary(Function *function) const {
     if (function->memoryFlowTypeForThis().isUnknown()) {
         MFFunctionAnalyser(function).analyse();
     }
+}
+
+void MFFunctionAnalyser::analyseFunctionCall(ASTArguments *node, ASTExpr *callee, Function *function) {
+    analyseIfNecessary(function);
     if (callee != nullptr) {
         callee->analyseMemoryFlow(this, function->memoryFlowTypeForThis());
     }
@@ -112,7 +152,12 @@ void MFFunctionAnalyser::recordVariableGet(size_t id, MFFlowCategory category) {
         var.isReturned = true;
     }
     if (category.isEscaping()) {
-        scope_.getVariable(id).flowCategory = category;
+        auto &var = scope_.getVariable(id);
+        auto type = var.type.unoptionalized();
+        if (type.is<TypeType::ValueType>() || type.is<TypeType::Enum>()) {
+            return;
+        }
+        var.flowCategory = category;
     }
 }
 
