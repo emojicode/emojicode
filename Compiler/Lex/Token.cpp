@@ -69,7 +69,7 @@ const char* Token::stringNameForType(TokenType type) {
 void Token::validate() const {
     switch (type()) {
         case TokenType::Integer:
-            if (value().back() == 'x') {
+            if (value().back() == 'x' || value().back() == '+' || value().back() == '-') {
                 throw CompilerError(position(), "Expected a digit after integer literal prefix.");
             }
             break;
