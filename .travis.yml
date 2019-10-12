@@ -28,7 +28,7 @@ deploy:
 addons:
   homebrew:
     packages:
-    - llvm
+    - llvm@8
     - ninja
     update: true
 
