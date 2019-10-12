@@ -13,11 +13,12 @@
     🚜 data 0 memory 0 count❗️
   🍉
 
+  📗 Returns the memory region as a 🧠 📗
   ❗️🧠 ➡️ 🧠 🍇
     ↩️ data
   🍉
 
-  📗 Returns 👍 if this is equal to *b*. 📗
+  📗 Returns 👍 if 🐕 is equal to *b*. 📗
   🙌 b 📇 ➡️ 👌 🍇
     ↪️ ❎🐔 b❗️🙌 count❗️ 🍇
       ↩️ 👎
@@ -28,7 +29,7 @@
     ☣️ 🍇
       ↩️ ↔️ data 🧠b❗️ count❗️ 🙌 0
     🍉
-   🍉
+  🍉
 
   📗 Returns the number of bytes represented by this instance. 📗
   ❗️ 🐔 ➡️ 🔢 🍇
@@ -49,14 +50,14 @@
   🍉
 
   📗
-    If this object represents the bytes of a UTF8 encoded text this method
+    If this object represents the bytes of a UTF-8 encoded text this method
     returns a string representing that text. No value is returned if this
-    object does not represent a valid UTF8 sequence.
+    object does not represent a valid UTF-8 sequence.
   📗
   ❗️ 🔡 ➡️ 🍬🔡 📻 🔤sDataAsString🔤
 
   📗
-    Returns a copy of the data within the given range. This method employes
+    Returns a copy of the data within the given range. This method employs
     various techniques to make this as efficient as possible.
   📗
   ❗️ 🔪 from 🔢 length 🔢 ➡️ 📇 🍇
