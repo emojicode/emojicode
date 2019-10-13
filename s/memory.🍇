@@ -34,7 +34,7 @@
     represented by this instance.
 
     >!H If the memory area represented is smaller than `⚖️T ➕ offset` bytes,
-    >!H undefined behavior is caused!
+    >!H the behavior is undefined!
     >!H
     >!H If the value at specified location is not *exactly* of type T or,
     >!H in the case T is a class type, a subclass of T, the behavior is

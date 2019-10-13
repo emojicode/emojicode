@@ -56,14 +56,19 @@ string, but those themselves are then immutable again.
   🐊 🔂🐚🔡🍆
   🐊 😛🐚🔡🍆
 
-  📗 Creates a string by copying the memory from the *memory*. 📗
+  📗 Creates a 🔡 by copying the memory from the *memory*. 📗
   ☣️ 🆕 🧠 memory 🧠 🍼 count 🔢 🍇
     count ➡️ size
     🆕🧠🆕 size❗️ ➡️ 🖍bytes
     🚜 bytes 0 memory 0 size❗️
   🍉
 
-  📗 Returns the memory area representing the value of this string. 📗
+  📗
+    Returns the 🧠 storing the value of this 🔡. No copy is performed.
+
+    >!H Only read from the 🧠. When writing to the 🧠 returned by this method,
+    >!H the behavior is undefined.
+  📗
   ❗️🧠 ➡️ 🧠 🍇
     ↩️ bytes
   🍉
@@ -248,8 +253,8 @@ string, but those themselves are then immutable again.
   📗
   ❗️ 💯 ➡️ 🍬💯 📻 🔤sStringToReal🔤
 
-	📗 Converts the string to data encoded as UTF8. 📗
-	❗️ 📇 ➡️ 📇 📻 🔤sStringToData🔤
+  📗 Converts the string to data encoded as UTF8. 📗
+  ❗️ 📇 ➡️ 📇 📻 🔤sStringToData🔤
 
   📗
     Hashes this string.
