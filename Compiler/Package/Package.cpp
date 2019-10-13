@@ -68,8 +68,10 @@ TokenStream Package::lexFile(const std::string &path) {
     }
 
     // Exclude "extension only" filename from compilation
-    std::size_t extensionIndex = path.find_last_of("."); 
-    std::string stem = path.substr(0, extensionIndex);
+    auto pos = path.find_last_of("/");
+    auto last = pos == std::string::npos ? path : path.substr(pos);
+    std::size_t extensionIndex = last.find_last_of(".");
+    std::string stem = last.substr(0, extensionIndex);
     if (endsWith(stem, "/")) {
         throw CompilerError(SourcePosition(), "Emojicode files must have a filename: ", path);
     }
