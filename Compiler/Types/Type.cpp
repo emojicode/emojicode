@@ -16,6 +16,7 @@
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
 #include "Utils/StringUtils.hpp"
+#include "Analysis/GenericInferer.hpp"
 #include "ValueType.hpp"
 #include <algorithm>
 #include <cstring>
@@ -313,21 +314,21 @@ Type Type::resolveOn(const TypeContext &typeContext) const {
     return t;
 }
 
-bool Type::identicalGenericArguments(Type to, const TypeContext &typeContext, std::vector<CommonTypeFinder> *ctargs) const {
+bool Type::identicalGenericArguments(Type to, const TypeContext &typeContext, GenericInferer *inf) const {
     for (size_t i = to.typeDefinition()->superGenericArguments().size(); i < to.genericArguments_.size(); i++) {
-        if (!this->genericArguments_[i].identicalTo(to.genericArguments_[i], typeContext, ctargs)) {
+        if (!this->genericArguments_[i].identicalTo(to.genericArguments_[i], typeContext, inf)) {
             return false;
         }
     }
     return true;
 }
 
-bool Type::compatibleTo(const Type &to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs) const {
+bool Type::compatibleTo(const Type &to, const TypeContext &tc, GenericInferer *inf) const {
     if (type() == TypeType::Box) {
-        return unboxed().compatibleTo(to, tc, ctargs);
+        return unboxed().compatibleTo(to, tc, inf);
     }
     if (to.type() == TypeType::Box) {
-        return compatibleTo(to.unboxed(), tc, ctargs);
+        return compatibleTo(to.unboxed(), tc, inf);
     }
 
     if (to.type() == TypeType::Something) {
@@ -338,10 +339,10 @@ bool Type::compatibleTo(const Type &to, const TypeContext &tc, std::vector<Commo
         if (to.type() != TypeType::Optional) {
             return false;
         }
-        return optionalType().compatibleTo(to.optionalType(), tc, ctargs);
+        return optionalType().compatibleTo(to.optionalType(), tc, inf);
     }
     if (this->type() != TypeType::Optional && to.type() == TypeType::Optional) {
-        return compatibleTo(to.optionalType(), tc, ctargs);
+        return compatibleTo(to.optionalType(), tc, inf);
     }
 
     if ((this->type() == TypeType::GenericVariable && to.type() == TypeType::GenericVariable) ||
@@ -349,42 +350,48 @@ bool Type::compatibleTo(const Type &to, const TypeContext &tc, std::vector<Commo
         return (this->genericVariableIndex() == to.genericVariableIndex() &&
                 this->typeDefinition_ == to.typeDefinition_) ||
         this->resolveOnSuperArgumentsAndConstraints(tc)
-        .compatibleTo(to.resolveOnSuperArgumentsAndConstraints(tc), tc, ctargs);
+        .compatibleTo(to.resolveOnSuperArgumentsAndConstraints(tc), tc, inf);
     }
     if (type() == TypeType::GenericVariable) {
-        return resolveOnSuperArgumentsAndConstraints(tc).compatibleTo(to, tc, ctargs);
+        return (inf != nullptr && inf->inferringType()) ||
+                resolveOnSuperArgumentsAndConstraints(tc).compatibleTo(to, tc, inf);
     }
     if (type() == TypeType::LocalGenericVariable) {
-        return ctargs != nullptr || resolveOnSuperArgumentsAndConstraints(tc).compatibleTo(to, tc, ctargs);
+        return (inf != nullptr && inf->inferringLocal()) ||
+                resolveOnSuperArgumentsAndConstraints(tc).compatibleTo(to, tc, inf);
     }
 
     switch (to.type()) {
         case TypeType::TypeAsValue:
-            return isCompatibleToTypeAsValue(to, tc, ctargs);
+            return isCompatibleToTypeAsValue(to, tc, inf);
         case TypeType::GenericVariable:
-            return compatibleTo(to.resolveOnSuperArgumentsAndConstraints(tc), tc, ctargs);
-        case TypeType::LocalGenericVariable:
-            if (ctargs != nullptr) {
-                (*ctargs)[to.genericVariableIndex()].addType(*this, tc);
+            if (inf != nullptr && inf->inferringType()) {
+                inf->addType(to.genericVariableIndex(), *this, tc);
                 return true;
             }
-            return this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(tc), tc, ctargs);
+            return compatibleTo(to.resolveOnSuperArgumentsAndConstraints(tc), tc, inf);
+        case TypeType::LocalGenericVariable:
+            if (inf != nullptr && inf->inferringLocal()) {
+                inf->addLocal(to.genericVariableIndex(), *this, tc);
+                return true;
+            }
+            return compatibleTo(to.resolveOnSuperArgumentsAndConstraints(tc), tc, inf);
         case TypeType::Class:
             return type() == TypeType::Class && klass()->inheritsFrom(to.klass()) &&
-                identicalGenericArguments(to, tc, ctargs);
+                identicalGenericArguments(to, tc, inf);
         case TypeType::ValueType:
             return type() == TypeType::ValueType && typeDefinition() == to.typeDefinition() &&
-                identicalGenericArguments(to, tc, ctargs);
+                identicalGenericArguments(to, tc, inf);
         case TypeType::Enum:
             return type() == TypeType::Enum && enumeration() == to.enumeration();
         case TypeType::Someobject:
             return type() == TypeType::Class || type() == TypeType::Someobject;
         case TypeType::MultiProtocol:
-            return isCompatibleToMultiProtocol(to, tc, ctargs);
+            return isCompatibleToMultiProtocol(to, tc, inf);
         case TypeType::Protocol:
-            return isCompatibleToProtocol(to, tc, ctargs);
+            return isCompatibleToProtocol(to, tc, inf);
         case TypeType::Callable:
-            return isCompatibleToCallable(to, tc, ctargs);
+            return isCompatibleToCallable(to, tc, inf);
         case TypeType::NoReturn:
             return type() == TypeType::NoReturn;
         default:
@@ -394,23 +401,23 @@ bool Type::compatibleTo(const Type &to, const TypeContext &tc, std::vector<Commo
 }
 
 bool Type::isCompatibleToTypeAsValue(const Type &to, const TypeContext &tc,
-                                     std::vector<CommonTypeFinder> *ctargs) const {
+                                     GenericInferer *inf) const {
     if (type() != TypeType::TypeAsValue) {
         return false;
     }
 
     if (typeOfTypeValue().type() == TypeType::Class && to.typeOfTypeValue().type() == TypeType::Class) {
-        return typeOfTypeValue().compatibleTo(to.typeOfTypeValue(), tc, ctargs);
+        return typeOfTypeValue().compatibleTo(to.typeOfTypeValue(), tc, inf);
     }
 
-    return identicalTo(to, tc, ctargs);
+    return identicalTo(to, tc, inf);
 }
 
-bool Type::isCompatibleToMultiProtocol(const Type &to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const {
+bool Type::isCompatibleToMultiProtocol(const Type &to, const TypeContext &ct, GenericInferer *inf) const {
     if (type() == TypeType::MultiProtocol) {
         return std::equal(protocols().begin(), protocols().end(), to.protocols().begin(), to.protocols().end(),
-                          [ct, ctargs](const Type &a, const Type &b) {
-                              return a.compatibleTo(b, ct, ctargs);
+                          [ct, inf](const Type &a, const Type &b) {
+                              return a.compatibleTo(b, ct, inf);
                           });
     }
 
@@ -419,11 +426,11 @@ bool Type::isCompatibleToMultiProtocol(const Type &to, const TypeContext &ct, st
     });
 }
 
-bool Type::isCompatibleToProtocol(const Type &to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const {
+bool Type::isCompatibleToProtocol(const Type &to, const TypeContext &ct, GenericInferer *inf) const {
     if (type() == TypeType::Class) {
         for (Class *a = this->klass(); a != nullptr; a = a->superclass()) {
             for (auto &protocol : a->protocols()) {
-                if (protocol->type().resolveOn(TypeContext(*this)).compatibleTo(to.resolveOn(ct), ct, ctargs)) {
+                if (protocol->type().resolveOn(TypeContext(*this)).compatibleTo(to.resolveOn(ct), ct, inf)) {
                     return true;
                 }
             }
@@ -432,24 +439,24 @@ bool Type::isCompatibleToProtocol(const Type &to, const TypeContext &ct, std::ve
     }
     if (type() == TypeType::ValueType || type() == TypeType::Enum) {
         for (auto &protocol : typeDefinition()->protocols()) {
-            if (protocol->type().resolveOn(TypeContext(*this)).compatibleTo(to.resolveOn(ct), ct, ctargs)) {
+            if (protocol->type().resolveOn(TypeContext(*this)).compatibleTo(to.resolveOn(ct), ct, inf)) {
                 return true;
             }
         }
         return false;
     }
     if (type() == TypeType::Protocol) {
-        return this->typeDefinition() == to.typeDefinition() && identicalGenericArguments(to, ct, ctargs);
+        return this->typeDefinition() == to.typeDefinition() && identicalGenericArguments(to, ct, inf);
     }
     return false;
 }
 
-bool Type::isCompatibleToCallable(const Type &to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const {
+bool Type::isCompatibleToCallable(const Type &to, const TypeContext &ct, GenericInferer *inf) const {
     if (type() == TypeType::Callable) {
-        if (returnType().compatibleTo(to.returnType(), ct, ctargs) &&
-            errorType().compatibleTo(to.errorType(), ct, ctargs) && to.parametersCount() == parametersCount()) {
+        if (returnType().compatibleTo(to.returnType(), ct, inf) &&
+            errorType().compatibleTo(to.errorType(), ct, inf) && to.parametersCount() == parametersCount()) {
             for (size_t i = 0; i < to.parametersCount(); i++) {
-                if (!to.parameters()[i].compatibleTo(parameters()[i], ct, ctargs)) {
+                if (!to.parameters()[i].compatibleTo(parameters()[i], ct, inf)) {
                     return false;
                 }
             }
@@ -459,17 +466,21 @@ bool Type::isCompatibleToCallable(const Type &to, const TypeContext &ct, std::ve
     return false;
 }
 
-bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs) const {
-    if (ctargs != nullptr && to.type() == TypeType::LocalGenericVariable) {
-        (*ctargs)[to.genericVariableIndex()].addType(*this, tc);
+bool Type::identicalTo(Type to, const TypeContext &tc, GenericInferer *inf) const {
+    if (inf != nullptr && inf->inferringLocal() && to.type() == TypeType::LocalGenericVariable) {
+        inf->addLocal(to.genericVariableIndex(), *this, tc);
+        return true;
+    }
+    if (inf != nullptr && inf->inferringType() && to.type() == TypeType::GenericVariable) {
+        inf->addType(to.genericVariableIndex(), *this, tc);
         return true;
     }
 
     if (type() == TypeType::Box) {
-        return unboxed().identicalTo(to, tc, ctargs);
+        return unboxed().identicalTo(to, tc, inf);
     }
     if (to.type() == TypeType::Box) {
-        return identicalTo(to.unboxed(), tc, ctargs);
+        return identicalTo(to.unboxed(), tc, inf);
     }
 
     if (type() == to.type()) {
@@ -477,14 +488,14 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
             case TypeType::Class:
             case TypeType::Protocol:
             case TypeType::ValueType:
-                return typeDefinition() == to.typeDefinition() && identicalGenericArguments(to, tc, ctargs);
+                return typeDefinition() == to.typeDefinition() && identicalGenericArguments(to, tc, inf);
             case TypeType::Callable:
                 return std::equal(to.genericArguments_.begin(), to.genericArguments_.end(),
                                   genericArguments_.begin(), genericArguments_.end(),
-                                  [&tc, ctargs](const Type &a, const Type &b) { return a.identicalTo(b, tc, ctargs); });
+                                  [&tc, inf](const Type &a, const Type &b) { return a.identicalTo(b, tc, inf); });
             case TypeType::Optional:
             case TypeType::TypeAsValue:
-                return genericArguments_[0].identicalTo(to.genericArguments_[0], tc, ctargs);
+                return genericArguments_[0].identicalTo(to.genericArguments_[0], tc, inf);
             case TypeType::Enum:
                 return enumeration() == to.enumeration();
             case TypeType::GenericVariable:
@@ -496,7 +507,7 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
                 return true;
             case TypeType::MultiProtocol:
                 return std::equal(protocols().begin(), protocols().end(), to.protocols().begin(), to.protocols().end(),
-                                  [&tc, ctargs](const Type &a, const Type &b) { return a.identicalTo(b, tc, ctargs); });
+                                  [&tc, inf](const Type &a, const Type &b) { return a.identicalTo(b, tc, inf); });
             case TypeType::StorageExpectation:
             case TypeType::Box:
                 return false;

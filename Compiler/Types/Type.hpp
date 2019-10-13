@@ -29,9 +29,9 @@ class TypeDefinition;
 class TypeContext;
 class ValueType;
 class Function;
-class CommonTypeFinder;
 class AbstractParser;
 class Initializer;
+class GenericInferer;
 
 enum class TypeType {
     Box,
@@ -153,10 +153,10 @@ public:
     Type typeOfTypeValue() const;
 
     /// Returns true if this type is compatible to the given other type.
-    bool compatibleTo(const Type &to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs = nullptr) const;
+    bool compatibleTo(const Type &to, const TypeContext &tc, GenericInferer *inf = nullptr) const;
     /// Whether this instance of Type is considered indentical to the other instance.
     /// Mainly used to determine compatibility of generics.
-    bool identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs) const;
+    bool identicalTo(Type to, const TypeContext &tc, GenericInferer *inf) const;
 
     /// Returns the generic variable index if the type is a Type::GenericVariable or TypeType::LocalGenericVariable.
     size_t genericVariableIndex() const;
@@ -340,13 +340,13 @@ private:
     bool forceExact_ = false;
 
     void typeName(Type type, const TypeContext &typeContext, std::string &string, Package *package) const;
-    bool identicalGenericArguments(Type to, const TypeContext &typeContext, std::vector<CommonTypeFinder> *ctargs) const;
+    bool identicalGenericArguments(Type to, const TypeContext &typeContext, GenericInferer *inf) const;
     void sortMultiProtocolType();
 
-    bool isCompatibleToMultiProtocol(const Type &to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const;
-    bool isCompatibleToProtocol(const Type &to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const;
-    bool isCompatibleToCallable(const Type &to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const;
-    bool isCompatibleToTypeAsValue(const Type &to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs) const;
+    bool isCompatibleToMultiProtocol(const Type &to, const TypeContext &ct, GenericInferer *inf) const;
+    bool isCompatibleToProtocol(const Type &to, const TypeContext &ct, GenericInferer *inf) const;
+    bool isCompatibleToCallable(const Type &to, const TypeContext &ct, GenericInferer *inf) const;
+    bool isCompatibleToTypeAsValue(const Type &to, const TypeContext &tc, GenericInferer *inf) const;
 };
 
 }  // namespace EmojicodeCompiler

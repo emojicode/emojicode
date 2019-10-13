@@ -18,7 +18,7 @@ enum class TokenType;
 /// Abstract parent class of all abstract syntax tree nodes representing a $type$.
 class ASTType : public ASTNode {
 public:
-    Type& analyseType(const TypeContext &typeContext, bool allowReference = false);
+    Type& analyseType(const TypeContext &typeContext, bool allowReference = false, bool allowGenericInference = false);
     Type& type() { assert(wasAnalysed()); return type_; }
     const Type& type() const { assert(wasAnalysed()); return type_; }
     void setOptional(bool optional) { optional_ = optional; type_ = type_.optionalized(optional); }
@@ -31,7 +31,7 @@ public:
 protected:
     ASTType(SourcePosition p, Package *package) : ASTNode(std::move(p)), package_(package) {}
     ASTType(Type type) : ASTNode(SourcePosition()), type_(type.applyMinimalBoxing()), package_(nullptr) {}
-    virtual Type getType(const TypeContext &typeContext) const = 0;
+    virtual Type getType(const TypeContext &typeContext, bool allowGenericInference) const = 0;
     Package* package() const { return package_; }
     virtual void toCodeType(PrettyStream &pretty) const = 0;
 private:
@@ -60,7 +60,7 @@ public:
     void addGenericArgument(std::unique_ptr<ASTType> type) { genericArgs_.emplace_back(std::move(type)); }
 
     void toCodeType(PrettyStream &pretty) const override;
-    Type getType(const TypeContext &typeContext) const override;
+    Type getType(const TypeContext &typeContext, bool allowGenericInference) const override;
 private:
     std::u32string name_;
     std::u32string namespace_;
@@ -77,7 +77,7 @@ public:
                 errorType_(std::move(errorType)) {}
 
     void toCodeType(PrettyStream &pretty) const override;
-    Type getType(const TypeContext &typeContext) const override;
+    Type getType(const TypeContext &typeContext, bool allowGenericInference) const override;
 private:
     std::unique_ptr<ASTType> return_;
     std::vector<std::unique_ptr<ASTType>> params_;
@@ -89,7 +89,7 @@ public:
     explicit ASTLiteralType(Type type) : ASTType(std::move(type)) {}
 
     void toCode(PrettyStream &pretty) const override;
-    Type getType(const TypeContext &typeContext) const override { return Type::noReturn(); }
+    Type getType(const TypeContext &typeContext, bool allowGenericInference) const override { return Type::noReturn(); }
 protected:
     void toCodeType(PrettyStream &pretty) const override {}
 };
@@ -100,7 +100,7 @@ public:
             : ASTType(std::move(p), package), protocols_(std::move(protocols)) {}
 
     void toCodeType(PrettyStream &pretty) const override;
-    Type getType(const TypeContext &typeContext) const override;
+    Type getType(const TypeContext &typeContext, bool allowGenericInference) const override;
 private:
     std::vector<std::unique_ptr<ASTType>> protocols_;
 };
@@ -111,7 +111,7 @@ public:
             : ASTType(std::move(p), package), type_(std::move(type)), tokenType_(tokenType) {}
 
     void toCodeType(PrettyStream &pretty) const override;
-    Type getType(const TypeContext &typeContext) const override;
+    Type getType(const TypeContext &typeContext, bool allowGenericInference) const override;
 
     static void checkTypeValue(TokenType tokenType, const Type &type, const TypeContext &typeContext,
                                const SourcePosition &p, Package *package);
@@ -127,7 +127,7 @@ public:
             : ASTType(p, package), name_(std::move(name)) {}
 
     void toCodeType(PrettyStream &pretty) const override;
-    Type getType(const TypeContext &typeContext) const override;
+    Type getType(const TypeContext &typeContext, bool allowGenericInference) const override;
 private:
     std::u32string name_;
 };

@@ -24,6 +24,9 @@ class ASTTypeExpr : public ASTExpr {
 public:
     ASTTypeExpr(const SourcePosition &p) : ASTExpr(p) {}
     void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override {}
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) final;
+    virtual Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation,
+                         bool allowGenericInference) = 0;
 };
 
 class ASTTypeFromExpr : public ASTTypeExpr {
@@ -31,7 +34,7 @@ public:
     ASTTypeFromExpr(std::shared_ptr<ASTExpr> value, const SourcePosition &p)
             : ASTTypeExpr(p), expr_(std::move(value)) {}
 
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) final;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation, bool allowGenericInference) override;
     Value *generate(FunctionCodeGenerator *fg) const final;
     void toCode(PrettyStream &pretty) const override;
 private:
@@ -42,7 +45,7 @@ class ASTStaticType : public ASTTypeExpr {
 public:
     ASTStaticType(std::unique_ptr<ASTType> type, const SourcePosition &p);
 
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation, bool allowGenericInference) override;
     Value *generate(FunctionCodeGenerator *fg) const override;
     void toCode(PrettyStream &pretty) const override;
 
@@ -56,7 +59,7 @@ class ASTInferType final : public ASTStaticType {
 public:
     explicit ASTInferType(const SourcePosition &p) : ASTStaticType(nullptr, p) {}
 
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation, bool allowGenericInference) override;
     void toCode(PrettyStream &pretty) const override;
 };
 

@@ -8,6 +8,7 @@
 #include "ExpressionAnalyser.hpp"
 #include "AST/ASTClosure.hpp"
 #include "AST/ASTVariables.hpp"
+#include "AST/ASTTypeExpr.hpp"
 #include "Compiler.hpp"
 #include "Functions/Function.hpp"
 #include "SemanticAnalyser.hpp"
@@ -16,6 +17,7 @@
 #include "Types/ValueType.hpp"
 #include "Types/CommonTypeFinder.hpp"
 #include "Types/TypeExpectation.hpp"
+#include "GenericInferer.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -58,35 +60,40 @@ void ExpressionAnalyser::configureClosure(Function *closure) const {
     closure->setFunctionType(functionType());
 }
 
-Type ExpressionAnalyser::analyseTypeExpr(const std::shared_ptr<ASTExpr> &node, const TypeExpectation &exp) {
-    auto type = node->analyse(this, exp).resolveOnSuperArgumentsAndConstraints(typeContext_);
+Type ExpressionAnalyser::analyseTypeExpr(const std::shared_ptr<ASTTypeExpr> &node, const TypeExpectation &exp,
+                                         bool allowGenericInf) {
+    Type type = node->analyse(this, exp, allowGenericInf).resolveOnSuperArgumentsAndConstraints(typeContext_);
     node->setExpressionType(type);
     return type;
 }
 
-Type ExpressionAnalyser::expectType(const Type &type, std::shared_ptr<ASTExpr> *node, std::vector<CommonTypeFinder> *ctargs) {
-    auto returnType = (*node)->analyse(this, ctargs != nullptr ? TypeExpectation() : TypeExpectation(type));
-    if (!returnType.compatibleTo(type, typeContext_, ctargs)) {
+Type ExpressionAnalyser::expectType(const Type &type, std::shared_ptr<ASTExpr> *node, GenericInferer *inf) {
+    auto returnType = (*node)->analyse(this, inf != nullptr ? TypeExpectation() : TypeExpectation(type));
+    if (!returnType.compatibleTo(type, typeContext_, inf)) {
         throw CompilerError((*node)->position(), returnType.toString(typeContext_), " is not compatible to ",
                             type.toString(typeContext_), ".");
     }
-    if (ctargs == nullptr) {
+    if (inf == nullptr) {
         comply(returnType, TypeExpectation(type), node);
     }
     return returnType;
 }
 
-Type ExpressionAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type, Function *function) {
+Type ExpressionAnalyser::analyseFunctionCall(ASTArguments *node, Type type, Function *function) {
+    return analyseFunctionCall(node, &type, function, false);
+}
+
+Type ExpressionAnalyser::analyseFunctionCall(ASTArguments *node, Type *type, Function *function, bool allowTypeArgInf) {
     if (node->args().size() != function->parameters().size()) {
         auto position = node->args().empty() ? node->position() : node->args().back()->position();
         throw CompilerError(position, utf8(function->name()), " expects ", function->parameters().size(),
                             " arguments but ", node->args().size(), " were supplied.");
     }
 
-    auto inferedGenerics = ensureGenericArguments(node, type, function);
+    auto inferedGenerics = ensureGenericArguments(node, type, function, allowTypeArgInf);
     auto genericArgs = transformTypeAstVector(node->genericArguments(), typeContext());
 
-    TypeContext typeContext = TypeContext(type, function, &genericArgs);
+    TypeContext typeContext = TypeContext(*type, function, &genericArgs);
     function->requestReificationAndCheck(typeContext, genericArgs, node->position());
 
     for (size_t i = 0; i < function->parameters().size(); i++) {
@@ -103,7 +110,7 @@ Type ExpressionAnalyser::analyseFunctionCall(ASTArguments *node, const Type &typ
         if (function->owner() != compiler()->sMemory) {
             if (paramType.is<TypeType::GenericVariable>()) {  // i.e. the value is not boxed
                 insertNode<ASTUpcast>(&node->args()[i], exprType,
-                                      type.typeDefinition()->constraintForIndex(paramType.genericVariableIndex()));
+                                      type->typeDefinition()->constraintForIndex(paramType.genericVariableIndex()));
             }
             if (paramType.is<TypeType::LocalGenericVariable>()) {  // i.e. the value is not boxed
                 insertNode<ASTUpcast>(&node->args()[i], exprType,
@@ -115,7 +122,7 @@ Type ExpressionAnalyser::analyseFunctionCall(ASTArguments *node, const Type &typ
     node->setGenericArgumentTypes(genericArgs);
     auto rtType = function->returnType()->type().resolveOn(typeContext);
     if (rtType.isReference()) {
-        rtType.setMutable(type.isMutable());
+        rtType.setMutable(type->isMutable());
     }
     return rtType;
 }
@@ -159,22 +166,34 @@ void ExpressionAnalyser::deprecatedWarning(Function *function, const SourcePosit
     }
 }
 
-bool ExpressionAnalyser::ensureGenericArguments(ASTArguments *node, const Type &type, Function *function) {
-    if (node->genericArguments().empty() && !function->genericParameters().empty()) {
-        std::vector<CommonTypeFinder> genericArgsFinders(function->genericParameters().size(), CommonTypeFinder());
-        TypeContext typeContext = TypeContext(type, function, nullptr);
-        size_t i = 0;
-        for (auto &param : function->parameters()) {
-            auto &arg = node->args()[i++];
-            arg->setExpressionType(expectType(param.type->type().resolveOn(typeContext), &arg, &genericArgsFinders));
-        }
-        for (auto &finder : genericArgsFinders) {
-            auto commonType = finder.getCommonType(node->position(), compiler());
-            node->genericArguments().emplace_back(std::make_unique<ASTLiteralType>(commonType));
-        }
-        return true;
+bool ExpressionAnalyser::ensureGenericArguments(ASTArguments *node, Type *type, Function *function,
+                                                bool allowTypeArgInf) {
+    bool inferLocalArgs = node->genericArguments().empty() && !function->genericParameters().empty();
+    bool inferTypeArgs = allowTypeArgInf && type->genericArguments().empty() &&
+                         !type->typeDefinition()->genericParameters().empty();
+    if (!inferTypeArgs && !inferLocalArgs) {
+        return false;
     }
-    return false;
+
+    GenericInferer inf(inferLocalArgs ? function->genericParameters().size() : 0,
+                       inferTypeArgs ? type->typeDefinition()->genericParameters().size() : 0);
+
+    TypeContext callTypeContext = TypeContext(inferTypeArgs ? Type::noReturn() : *type, function, nullptr);
+    size_t i = 0;
+    for (auto &param : function->parameters()) {
+        auto &arg = node->args()[i++];
+        arg->setExpressionType(expectType(param.type->type().resolveOn(callTypeContext), &arg, &inf));
+    }
+
+    if (inferLocalArgs) {
+        node->genericArguments() = inf.localArguments(node->position(), compiler());
+    }
+    if (inferTypeArgs) {
+        type->setGenericArguments(inf.typeArguments(node->position(), compiler()));
+        type->typeDefinition()->requestReificationAndCheck(typeContext(), type->genericArguments(), node->position());
+        *type = type->resolveOnSuperArgumentsAndConstraints(typeContext_);
+    }
+    return true;
 }
 
 Type ExpressionAnalyser::comply(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {

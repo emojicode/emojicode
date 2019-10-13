@@ -23,6 +23,7 @@ class ASTExpr;
 struct SourcePosition;
 class ASTArguments;
 class CompilerError;
+class ASTTypeExpr;
 
 /// This class provides all interfaces required for analysing an expression.
 ///
@@ -59,7 +60,7 @@ public:
 
     /// Parses an expression node, verifies it return type and boxes it according to the given expectation.
     /// Calls @c expect internally.
-    Type expectType(const Type &type, std::shared_ptr<ASTExpr>*, std::vector<CommonTypeFinder> *ctargs = nullptr);
+    Type expectType(const Type &type, std::shared_ptr<ASTExpr>*, GenericInferer *inf = nullptr);
     /// Parses an expression node and boxes it according to the given expectation. Calls @c box internally.
     Type expect(const TypeExpectation &expectation, std::shared_ptr<ASTExpr>*);
     /// Makes the node comply with the expectation by dereferencing, temporarily storing or boxing it.
@@ -69,7 +70,10 @@ public:
 
     /// Analyses @c node and sets the expression type of the node to the type that will be returned.
     /// @returns The type denoted by the $type-expression$ resolved by Type::resolveOnSuperArgumentsAndConstraints.
-    Type analyseTypeExpr(const std::shared_ptr<ASTExpr> &node, const TypeExpectation &exp);
+    /// @param allowGenericInf If true, generic arguments must not be specified. The type will not contain any arguments in that case and must be inferred
+    ///                        with analyseFunctionCall().
+    Type analyseTypeExpr(const std::shared_ptr<ASTTypeExpr> &node, const TypeExpectation &exp,
+                         bool allowGenericInf = false);
 
     /// Verifies the call of the provided functions with the provided arguments.
     /// @param type The type on which the provided method is called.
@@ -80,7 +84,9 @@ public:
     /// - Issues a warning if the function is deprecated.
     /// - Ensures that access control allows this function to be called.
     /// - Checks that the function is safe or ensures that we are in an unsafe block.
-    Type analyseFunctionCall(ASTArguments *node, const Type &type, Function *function);
+    Type analyseFunctionCall(ASTArguments *node, Type type, Function *function);
+    /// Like analyseFunctionCall(ASTArguments *node, Type type, Function *function) but  can infer the type generic arguments additionally.
+    Type analyseFunctionCall(ASTArguments *node, Type *type, Function *function, bool allowTypeArgInf);
 
     Type integer() const;
     Type boolean() const;
@@ -101,9 +107,9 @@ private:
     /// Issues a warning at the given position if the function is deprecated.
     void deprecatedWarning(Function *function, const SourcePosition &p) const;
 
-    /// Ensures that node has the required number of generic arguments for a call to function.
-    /// If none are provided but function expects generic arguments, this method tries to infer them.
-    bool ensureGenericArguments(ASTArguments *node, const Type &type, Function *function);
+    /// Ensures that node has the required number of generic arguments for a call to function, by inferring them if none are provided.
+    /// If inferTypeArgs is true, also infers the generic arguments to the callee type and store them in `type` with Type::setGenericArguments().
+    bool ensureGenericArguments(ASTArguments *node, Type *type, Function *function, bool allowTypeArgInf);
 
     /// Checks that the function can be accessed or issues an error. Checks that the function is not deprecated
     /// and issues a warning otherwise.

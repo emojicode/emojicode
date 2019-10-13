@@ -18,7 +18,7 @@ namespace EmojicodeCompiler {
 ASTStaticType::ASTStaticType(std::unique_ptr<ASTType> type, const SourcePosition &p)
     : ASTTypeExpr(p), type_(std::move(type)) {}
 
-Type ASTInferType::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTInferType::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation, bool) {
     if (expectation.type() == TypeType::StorageExpectation || expectation.type() == TypeType::NoReturn) {
         throw CompilerError(position(), "Cannot infer ⚫️.");
     }
@@ -27,7 +27,7 @@ Type ASTInferType::analyse(ExpressionAnalyser *analyser, const TypeExpectation &
     return type_->type();
 }
 
-Type ASTTypeFromExpr::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTTypeFromExpr::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation, bool) {
     auto value = analyser->expect(expectation, &expr_);
     if (value.type() != TypeType::TypeAsValue) {
         throw CompilerError(position(), "Expected type value.");
@@ -35,12 +35,16 @@ Type ASTTypeFromExpr::analyse(ExpressionAnalyser *analyser, const TypeExpectatio
     return value.typeOfTypeValue();
 }
 
-Type ASTStaticType::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
-    type_->analyseType(analyser->typeContext()).setExact(true);
+Type ASTStaticType::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation, bool allowGenericInference) {
+    type_->analyseType(analyser->typeContext(), false, allowGenericInference).setExact(true);
     if (type_->type().type() == TypeType::GenericVariable || type_->type().type() == TypeType::LocalGenericVariable) {
         throw CompilerError(position(), "Generic Arguments are not available dynamically.");
     }
     return type_->type();
+}
+
+Type ASTTypeExpr::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+    return analyse(analyser, expectation, false);
 }
 
 ASTThisType::ASTThisType(const SourcePosition &p) : ASTTypeFromExpr(std::make_shared<ASTThis>(p), p) {}

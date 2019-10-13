@@ -14,9 +14,9 @@
 
 namespace EmojicodeCompiler {
 
-Type& ASTType::analyseType(const TypeContext &typeContext, bool allowReference) {
+Type& ASTType::analyseType(const TypeContext &typeContext, bool allowReference, bool allowGenericInference) {
     if (!wasAnalysed()) {
-        type_ = getType(typeContext).applyMinimalBoxing().optionalized(optional_);
+        type_ = getType(typeContext, allowGenericInference).applyMinimalBoxing().optionalized(optional_);
         if (reference_) {
             if (!allowReference) {
                 package()->compiler()->error(CompilerError(position(), "Reference not allowed here."));
@@ -35,7 +35,7 @@ Type& ASTType::analyseType(const TypeContext &typeContext, bool allowReference) 
     return type_;
 }
 
-Type ASTTypeId::getType(const TypeContext &typeContext) const {
+Type ASTTypeId::getType(const TypeContext &typeContext, bool allowGenericInference) const {
     auto type = package()->getRawType(TypeIdentifier(name_, namespace_, position()));
 
     auto typeDef = type.typeDefinition();
@@ -44,12 +44,14 @@ Type ASTTypeId::getType(const TypeContext &typeContext) const {
     for (auto &arg : genericArgs_) {
         args.emplace_back(arg->analyseType(typeContext));
     }
-    typeDef->requestReificationAndCheck(typeContext, args, position());
+    if (!(allowGenericInference && args.empty())) {
+        typeDef->requestReificationAndCheck(typeContext, args, position());
+    }
     type.setGenericArguments(std::move(args));
     return type;
 }
 
-Type ASTMultiProtocol::getType(const TypeContext &typeContext) const {
+Type ASTMultiProtocol::getType(const TypeContext &typeContext, bool allowGenericInference) const {
     std::vector<Type> protocols;
     protocols.reserve(protocols_.size());
 
@@ -70,7 +72,7 @@ Type ASTMultiProtocol::getType(const TypeContext &typeContext) const {
     return Type(std::move(protocols));
 }
 
-Type ASTTypeValueType::getType(const TypeContext &typeContext) const {
+Type ASTTypeValueType::getType(const TypeContext &typeContext, bool allowGenericInference) const {
     auto type = type_->analyseType(typeContext);
     checkTypeValue(tokenType_, type, typeContext, position(), package());
     return Type(MakeTypeAsValue, type);
@@ -114,7 +116,7 @@ std::string ASTTypeValueType::toString(TokenType tokenType) {
     }
 }
 
-Type ASTGenericVariable::getType(const TypeContext &typeContext) const {
+Type ASTGenericVariable::getType(const TypeContext &typeContext, bool allowGenericInference) const {
     Type type = Type::noReturn();
     if (typeContext.function() != nullptr && typeContext.function()->fetchVariable(name_, &type)) {
         return type;
@@ -131,7 +133,7 @@ Type ASTGenericVariable::getType(const TypeContext &typeContext) const {
     throw CompilerError(position(), "No such generic type variable \"", utf8(name_), "\".");
 }
 
-Type ASTCallableType::getType(const TypeContext &typeContext) const {
+Type ASTCallableType::getType(const TypeContext &typeContext, bool allowGenericInference) const {
     auto returnType = return_ == nullptr ? Type::noReturn() : return_->analyseType(typeContext);
     auto errorType = errorType_ == nullptr ? Type::noReturn() : errorType_->analyseType(typeContext);
     return Type(returnType, transformTypeAstVector(params_, typeContext), errorType);

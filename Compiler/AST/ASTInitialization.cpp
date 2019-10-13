@@ -7,6 +7,7 @@
 //
 
 #include "ASTInitialization.hpp"
+#include "ASTTypeExpr.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Emojis.h"
@@ -18,7 +19,7 @@
 namespace EmojicodeCompiler {
 
 Type ASTInitialization::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
-    auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
+    auto type = analyser->analyseTypeExpr(typeExpr_, expectation, true);
 
     if (type.type() == TypeType::Enum) {
         return analyseEnumInit(analyser, type);
@@ -41,7 +42,8 @@ Type ASTInitialization::analyse(ExpressionAnalyser *analyser, const TypeExpectat
         initializer_ = init;
     }
 
-    analyser->analyseFunctionCall(&args_, type, init);
+    analyser->analyseFunctionCall(&args_, &type, init, true);
+    typeExpr_->setExpressionType(type);
     ensureErrorIsHandled(analyser);
     return init->constructedType(type);
 }

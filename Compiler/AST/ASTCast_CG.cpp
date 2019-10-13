@@ -6,6 +6,7 @@
 //
 
 #include "ASTCast.hpp"
+#include "ASTTypeExpr.hpp"
 #include "Generation/RunTimeHelper.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Types/ValueType.hpp"

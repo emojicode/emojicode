@@ -20,7 +20,7 @@ class CodeGenerator;
 
 class ASTCast final : public ASTUnaryMFForwarding {
 public:
-    ASTCast(std::shared_ptr<ASTExpr> value, std::shared_ptr<ASTExpr> type,
+    ASTCast(std::shared_ptr<ASTExpr> value, std::shared_ptr<ASTTypeExpr> type,
             const SourcePosition &p) : ASTUnaryMFForwarding(std::move(value), p), typeExpr_(std::move(type)) {}
     Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
@@ -31,7 +31,7 @@ public:
 private:
     /// If this is true, this is a class downcast. Otherwise a dynamic cast.
     bool isDowncast_ = false;
-    std::shared_ptr<ASTExpr> typeExpr_;
+    std::shared_ptr<ASTTypeExpr> typeExpr_;
     Value* downcast(FunctionCodeGenerator *fg) const;
 
     static llvm::Function *kFunction;

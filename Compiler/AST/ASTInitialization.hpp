@@ -23,7 +23,7 @@ public:
         Enum, ValueType, Class, ClassStack, MemoryAllocation
     };
 
-    ASTInitialization(std::u32string name, std::shared_ptr<ASTExpr> type,
+    ASTInitialization(std::u32string name, std::shared_ptr<ASTTypeExpr> type,
                       ASTArguments args, const SourcePosition &p)
     : ASTCall(p), name_(std::move(name)), typeExpr_(std::move(type)), args_(std::move(args)) {}
     Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
@@ -54,7 +54,7 @@ public:
 private:
     InitType initType_ = InitType::Class;
     std::u32string name_;
-    std::shared_ptr<ASTExpr> typeExpr_;
+    std::shared_ptr<ASTTypeExpr> typeExpr_;
     llvm::Value *vtDestination_ = nullptr;
     Function *initializer_ = nullptr;
     ASTArguments args_;
