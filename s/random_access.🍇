@@ -3,7 +3,7 @@
 
   Types representing a collection whose elements can be accessed by 🐽 randomly
   should conform to this protocol. The number of elements must be finite and
-  returned by 🐔.
+  returned by 📏.
 📗
 🌍 🐊 🐽️🐚Element⚪️🍆 🍇
   📗
@@ -12,7 +12,7 @@
   📗
   ❗️ 🐽 index 🔢 ➡️ Element
   📗 Returns the number of items in the collection. 📗
-  ❗️ 🐔 ➡️ 🔢
+  ❓ 📏 ➡️ 🔢
 🍉
 
 📗
@@ -39,7 +39,7 @@
   🍉
 
   ❓ 🔽 ➡️ 👌 🍇
-    ↩️ index ◀️ 🐔 iteratee❗️
+    ↩️ index ◀️ 📏iteratee❓
   🍉
 
   ❗️ 🍡 ➡️ 🍡🐚Element🍆 🍇
