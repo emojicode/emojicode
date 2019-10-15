@@ -13,7 +13,12 @@
     🚜 data 0 memory 0 count❗️
   🍉
 
-  📗 Returns the memory region as a 🧠 📗
+  📗
+    Returns the 🧠 storing the value of this 📇. No copy is performed.
+
+    >!H Only read from the 🧠. When writing to the 🧠 returned by this method,
+    >!H the behavior is undefined.
+  📗
   ❗️🧠 ➡️ 🧠 🍇
     ↩️ data
   🍉

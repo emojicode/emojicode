@@ -1,9 +1,12 @@
 📗
   Protocol defining equality.
 
-  A type conforming to this protocol provides a method 😛 to determine whether
-  one of its instance is equal to an instance of type T. T is normally the
-  type itself.
+  A type conforming to this protocol provides the operator 🙌 that determines
+  equality between instances.
+
+  In the simple case, equality is determined between two instances of the same type.
+  However, implementing this protocol for other T is allowed
+  and defines equality between two different types.
 📗
 🌍 🐊 😛🐚T⚪🍆️ 🍇
   📗 Whether this value and *other* are equal. 📗
