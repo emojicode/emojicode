@@ -9,19 +9,35 @@
     ↩️ 🐕 🙌 other
   🍉
 
-  📗 Returns the receiver minus *other*. 📗
+  📗
+    Returns the receiver minus *other*.
+
+    If the result does not fit, "wrap-around" occurs.
+  📗
   ➖ other 🔢 ➡️ 🔢 🍇
     ↩️ 🐕 ➖ other
   🍉
-  📗 Returns the receiver plus *other*. 📗
+  📗
+    Returns the receiver plus *other*.
+
+    If the result does not fit, "wrap-around" occurs.
+  📗
   ➕ other 🔢 ➡️ 🔢 🍇
     ↩️ 🐕 ➕ other
   🍉
-  📗 Returns the receiver divided by *other*. 📗
+  📗
+    Returns the receiver divided by *other*.
+
+    If *other* is zero, or the result does not fit, the behavior is undefined.
+  📗
   ➗ other 🔢 ➡️ 🔢 🍇
     ↩️ 🐕 ➗ other
   🍉
-  📗 Returns the receiver multiplied by *other*. 📗
+  📗
+    Returns the receiver multiplied by *other*.
+
+    If the result does not fit, "wrap-around" occurs.
+  📗
   ✖️ other 🔢 ➡️ 🔢 🍇
     ↩️ 🐕 ✖️ other
   🍉
