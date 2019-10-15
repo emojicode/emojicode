@@ -24,7 +24,7 @@
   method, which returns an array of graphemes. Graphemes are always represented
   as strings.
 
-  To determine the number of graphemes in a string, you can use 🐔 on that array.
+  To determine the number of graphemes in a string, you can use 📏 on that array.
   To determine the number of UTF-8 bytes that make up a string, use 📐.
 
   ### Comparing Strings
@@ -81,10 +81,10 @@ string, but those themselves are then immutable again.
   📗
   🆕 🍨 list 🍨🐚🔡🍆 separator 🔡 🍇
     🆕🔠🆕❗️ ➡️ builder
-    🔂 i 🆕⏩⏩ 0 🐔list❗️ ❗️  🍇
+    🔂 i 🆕⏩⏩ 0 📏list❓ ❗️  🍇
       🐻 builder 🐽list i❗️ ❗️
 
-      ↪️ i ➕ 1 ◀️ 🐔list❗️ 🍇
+      ↪️ i ➕ 1 ◀️ 📏list❓ 🍇
         🐻 builder separator❗️
       🍉
     🍉

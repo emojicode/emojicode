@@ -19,9 +19,9 @@
     🔡🐕 🍺🐽dict 🔤Hannelore🔤❗️ 🔤Pia🔤🔤Hannelore = Pia🔤❗️
     🔡🐕 🍺🐽dict 🔤Josef🔤❗️ 🔤Jan🔤🔤Josef = Gerd🔤❗️
     🔤Gerd🔤 ➡️🐽dict🔤Josef🔤❗️
-    🔡🐕  🍺🐽dict 🔤Josef🔤❗️ 🔤Gerd🔤🔤Josef = Gerd🔤❗️
+    🔡🐕 🍺🐽dict 🔤Josef🔤❗️ 🔤Gerd🔤🔤Josef = Gerd🔤❗️
     🔤Robertus🔤 ➡️🐽dict🔤Freiherr🔤❗️
-    🔡🐕  🍺🐽dict 🔤Freiherr🔤❗️🔤Robertus🔤🔤Freiherr = Robertus🔤❗️
+    🔡🐕 🍺🐽dict 🔤Freiherr🔤❗️🔤Robertus🔤🔤Freiherr = Robertus🔤❗️
     🐨dict 🔤Hannah🔤❗️
     🐨dict 🔤Freiherr🔤❗️
     🐨dict 🔤Gunther🔤❗️
@@ -29,14 +29,14 @@
     ⛔🐕 🐽dict🔤Freiherr🔤❗️ 🙌 🤷‍♀️ 🔤Freiherr = Nothingness🔤❗️
     ⛔🐕 🐽dict🔤Gunther🔤❗️ 🙌 🤷‍♀️ 🔤Gunther = Nothingness🔤❗️
     ⛔🐕 🐽dict🔤Ninja🔤❗️ 🙌 🤷‍♀️ 🔤Ninja = Nothingness🔤❗️
-    🔡🐕  🍺🐽dict 🔤Oskar🔤❗️ 🔤Obelix🔤🔤Oskar = Obelix🔤❗️
-    🔡🐕  🍺🐽dict 🔤Peter🔤❗️ 🔤Paul🔤🔤Peter = Paul🔤❗️
+    🔡🐕 🍺🐽dict 🔤Oskar🔤❗️ 🔤Obelix🔤🔤Oskar = Obelix🔤❗️
+    🔡🐕 🍺🐽dict 🔤Peter🔤❗️ 🔤Paul🔤🔤Peter = Paul🔤❗️
     🔤Berlauch🔤 ➡️🐽dict🔤Freiherr🔤❗️
-    🔡🐕  🍺🐽dict 🔤Freiherr🔤❗️🔤Berlauch🔤🔤Freiherr = Berlauch🔤❗️
+    🔡🐕 🍺🐽dict 🔤Freiherr🔤❗️🔤Berlauch🔤🔤Freiherr = Berlauch🔤❗️
     🍯 🔤Grapefruit🔤 34  🔤Birne🔤 24  🔤Apfel🔤 111  🍆 ➡️ literalDictionary
-    🔢🐕  🍺🐽literalDictionary 🔤Grapefruit🔤❗️34 🔤Grapefruit = 34🔤❗️
-    🔢🐕  🍺🐽literalDictionary 🔤Birne🔤❗️24 🔤Birne = 24🔤❗️
-    🔢🐕  🍺🐽literalDictionary 🔤Apfel🔤❗️ 111 🔤Apfel = 111🔤❗️
+    🔢🐕 🍺🐽literalDictionary 🔤Grapefruit🔤❗️34 🔤Grapefruit = 34🔤❗️
+    🔢🐕 🍺🐽literalDictionary 🔤Birne🔤❗️24 🔤Birne = 24🔤❗️
+    🔢🐕 🍺🐽literalDictionary 🔤Apfel🔤❗️ 111 🔤Apfel = 111🔤❗️
     🍯 🔤Grapefruit🔤 34  🔤Birne🔤 24  🔤Apfel🔤 111  🍆 ➡️ keysDictionary
 
     🍨 🔤Grapefruit🔤 🔤Birne🔤 🔤Apfel🔤 🍆 ➡️ 🖍🆕keys
@@ -54,17 +54,17 @@
     🍯 🔤Grapefruit🔤 34 🔤Birne🔤 24  🔤Apfel🔤 111 🍆 ➡️ 🖍🆕clearDictionary
     🔢🐕 🐗clearDictionary❗️ 3 🔤Cleared Amount = 3🔤❗️
     ⛔🐕 🐽clearDictionary 🔤Grapefruit🔤❗️🙌 🤷‍♀️ 🔤Cleared Item not accessible🔤❗️
-    🔢🐕 🐔clearDictionary❗️ 0 🔤Cleared Dictionary Size = 0🔤❗️
+    🔢🐕 📏clearDictionary❓ 0 🔤Cleared Dictionary Size = 0🔤❗️
 
     🍯 🔤Grapefruit🔤 34  🔤Birne🔤 24  🔤Apfel🔤 111🍆 ➡️ 🖍🆕containsDictionary
     ⛔🐕 🐣containsDictionary 🔤Birne🔤❗️🔤Dictionary contains Birne🔤❗️
     ⛔🐕 🐣containsDictionary 🔤Apfel🔤❗️🔤Dictionary contains Apfel🔤❗️
     ❎🐕 🐣containsDictionary 🔤42🔤❗️🔤Dictionary doesn't contain 42🔤❗️
-    🔢🐕 🐔containsDictionary❗️ 3 🔤Dictionary size = 3🔤❗️
+    🔢🐕 📏containsDictionary❓ 3 🔤Dictionary size = 3🔤❗️
     10➡️🐽containsDictionary 🔤42🔤❗️
-    🔢🐕 🐔containsDictionary❗️ 4 🔤Dictionary size = 4🔤❗️
+    🔢🐕 📏containsDictionary❓ 4 🔤Dictionary size = 4🔤❗️
     10➡️🐽containsDictionary 🔤42🔤❗️
-    🔢🐕 🐔containsDictionary❗️ 4 🔤Dictionary size = 4🔤❗️
+    🔢🐕 📏containsDictionary❓ 4 🔤Dictionary size = 4🔤❗️
 
     🍯 🔤pancake🔤 99 🔤waffles🔤 11 🔤muffin🔤 22 🍆 ➡️ dictA
     dictA ➡️ 🖍🆕dictB
@@ -89,7 +89,7 @@
     🔤7🔤 ➡️🐽dictC 🔤g🔤❗️
     🔤G🔤 ➡️🐽dictC 🔤2🔤❗️
     🔤S🔤 ➡️🐽dictC 🔤f🔤❗️
-    🔢🐕 🐔dictC❗️ 8 🔤dictC contains 8 items🔤❗️
+    🔢🐕 📏dictC❓ 8 🔤dictC contains 8 items🔤❗️
   🍉
 🍉
 
