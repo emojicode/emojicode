@@ -29,7 +29,7 @@ Lexer::Lexer(SourceFile *source) : sourcePosition_(1, 0, source), source_(source
     singleTokens_.emplace(E_THUMBS_DOWN_SIGN, TokenType::BooleanFalse);
     singleTokens_.emplace(E_POLICE_CARS_LIGHT, TokenType::Error);
     singleTokens_.emplace(E_LEFT_ARROW_CURVING_RIGHT, TokenType::If);
-    singleTokens_.emplace(E_AVOCADO, TokenType::ErrorHandler);
+    singleTokens_.emplace(E_OK, TokenType::ErrorHandler);
     singleTokens_.emplace(E_GRAPES, TokenType::BlockBegin);
     singleTokens_.emplace(E_WATERMELON, TokenType::BlockEnd);
     singleTokens_.emplace(E_NEW_SIGN, TokenType::New);

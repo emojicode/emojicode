@@ -124,7 +124,7 @@ void ASTClosure::toCode(PrettyStream &pretty) const {
 
 void ASTErrorHandler::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty.indent() << "🥑 " << valueVarName_ << " " << value_ << " " << valueBlock_;
+    pretty.indent() << "🆗 " << valueVarName_ << " " << value_ << " " << valueBlock_;
     pretty.indent() << "🙅‍♀️ " << errorVarName_ << " " << errorBlock_;
 }
 
@@ -238,7 +238,7 @@ void ASTThis::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
     pretty << "🐕";
 }
-    
+
 void ASTUnwrap::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
     pretty << " 🍺" << expr_;
