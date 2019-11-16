@@ -23,7 +23,7 @@
     ↩️ data
   🍉
 
-  📗 Returns 👍 if 🐕 is equal to *b*. 📗
+  📗 Returns 👍 if 👇 is equal to *b*. 📗
   🙌 b 📇 ➡️ 👌 🍇
     ↪️ ❎ 📏b❓ 🙌 count❗️ 🍇
       ↩️ 👎
@@ -103,6 +103,6 @@
 
   📗 Returns an iterator to iterate over the bytes of this data object. 📗
   ❗️ 🍡 ➡️ 🌳🐚💧🍆 🍇
-    ↩️ 🆕🌳🐚💧🍆🆕🐕❗️
+    ↩️ 🆕🌳🐚💧🍆🆕👇❗️
   🍉
 🍉

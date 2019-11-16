@@ -6,24 +6,24 @@
 
   📗 Whether this value and *other* are considered equal. 📗
   🙌 other 💯 ➡️ 👌 🍇
-    ↩️ 🐕 🙌 other
+    ↩️ 👇 🙌 other
   🍉
 
   📗 Returns the receiver minus *other*. 📗
   ➖ other 💯 ➡️ 💯 🍇
-    ↩️ 🐕 ➖ other
+    ↩️ 👇 ➖ other
   🍉
   📗 Returns the receiver plus *other*. 📗
   ➕ other 💯 ➡️ 💯 🍇
-    ↩️ 🐕 ➕ other
+    ↩️ 👇 ➕ other
   🍉
   📗 Returns the receiver divided by *other*. 📗
   ➗ other 💯 ➡️ 💯 🍇
-    ↩️ 🐕 ➗ other
+    ↩️ 👇 ➗ other
   🍉
   📗 Returns the receiver multiplied by *other*. 📗
   ✖️ other 💯 ➡️ 💯 🍇
-    ↩️ 🐕 ✖️ other
+    ↩️ 👇 ✖️ other
   🍉
   📗
     Returns the floating-point remainder of the division operation
@@ -31,23 +31,23 @@
     will always have the same sign as the receiver.
   📗
   🚮 other 💯 ➡️ 💯 🍇
-    ↩️ 🐕 🚮 other
+    ↩️ 👇 🚮 other
   🍉
   📗 Returns true if the receiver is smaller than *other*. 📗
   ◀️ other 💯 ➡️ 👌 🍇
-    ↩️ 🐕 ◀️ other
+    ↩️ 👇 ◀️ other
   🍉
   📗 Returns true if the receiver is greater than *other*. 📗
   ▶️ other 💯 ➡️ 👌 🍇
-    ↩️ 🐕 ▶️ other
+    ↩️ 👇 ▶️ other
   🍉
   📗 Returns true if the receiver is smaller than or equal to *other*. 📗
   ◀️🙌 other 💯 ➡️ 👌 🍇
-    ↩️ 🐕 ◀️🙌 other
+    ↩️ 👇 ◀️🙌 other
   🍉
   📗 Returns true if the receiver is greater than or equal to *other*. 📗
   ▶️🙌 other 💯 ➡️ 👌 🍇
-    ↩️ 🐕 ▶️🙌 other
+    ↩️ 👇 ▶️🙌 other
   🍉
 
   📗 Returns the absolute value of this 💯. 📗

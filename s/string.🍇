@@ -105,10 +105,10 @@ string, but those themselves are then immutable again.
 
   📗 Returns 👍 if this string is equal to *b*. 📗
   🙌 b 🔡 ➡️ 👌 🍇
-    ↪️ 🐕 😜 b 🍇
+    ↪️ 👇 😜 b 🍇
       ↩️ 👍
     🍉
-    ↩️ ↔️🐕 b❗️ 🙌 0
+    ↩️ ↔️👇 b❗️ 🙌 0
   🍉
 
   📗
@@ -196,15 +196,15 @@ string, but those themselves are then immutable again.
     0 ➡️ 🖍🆕lastIndex
     👍 ➡️ 🖍🆕continue
     🔁 continue 🍇
-      ↪️ 🕵️‍♀️🐕 separator lastIndex❗️ ➡️ newIndex 🍇
-        🐻 list 🗡🐕 lastIndex newIndex ➖ lastIndex❗️❗️
+      ↪️ 🕵️‍♀️👇 separator lastIndex❗️ ➡️ newIndex 🍇
+        🐻 list 🗡👇 lastIndex newIndex ➖ lastIndex❗️❗️
         newIndex ➕ 📐separator❗️ ➡️ 🖍lastIndex
       🍉
       🙅 🍇
         👎 ➡️ 🖍continue
       🍉
     🍉
-    🐻 list 🗡🐕 lastIndex  🤜📐❗️🤛 ➖ lastIndex❗️❗️
+    🐻 list 🗡👇 lastIndex  🤜📐❗️🤛 ➖ lastIndex❗️❗️
 
     ↩️ list
   🍉
@@ -266,7 +266,7 @@ string, but those themselves are then immutable again.
   📗 Returns an array with the graphemes from this string. 📗
   ❗️ 🎶 ➡️ 🍨🐚🔡🍆 🍇
     🆕🍦🐚🔡🍆🆕❗️ ➡️ list
-    🔣 🐕🍇 grapheme🔡 🐻list grapheme❗️🍉❗️
+    🔣 👇🍇 grapheme🔡 🐻list grapheme❗️🍉❗️
     ↩️ 🥄list❗️
   🍉
 
@@ -314,7 +314,7 @@ string, but those themselves are then immutable again.
     📐string❗️➕ 16 ➡️ 🖍size
     ☣️ 🍇
       🆕🧠🆕 size❗️ ➡️ 🖍data
-      🦘🐕 string❗️
+      🦘👇 string❗️
     🍉
   🍉
 
@@ -331,8 +331,8 @@ string, but those themselves are then immutable again.
   🥯❗️ 🐻 string 🔡 🍇
     📐string❗️ ➡️ stringSize
     ☣️ 🍇
-      🍜🐕 stringSize❗️
-      🦘🐕 string❗️
+      🍜👇 stringSize❗️
+      🦘👇 string❗️
     🍉
   🍉
 
@@ -361,7 +361,7 @@ string, but those themselves are then immutable again.
     The data must be valid UTF-8 data or the behavior is undefined.
   📗
   ☣️❗️🐺 strdata 🧠 offset 🔢 bytes 🔢 🍇
-    🍜🐕 bytes❗️
+    🍜👇 bytes❗️
     🚜 data count strdata offset bytes❗️
     count ⬅️➕ bytes
   🍉
@@ -372,7 +372,7 @@ string, but those themselves are then immutable again.
     behavior is caused.
   📗
   ☣️❗️🐻🔸💧byte💧 🍇
-    🍜🐕 1❗️
+    🍜👇 1❗️
     byte ➡️ 🐽🐚💧🍆 data count❗️
     count ⬅️➕ 1
   🍉
@@ -387,13 +387,13 @@ string, but those themselves are then immutable again.
       ↩️👎
     🍉
     ↪️ codepoint ◀️ 0x80 🍇
-      🍜🐕 1❗️
+      🍜👇 1❗️
       💧codepoint❗️ ➡️ 🐽🐚💧🍆data count❗️
       count ⬅️➕ 1
       ↩️👍
     🍉
     ↪️ codepoint ◀️ 0x800 🍇
-      🍜🐕 2❗️
+      🍜👇 2❗️
       💧0xC0 ➕ 🤜codepoint 👉 6 🤛❗️ ➡️ 🐽🐚💧🍆data count❗️
       count ⬅️➕ 1
       💧0x80 ➕ 🤜codepoint ⭕ 0x3F 🤛❗️ ➡️ 🐽🐚💧🍆data count❗️
@@ -401,7 +401,7 @@ string, but those themselves are then immutable again.
       ↩️👍
     🍉
     ↪️ codepoint ◀️ 0x10000 🍇
-      🍜🐕 3❗️
+      🍜👇 3❗️
       💧0xE0 ➕ 🤜codepoint 👉 12 🤛❗️ ➡️ 🐽🐚💧🍆data count❗️
       count ⬅️➕ 1
       💧0x80 ➕ 🤜🤜codepoint 👉 6 🤛 ⭕ 0x3F 🤛❗️ ➡️ 🐽🐚💧🍆data count❗️
@@ -411,7 +411,7 @@ string, but those themselves are then immutable again.
       ↩️👍
     🍉
     ↪️ codepoint ◀️ 0x110000 🍇
-      🍜🐕 4❗️
+      🍜👇 4❗️
       💧0xF0 ➕ 🤜codepoint 👉 18 🤛❗️ ➡️ 🐽🐚💧🍆data count❗️
       count ⬅️➕ 1
       💧0x80 ➕ 🤜🤜codepoint 👉 12 🤛 ⭕ 0x3F 🤛❗️ ➡️ 🐽🐚💧🍆data count❗️

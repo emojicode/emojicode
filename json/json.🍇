@@ -51,7 +51,7 @@
     Parses the instance’s input and returns the represented value.
   📗
   🖍❗️⚪️➡️⚪️ 🚧🚧🔸🌸 🍇
-    🔺🔎🐕❗️➡️value
+    🔺🔎👇❗️➡️value
 
     ☣️🍇
       🔁 index ◀️ count 🍇
@@ -113,7 +113,7 @@
     index➡️🖍🆕cut
     👎➡️🖍🆕escape
     🔁 👍 🍇
-      🔺⏭🐕❗️➡️v
+      🔺⏭👇❗️➡️v
 
       ↪️ escape 🍇
         ↪️v🙌0x22🍇
@@ -141,7 +141,7 @@
           🐻🔸💧 builder 0x9❗️
         🍉
         🙅‍♀️↪️v🙌0x75🍇
-          🐻🔸🔣 builder 🔺🈲🐕❗️❗️
+          🐻🔸🔣 builder 🔺🈲👇❗️❗️
         🍉
         🙅🍇
           🚨🆕🚧🔸🌸🆕 🔤Unrecognized escape sequence.🔤❗️
@@ -165,7 +165,7 @@
   ☣️🖍🔒❗️🈯️➡️🔢 🚧🚧🔸🌸 🍇
     0➡️🖍🆕integer
     🔂 i 🆕⏩⏩ 0 4❗️ 🍇
-      🔺⏭🐕❗️➡️ v
+      🔺⏭👇❗️➡️ v
       ↪️ v ▶️🙌 0x30 🤝 v ◀️🙌 0x39 🍇
         integer ✖️ 16 ➕ 🔢v❗️ ➖ 0x30 ➡️🖍integer
       🍉
@@ -187,17 +187,17 @@
     Deals with surrogate pairs.
   📗
   ☣️🖍🔒❗️🈲➡️🔢 🚧🚧🔸🌸 🍇
-    🔺🈯️🐕❗️➡️high
+    🔺🈯️👇❗️➡️high
 
     ↪️ high ◀️ 0xD800 👐 high ▶️ 0xDBFF 🍇
       ↩️ high
     🍉
 
-    ↪️ ❎🤜🔺⏭🐕❗️🤛🙌 0x5C❗️ 👐 ❎🤜🔺⏭🐕❗️🤛🙌 0x75❗️🍇
+    ↪️ ❎🤜🔺⏭👇❗️🤛🙌 0x5C❗️ 👐 ❎🤜🔺⏭👇❗️🤛🙌 0x75❗️🍇
       🚨🆕🚧🔸🌸🆕 🔤\u sequence is begin of surrogate pair but not followed by another \u sequence🔤❗️
     🍉
 
-    🔺🈯️🐕❗️➡️low
+    🔺🈯️👇❗️➡️low
     ↩️ 🤜high ➖ 0xD800🤛 ✖️ 0x400 ➕ low ➖ 0xDC00 ➕ 0x10000
   🍉
 
@@ -226,11 +226,11 @@
   ☣️🖍🔒❗️💜 initial 🔢 neg 👌 ➡️⚪️ 🚧🚧🔸🌸 🍇
     0 ➡️ 🖍🆕integer
     ↪️ neg 🍇
-      🔢🐕initial❗️➡️ 🖍integer
+      🔢👇initial❗️➡️ 🖍integer
       integer⬅️✖️-1
     🍉
     🙅‍♀️↪️ initial ▶️ 0 🍇  💭 "with no superfluous leading zero"
-      🔢🐕initial❗️➡️ 🖍integer
+      🔢👇initial❗️➡️ 🖍integer
     🍉
 
     ↪️ index 🙌 count 🍇
@@ -246,7 +246,7 @@
       ↪️ nx ◀️ 0x30 👐 nx ▶️ 0x39 🍇
         🚨🆕🚧🔸🌸🆕 🔤Expected digit after decimal point🔤❗️
       🍉
-      💯🔢🐕0❗️❗️➡️ place
+      💯🔢👇0❗️❗️➡️ place
       place➗🏂10.0 🚵🥏place❗️❗️➕1❗️ ➡️ fraction
       ↪️ neg 🍇
         real ⬅️➖ fraction
@@ -262,13 +262,13 @@
       🐽🐚💧🍆string index❗️ ➡️ nv
       ↪️ nv 🙌 0x65 👐 nv 🙌 0x45 🍇
         index ⬅️➕ 1
-        ↩️🏂🐕real❗️
+        ↩️🏂👇real❗️
       🍉
       ↩️real
     🍉
     🙅‍♂️↪️ v 🙌 0x65 👐 v 🙌 0x45 🍇
       index ⬅️➕ 1
-      ↩️🏂🐕real❗️
+      ↩️🏂👇real❗️
     🍉
 
     ↩️ integer
@@ -290,7 +290,7 @@
       index ⬅️➕ 1
     🍉
 
-    💯🔢🐕0❗️❗️➡️ 🖍🆕exponent
+    💯🔢👇0❗️❗️➡️ 🖍🆕exponent
     ↪️ negexp 🍇
       exponent⬅️✖️-1
     🍉
@@ -300,7 +300,7 @@
   🍉
 
   ☣️🖍🔒❗️🦷 expectation💧 🚧🚧🔸🌸 🍇
-    🔺⏭🐕❗️➡️f
+    🔺⏭👇❗️➡️f
     ↪️ ❎f🙌expectation❗️ 🍇
       🚨🆕🚧🔸🌸🆕 🔤Invalid JSON.🔤❗️
     🍉
@@ -308,20 +308,20 @@
 
   ☣️🖍🔒❗️🌕 v 💧 ➡️⚪️ 🚧🚧🔸🌸 🍇
     ↪️ v🙌 0x22 🍇
-      ↩️🔺🔠🐕❗️
+      ↩️🔺🔠👇❗️
     🍉
     🙅‍♀️↪️ v🙌 0x7B 🍇
       🆕🍯🐚⚪️🍆🐸❗️➡️🖍🆕a
-      ↪️ 🤜🔺⏭🐕❓🤛🙌0x7D🍇
+      ↪️ 🤜🔺⏭👇❓🤛🙌0x7D🍇
         index ⬅️➕ 1
         ↩️a
       🍉
       🔁👍🍇
-        🔺🦷🐕0x22❗️
-        🔺🔠🐕❗️ ➡️ key
-        🔺🦷🐕0x3A❗️
-        🔺🔎🐕❗️ ➡️ 🐽a key❗️
-        🔺⏭🐕❗️➡️nv
+        🔺🦷👇0x22❗️
+        🔺🔠👇❗️ ➡️ key
+        🔺🦷👇0x3A❗️
+        🔺🔎👇❗️ ➡️ 🐽a key❗️
+        🔺⏭👇❗️➡️nv
         ↪️ ❎nv🙌 0x2C❗️ 🍇
           ↪️ ❎nv🙌0x7D❗️ 🍇
             🚨🆕🚧🔸🌸🆕 🔤Expected }.🔤❗️
@@ -331,54 +331,54 @@
       🍉
     🍉
     🙅‍♀️↪️ v🙌 0x66 🍇
-      🔺🦷🐕0x61❗️
-      🔺🦷🐕0x6C❗️
-      🔺🦷🐕0x73❗️
-      🔺🦷🐕0x65❗️
+      🔺🦷👇0x61❗️
+      🔺🦷👇0x6C❗️
+      🔺🦷👇0x73❗️
+      🔺🦷👇0x65❗️
       ↩️👎
     🍉
     🙅‍♀️↪️ v🙌 0x6E 🍇
-      🔺🦷🐕0x75❗️
-      🔺🦷🐕0x6C❗️
-      🔺🦷🐕0x6C❗️
+      🔺🦷👇0x75❗️
+      🔺🦷👇0x6C❗️
+      🔺🦷👇0x6C❗️
       ↩️🤷‍♂️
     🍉
     🙅‍♀️↪️ v🙌 0x74 🍇
-      🔺🦷🐕0x72❗️
-      🔺🦷🐕0x75❗️
-      🔺🦷🐕0x65❗️
+      🔺🦷👇0x72❗️
+      🔺🦷👇0x75❗️
+      🔺🦷👇0x65❗️
       ↩️👍
     🍉
     🙅‍♀️↪️ v🙌 0x5B 🍇
       🆕🍨🐚⚪️🍆🐸❗️➡️🖍🆕a
-      🔺⏭🐕❗️➡️gv
+      🔺⏭👇❗️➡️gv
       ↪️ gv🙌0x5D 🍇
         ↩️a
       🍉
-      🐻a 🔺🌕🐕gv❗️❗️
+      🐻a 🔺🌕👇gv❗️❗️
       🔁👍🍇
-        🔺⏭🐕❗️➡️nv
+        🔺⏭👇❗️➡️nv
         ↪️ ❎nv🙌 0x2C❗️ 🍇
           ↪️ ❎nv🙌0x5D❗️ 🍇
             🚨🆕🚧🔸🌸🆕 🔤Expected ].🔤❗️
           🍉
           ↩️a
         🍉
-        🐻a 🔺🔎🐕❗️❗️
+        🐻a 🔺🔎👇❗️❗️
       🍉
     🍉
     🙅‍♀️↪️ v▶️🙌0x30 🤝 v ◀️🙌 0x39 🍇
-      ↩️🔺💜🐕🔢v ➖ 0x30❗️👎❗
+      ↩️🔺💜👇🔢v ➖ 0x30❗️👎❗
     🍉
     🙅‍♀️↪️ v 🙌 0x2D 🍇
-      ↩️🔺💜🐕0👍❗
+      ↩️🔺💜👇0👍❗
     🍉
     🚨🆕🚧🔸🌸🆕 🔤Invalid JSON.🔤❗️
   🍉
 
   🖍🔒❗️🔎➡️⚪️ 🚧🚧🔸🌸 🍇
     ☣️🍇
-      ↩️🔺🌕🐕🔺⏭🐕❗️❗️
+      ↩️🔺🌕👇🔺⏭👇❗️❗️
     🍉
   🍉
 🍉

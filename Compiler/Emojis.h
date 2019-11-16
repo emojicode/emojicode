@@ -112,6 +112,7 @@ enum Emojis {
     E_SMALL_ORANGE_DIAMOND = 0x1F538,
     E_PINE_DECORATION = 0x1F38D,
     E_OIL_DRUM = 0x1F6E2,
+    E_HAND_POINTING_DOWN = 0x1F447,
 };
 
 }  // namespace EmojicodeCompiler

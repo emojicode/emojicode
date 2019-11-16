@@ -293,7 +293,7 @@
   📗
   🖍❗️ 🦁 comparator 🍇Element Element➡️🔢🍉 🍇
     📝❗️
-    🥃🐕 0 📏❓ ➖ 1 comparator❗️
+    🥃👇 0 📏❓ ➖ 1 comparator❗️
   🍉
 
   🔒❗️✂️ first 🔢 last 🔢 comparator 🍇Element Element➡️🔢🍉 ➡️ 🔢 🍇
@@ -324,7 +324,7 @@
       🍉
 
       ☣️ 🍇
-        🔄🐕 i j❗️
+        🔄👇 i j❗️
       🍉
     🍉
     ↩️ 0
@@ -332,9 +332,9 @@
 
   🔒❗️🥃 first 🔢 last 🔢 comparator 🍇Element Element➡️🔢🍉 🍇
     ↪️ first ◀️ last 🍇
-      ✂️🐕 first last comparator❗️ ➡️ p
-      🥃🐕 first p comparator❗️
-      🥃🐕 p ➕ 1 last comparator❗️
+      ✂️👇 first last comparator❗️ ➡️ p
+      🥃👇 first p comparator❗️
+      🥃👇 p ➕ 1 last comparator❗️
     🍉
   🍉
 
@@ -356,7 +356,7 @@
       🔢 prng 0 count ➖ 1❗️ ➡️ x
 
       ☣️ 🍇
-        🔄🐕 i x❗️
+        🔄👇 i x❗️
       🍉
     🍉
   🍉
@@ -367,7 +367,7 @@
   📗
   ❗️ 🐰 🐚A⚪🍆️ callback 🍇Element➡️A🍉 ➡️ 🍨🐚A🍆 🍇
     🆕🍨🐚A🍆🐴 📏❓❗️ ➡️ 🖍🆕g
-    🔂 element 🐕 🍇
+    🔂 element 👇 🍇
       🐻 g ⁉️callback element❗️❗️
     🍉
     ↩️ g
@@ -379,7 +379,7 @@
   📗
   ❗️ 🐭 callback 🍇Element➡️👌🍉 ➡️ 🍨🐚Element🍆 🍇
     🆕🍨🐚Element🍆🐸❗️ ➡️ 🖍🆕g
-    🔂 element 🐕 🍇
+    🔂 element 👇 🍇
       ↪️ ⁉️ callback element❗️ 🍇
         🐻 g element❗️
       🍉
@@ -391,7 +391,7 @@
     Returns 👍 if at least one element in the list is equal to `value`.
   📗
   ❓ 🐦🐚A😛🐚Element🍆🍆 value A ➡️ 👌 🍇
-    🔂 element 🐕 🍇
+    🔂 element 👇 🍇
       ↪️ value 🙌 element 🍇
         ↩️ 👍
       🍉
@@ -406,7 +406,7 @@
     The method immdiately returns 👎 if `callback` returned 👎 for one element.
   📗
   ❗️ 🐯 callback 🍇Element➡️👌🍉 ➡️ 👌 🍇
-    🔂 element 🐕 🍇
+    🔂 element 👇 🍇
       ↪️ ❎ ⁉️callback element❗️ ❗️ 🍇
         ↩️ 👎
       🍉
@@ -425,7 +425,7 @@
       ↩️🤷‍♂️
     🍉
 
-    🐽🐕 0❗️ ➡️ 🖍🆕 result
+    🐽👇 0❗️ ➡️ 🖍🆕 result
     🍡❗ ➡️ it
     🔽it❗️
 
@@ -444,7 +444,7 @@
   📗
   ❗ 🐤🐚A⚪🍆️ start A callable 🍇A Element➡️A🍉 ➡️ A 🍇
     start ➡️ 🖍🆕 result
-    🔂 element 🐕 🍇
+    🔂 element 👇 🍇
       ⁉️ callable result element❗ ➡️ 🖍result
     🍉
     ↩️ result
@@ -456,7 +456,7 @@
     📏data❓ ➖ 1 ➡️ backIndex
     🔂 i 🆕⏩⏩ 0 📏data❓ ➗ 2 ❗ 🍇
       ☣️ 🍇
-        🔄🐕 i backIndex ➖ i ❗
+        🔄👇 i backIndex ➖ i ❗
       🍉
     🍉
   🍉
@@ -468,7 +468,7 @@
     🍉
 
     🔂 i 🆕⏩⏩  0 📏❓ ❗️ 🍇
-      ↪️ ❎ 🐽 other i❗️ 🙌 🐽 🐕  i❗️ ❗️ 🍇
+      ↪️ ❎ 🐽 other i❗️ 🙌 🐽 👇  i❗️ ❗️ 🍇
         ↩️ 👎
       🍉
     🍉
@@ -477,7 +477,7 @@
 
   📗 Returns an iterator to iterate over the elements of this list. 📗
   ❗️ 🍡 ➡️ 🌳🐚Element🍆 🍇
-    ↩️ 🆕⚫️🆕🐕❗️
+    ↩️ 🆕⚫️🆕👇❗️
   🍉
 🍉
 

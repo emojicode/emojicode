@@ -33,7 +33,7 @@ Lexer::Lexer(SourceFile *source) : sourcePosition_(1, 0, source), source_(source
     singleTokens_.emplace(E_GRAPES, TokenType::BlockBegin);
     singleTokens_.emplace(E_WATERMELON, TokenType::BlockEnd);
     singleTokens_.emplace(E_NEW_SIGN, TokenType::New);
-    singleTokens_.emplace(E_DOG, TokenType::This);
+    singleTokens_.emplace(E_HAND_POINTING_DOWN, TokenType::This);
     singleTokens_.emplace(E_BIOHAZARD, TokenType::Unsafe);
     singleTokens_.emplace(E_RIGHT_ARROW_CURVING_UP, TokenType::Super);
     singleTokens_.emplace(E_RIGHTWARDS_ARROW, TokenType::RightProductionOperator);

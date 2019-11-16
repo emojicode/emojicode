@@ -10,7 +10,7 @@
   ```
   🐇 🦔 🧪  🍇
     ✒️❗️ 🏁 🍇
-      🔢🐕 20 20 🔤20 equal 20🔤❗️
+      🔢👇 20 20 🔤20 equal 20🔤❗️
     🍉
   🍉
   ```
@@ -42,10 +42,10 @@
   📗
   🔐❗️ ⛔ value 👌 description 🔡 🍇
     ↪️ value 🍇
-      ✅🐕 description❗️
+      ✅👇 description❗️
     🍉
     🙅 🍇
-      🙁🐕 description❗️
+      🙁👇 description❗️
     🍉
   🍉
 
@@ -55,10 +55,10 @@
   📗
   🔐❗️ ❎ value 👌 description 🔡 🍇
     ↪️ ❎value❗️ 🍇
-      ✅🐕 description❗️
+      ✅👇 description❗️
     🍉
     🙅 🍇
-      🙁🐕 🍪description 🔤 but expected 👎 🔤 🍪❗️
+      🙁👇 🍪description 🔤 but expected 👎 🔤 🍪❗️
     🍉
   🍉
 
@@ -68,10 +68,10 @@
   📗
   🔐❗️🔡 value 🔡 expectation 🔡 description 🔡 🍇
     ↪️ value 🙌 expectation 🍇
-      ✅🐕 description❗️
+      ✅👇 description❗️
     🍉
     🙅 🍇
-      🙁🐕 🍪description 🔤 but it is 🔤 value 🍪❗️
+      🙁👇 🍪description 🔤 but it is 🔤 value 🍪❗️
     🍉
   🍉
 
@@ -81,10 +81,10 @@
   📗
   🔐❗️🔢 value 🔢 expectation 🔢 description 🔡 🍇
     ↪️ value 🙌 expectation 🍇
-      ✅🐕 description❗️
+      ✅👇 description❗️
     🍉
     🙅 🍇
-      🙁🐕 🍪description 🔤 but it is 🔤 🔡value 10❗️ 🍪❗️
+      🙁👇 🍪description 🔤 but it is 🔤 🔡value 10❗️ 🍪❗️
     🍉
   🍉
 
@@ -94,10 +94,10 @@
   📗
   🔐❗️💧 value 💧 expectation 💧 description 🔡 🍇
     ↪️ value 🙌 expectation 🍇
-      ✅🐕 description❗️
+      ✅👇 description❗️
     🍉
     🙅 🍇
-      🙁🐕 🍪description 🔤 but it is 🔤 🔡🔢value❗️ 10❗️ 🍪❗️
+      🙁👇 🍪description 🔤 but it is 🔤 🔡🔢value❗️ 10❗️ 🍪❗️
     🍉
   🍉
 
@@ -107,10 +107,10 @@
   📗
   🔐❗️💯 value 💯 expectation 💯 description 🔡 🍇
     ↪️ value 🙌 expectation 🍇
-      ✅🐕 description❗️
+      ✅👇 description❗️
     🍉
     🙅 🍇
-      🙁🐕 🍪description 🔤 but it is 🔤 🔡value 5❗️ 🍪❗️
+      🙁👇 🍪description 🔤 but it is 🔤 🔡value 5❗️ 🍪❗️
     🍉
   🍉
 
@@ -134,7 +134,7 @@
     Runs tests.
   📗
   ❗️ 👔 ➡️ 🔢 🍇
-    🏁🐕❗️
+    🏁👇❗️
     😀 🍪🔡asserts 10❗️ 🔤 assertions, 🔤 🔡failed 10❗️ 🔤 failures🔤🍪❗️
     ↪️ failed ▶ 0  🍇
       ↩️ 1

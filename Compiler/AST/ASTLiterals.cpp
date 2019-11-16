@@ -58,7 +58,7 @@ Type ASTThis::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expec
     analyser->checkThisUse(position());
 
     if (!isSelfAllowed(analyser->functionType())) {
-        throw CompilerError(position(), "Illegal use of 🐕.");
+        throw CompilerError(position(), "Illegal use of 👇.");
     }
     analyser->pathAnalyser().record(PathAnalyserIncident::UsedSelf);
     return analyser->typeContext().calleeType();
@@ -111,7 +111,7 @@ Type ASTListLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation
     type_ = Type(analyser->compiler()->sList);
     type_.typeDefinition()->lookupInitializer(U"🐴")->createUnspecificReification();
     type_.typeDefinition()->lookupMethod(U"🐻", Mood::Imperative)->createUnspecificReification();
-        
+
     if (expectation.type() == TypeType::ValueType && expectation.valueType() == analyser->compiler()->sList) {
         auto type = analyser->compiler()->sList->typeForVariable(0).resolveOn(TypeContext(expectation.copyType()));
         for (auto &valueNode : values_) {

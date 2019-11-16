@@ -6,11 +6,11 @@
   ✒️ ❗️ 🏁 🍇
     🍺🆕📄📜 🔤fileTest_testFile.txt🔤❗️ ➡️ readFile
 
-    ⛔️🐕 🍺🔡 🍺📓readFile 5❗️❗️ 🙌 🔤Lorem🔤 🔤Read test🔤❗️
+    ⛔️👇 🍺🔡 🍺📓readFile 5❗️❗️ 🙌 🔤Lorem🔤 🔤Read test🔤❗️
 
     🔛 readFile 12❗️
 
-    ⛔️🐕 🍺🔡 🍺📓readFile 5❗️❗️ 🙌 🔤dolor🔤 🔤Read after seek🔤❗️
+    ⛔️👇 🍺🔡 🍺📓readFile 5❗️❗️ 🙌 🔤dolor🔤 🔤Read after seek🔤❗️
 
     💭🔫🐇📑 🔤fileTest_writeTest.txt🔤❗️
 
@@ -21,22 +21,22 @@
     🍺✏️ file 📇🔤Hello Theo.🔤❗️❗️
     💧 file❗️
 
-    ⛔️🐕 🍺🔡 🍺📇🐇📄 🔤fileTest_writeTest.txt🔤❗️❗️ 🙌 🔤Hello Theo.🔤 🔤Write succeeded🔤❗️
+    ⛔️👇 🍺🔡 🍺📇🐇📄 🔤fileTest_writeTest.txt🔤❗️❗️ 🙌 🔤Hello Theo.🔤 🔤Write succeeded🔤❗️
 
     🔛 file 6❗️
 
     🍺✏️ file 📇🔤Hubertus.🔤❗️❗️
     💧 file❗️
 
-    ⛔️🐕 🍺🔡 🍺📇🐇📄 🔤fileTest_writeTest.txt🔤❗️❗️ 🙌 🔤Hello Hubertus.🔤 🔤Seek and write succeeded🔤❗️
+    ⛔️👇 🍺🔡 🍺📇🐇📄 🔤fileTest_writeTest.txt🔤❗️❗️ 🙌 🔤Hello Hubertus.🔤 🔤Seek and write succeeded🔤❗️
 
     🚪file❗️
 
     🆗 🆕📄📜 🔤does_not_exist.abc🔤❗ 🍇
-      ⛔️🐕 👎 🔤Non existant file is error🔤❗
+      ⛔️👇 👎 🔤Non existant file is error🔤❗
     🍉
     🙅‍♂️ error 🍇
-      ⛔️🐕 👍 🔤Non existant file is error🔤❗
+      ⛔️👇 👍 🔤Non existant file is error🔤❗
     🍉
   🍉
 🍉

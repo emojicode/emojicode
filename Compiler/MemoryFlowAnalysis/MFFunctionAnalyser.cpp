@@ -54,7 +54,7 @@ void MFFunctionAnalyser::checkMFPromises() const {
     auto compiler = function_->package()->compiler();
     if (function_->functionType() == FunctionType::Deinitializer) {
         if (thisEscapes_) {
-            compiler->error(CompilerError(function_->position(), "🐕 must not escape from ♻️."));
+            compiler->error(CompilerError(function_->position(), "👇 must not escape from ♻️."));
         }
     }
     else if (auto klass = dynamic_cast<Class *>(function_->owner())) {

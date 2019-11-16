@@ -43,7 +43,7 @@
   🍉
 
   ❗️ 🐻 newEntry 🐝🐚Key Element🍆 🍇
-    🐕 ➡️ 🖍🆕prev
+    👇 ➡️ 🖍🆕prev
     next ➡️ 🖍🆕entry?
     🔁 entry? ➡️ entry 🍇
       entry ➡️ 🖍prev
@@ -201,7 +201,7 @@
     🍉
 
     🔁 entry? ➡️ entry 🍇
-      ↪️ 🔑🐕 entry key hash❓️ 🍇
+      ↪️ 🔑👇 entry key hash❓️ 🍇
         ↩️️ entry
       🍉
       ⏭entry❗ ➡️ 🖍entry?
@@ -215,7 +215,7 @@
     returned.
   📗
   🥯❗️ 🐽 key 🔡 ➡️ 🍬Element 🍇
-    ↪️ 🔍🐕 key❗️ ➡️ entry 🍇
+    ↪️ 🔍👇 key❗️ ➡️ entry 🍇
       ↩️ 🐽entry❗
     🍉
     ↩️ 🤷‍♀️
@@ -246,7 +246,7 @@
       🍉
       entry ➡️ 🖍🆕prev
       🔁 entry? ➡️ entry 🍇
-        ↪️ 🔑🐕 entry key hash❓️️ 🍇
+        ↪️ 🔑👇 entry key hash❓️️ 🍇
           🥌 prev ⏭entry❗️️❗️
           count ⬅️➖ 1
           ↩️️↩️️
@@ -260,12 +260,12 @@
   📗 Assings a value to the provided key. 📗
   🥯🖍➡️🐽 value Element key 🔡 🍇
     📝❗️
-    ↪️ 🔍🐕 key❗️➡️ entry 🍇
+    ↪️ 🔍👇 key❗️➡️ entry 🍇
       🐷 entry value❗️
       ↩️↩️
     🍉
 
-    🦕🐕❗
+    🦕👇❗
 
     count ⬅️➕ 1
     ⚗️key❗➡️ hash
@@ -302,7 +302,7 @@
           🐽🐚🍬🐝🐚🔡Element🍆🍆 🧠oldData❗️ offset❗ ➡️ 🖍🆕entry?
         🍉
         🔁 entry? ➡️ entry 🍇
-          🐽entry❗ ➡️ 🐽🐕 🔑entry❗❗
+          🐽entry❗ ➡️ 🐽👇 🔑entry❗❗
           ⏭entry❗ ➡️ 🖍entry?
         🍉
       🍉
@@ -348,7 +348,7 @@
 
   📗 Checks whether *key* is in this 🍯. 📗
   ❗️ 🐣 key 🔡 ➡️ 👌 🍇
-    ↩️ ❎🔍🐕 key❗ 🙌 🤷‍♀️❗️
+    ↩️ ❎🔍👇 key❗ 🙌 🤷‍♀️❗️
   🍉
 
   📗 Returns the number of items. 📗

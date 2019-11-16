@@ -6,68 +6,68 @@
 
   📗 Whether this value and *other* are considered equal. 📗
   🙌 other 🔢 ➡️ 👌 🍇
-    ↩️ 🐕 🙌 other
+    ↩️ 👇 🙌 other
   🍉
 
   📗 Returns the receiver minus *other*. 📗
   ➖ other 🔢 ➡️ 🔢 🍇
-    ↩️ 🐕 ➖ other
+    ↩️ 👇 ➖ other
   🍉
   📗 Returns the receiver plus *other*. 📗
   ➕ other 🔢 ➡️ 🔢 🍇
-    ↩️ 🐕 ➕ other
+    ↩️ 👇 ➕ other
   🍉
   📗 Returns the receiver divided by *other*. 📗
   ➗ other 🔢 ➡️ 🔢 🍇
-    ↩️ 🐕 ➗ other
+    ↩️ 👇 ➗ other
   🍉
   📗 Returns the receiver multiplied by *other*. 📗
   ✖️ other 🔢 ➡️ 🔢 🍇
-    ↩️ 🐕 ✖️ other
+    ↩️ 👇 ✖️ other
   🍉
   📗 Returns the receiver modulus *other*. 📗
   🚮 other 🔢 ➡️ 🔢 🍇
-    ↩️ 🐕 🚮 other
+    ↩️ 👇 🚮 other
   🍉
   📗 Returns true if the receiver is smaller than *other*. 📗
   ◀️ other 🔢 ➡️ 👌 🍇
-    ↩️ 🐕 ◀️ other
+    ↩️ 👇 ◀️ other
   🍉
   📗 Returns true if the receiver is greater than *other*. 📗
   ▶️ other 🔢 ➡️ 👌 🍇
-    ↩️ 🐕 ▶️ other
+    ↩️ 👇 ▶️ other
   🍉
   📗 Returns true if the receiver is smaller than or equal to *other*. 📗
   ◀️🙌 other 🔢 ➡️ 👌 🍇
-    ↩️ 🐕 ◀️🙌 other
+    ↩️ 👇 ◀️🙌 other
   🍉
   📗 Returns true if the receiver is greater than or equal to *other*. 📗
   ▶️🙌 other 🔢 ➡️ 👌 🍇
-    ↩️ 🐕 ▶️🙌 other
+    ↩️ 👇 ▶️🙌 other
   🍉
   📗 Returns this integer AND *other*. 📗
   ⭕️ other 🔢 ➡️ 🔢 🍇
-    ↩️ 🐕 ⭕️ other
+    ↩️ 👇 ⭕️ other
   🍉
   📗 Returns this integer OR *other*. 📗
   💢 other 🔢 ➡️ 🔢 🍇
-    ↩️ 🐕 💢 other
+    ↩️ 👇 💢 other
   🍉
   📗 Returns this integer XOR *other*. 📗
   ❌ other 🔢 ➡️ 🔢 🍇
-    ↩️ 🐕 ❌ other
+    ↩️ 👇 ❌ other
   🍉
   📗 Returns NOT applied to this integer. 📗
   ❗️ 🚫 ➡️ 🔢 🍇
-    ↩️ 🚫 🐕 ❗️
+    ↩️ 🚫 👇 ❗️
   🍉
   📗 Shifts this integer by *n* bits to the left. 📗
   👈 n 🔢 ➡️ 🔢 🍇
-    ↩️ 🐕 👈 n
+    ↩️ 👇 👈 n
   🍉
   📗 Shifts this integer by *n* bits to the right. 📗
   👉 n 🔢 ➡️ 🔢 🍇
-    ↩️ 🐕 👉 n
+    ↩️ 👇 👉 n
   🍉
 
   📗 Returns the absolute value of this 🔢. 📗

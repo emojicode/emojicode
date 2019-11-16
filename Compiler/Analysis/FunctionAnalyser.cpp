@@ -57,10 +57,10 @@ void FunctionAnalyser::checkThisUse(const SourcePosition &p) const {
     if (isSuperconstructorRequired(function()->functionType()) &&
         !pathAnalyser_.hasCertainly(PathAnalyserIncident::CalledSuperInitializer) &&
         typeContext().calleeType().klass()->superclass() != nullptr) {
-        compiler()->error(CompilerError(p, "Attempt to use 🐕 before superinitializer call."));
+        compiler()->error(CompilerError(p, "Attempt to use 👇 before superinitializer call."));
     }
     if (isFullyInitializedCheckRequired(function()->functionType())) {
-        uninitializedVariablesCheck(p, "Instance variable \"", "\" must be initialized before using 🐕.");
+        uninitializedVariablesCheck(p, "Instance variable \"", "\" must be initialized before using 👇.");
     }
 }
 

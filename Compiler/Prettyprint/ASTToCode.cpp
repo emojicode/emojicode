@@ -191,7 +191,7 @@ void ASTInitialization::toCode(PrettyStream &pretty) const {
 
 void ASTThisType::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << "🐕";
+    pretty << "👇";
 }
 
 void ASTInferType::toCode(PrettyStream &pretty) const {
@@ -236,7 +236,7 @@ void ASTBooleanFalse::toCode(PrettyStream &pretty) const {
 
 void ASTThis::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << "🐕";
+    pretty << "👇";
 }
 
 void ASTUnwrap::toCode(PrettyStream &pretty) const {
