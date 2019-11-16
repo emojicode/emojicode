@@ -254,7 +254,11 @@ string, but those themselves are then immutable again.
   ❗️ 💯 ➡️ 🍬💯 📻 🔤sStringToReal🔤
 
   📗 Converts the string to data encoded as UTF8. 📗
-  ❗️ 📇 ➡️ 📇 📻 🔤sStringToData🔤
+  ❗️ 📇 ➡️ 📇 🍇
+    ☣️ 🍇
+      ↩️ 🆕📇🧠 bytes count❗️
+    🍉
+  🍉
 
   📗
     Hashes this string.

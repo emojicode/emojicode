@@ -64,10 +64,6 @@ extern "C" char sStringEndsWith(String *string, String *ending) {
                        ending->count) == 0;
 }
 
-extern "C" runtime::Integer sStringUtf8ByteCount(String *string) {
-    return string->count;
-}
-
 extern "C" String* sStringToLowercase(String *string) {
     auto newString = String::init();
     newString->count = string->count;
@@ -125,14 +121,6 @@ extern "C" runtime::SimpleOptional<runtime::Integer> sStringFindFromIndex(String
         return pos - string->characters.get();
     }
     return runtime::NoValue;
-}
-
-extern "C" s::Data* sStringToData(String *string) {
-    auto data = s::Data::init();
-    data->count = string->count;
-    data->data = string->characters;
-    string->characters.retain();
-    return data;
 }
 
 extern "C" void sStringCodepoints(String *string, runtime::Callable<void, runtime::Integer, runtime::Integer> cb) {
