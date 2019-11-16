@@ -160,10 +160,10 @@ void ASTMethodable::prepareBuiltIns(Compiler *c) {
     kBuiltIns = {
         {{c->sBoolean, E_NEGATIVE_SQUARED_CROSS_MARK}, BuiltInType::BooleanNegate},
         {{c->sInteger, E_HUNDRED_POINTS_SYMBOL}, BuiltInType::IntegerToDouble},
-        {{c->sInteger, E_NO_ENTRY_SIGN}, BuiltInType::IntegerNot},
+        {{c->sInteger, E_NEGATIVE_SQUARED_CROSS_MARK}, BuiltInType::IntegerNot},
         {{c->sInteger, E_BATTERY}, BuiltInType::IntegerInverse},
         {{c->sInteger, 0x1f4a7}, BuiltInType::IntegerToByte},
-        {{c->sByte, E_NO_ENTRY_SIGN}, BuiltInType::IntegerNot},
+        {{c->sByte, E_NEGATIVE_SQUARED_CROSS_MARK}, BuiltInType::IntegerNot},
         {{c->sByte, E_BATTERY}, BuiltInType::IntegerInverse},
         {{c->sByte, 0x1f522}, BuiltInType::ByteToInteger},
         {{c->sReal, E_BATTERY}, BuiltInType::DoubleInverse},

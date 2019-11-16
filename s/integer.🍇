@@ -58,8 +58,8 @@
     ↩️ 👇 ❌ other
   🍉
   📗 Returns NOT applied to this integer. 📗
-  ❗️ 🚫 ➡️ 🔢 🍇
-    ↩️ 🚫 👇 ❗️
+  ❗️ ❎ ➡️ 🔢 🍇
+    ↩️ ❎ 👇 ❗️
   🍉
   📗 Shifts this integer by *n* bits to the left. 📗
   👈 n 🔢 ➡️ 🔢 🍇
