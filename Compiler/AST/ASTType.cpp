@@ -94,7 +94,7 @@ void ASTTypeValueType::checkTypeValue(TokenType tokenType, const Type &type, con
     }
     else if (type.type() == TypeType::Enum) {
         if (tokenType != TokenType::Enumeration)
-            throw CompilerError(p, "Enumeration type must be prefixed with 🦃: 🦃", type.toString(typeContext, package));
+            throw CompilerError(p, "Enumeration type must be prefixed with 🔘: 🔘", type.toString(typeContext, package));
     }
     else {
         throw CompilerError(p, "Unexpected type.");
@@ -108,7 +108,7 @@ std::string ASTTypeValueType::toString(TokenType tokenType) {
         case TokenType::ValueType:
             return "🕊";
         case TokenType::Enumeration:
-            return "🦃";
+            return "🔘";
         case TokenType::Protocol:
             return "🐊";
         default:

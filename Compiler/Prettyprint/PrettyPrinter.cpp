@@ -213,7 +213,7 @@ void PrettyPrinter::printTypeDefName(const Type &type) {
             prettyStream_ << "🕊 ";
             break;
         case TypeType::Enum:
-            prettyStream_ << "🦃 ";
+            prettyStream_ << "🔘 ";
             break;
         case TypeType::Protocol:
             prettyStream_ << "🐊 ";
@@ -273,7 +273,7 @@ void PrettyPrinter::printEnumValues(Enum *enumeration) {
     std::sort(values.begin(), values.end(), [](auto &a, auto &b) { return a.second.value < b.second.value; });
     for (auto &value : values) {
         printDocumentation(value.second.documentation);
-        prettyStream_.indent() << "🔘" << value.first << "\n";
+        prettyStream_.indent() << "🆕" << value.first << "\n";
     }
     prettyStream_.offerNewLineUnlessEmpty(values);
 }
