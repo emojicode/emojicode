@@ -3,10 +3,10 @@ language: cpp
 matrix:
   include:
     - os: linux
-      dist: xenial
+      dist: bionic
       compiler: clang
     - os: linux
-      dist: xenial
+      dist: bionic
       compiler: gcc
     - os: osx
       osx_image: xcode10.1
