@@ -83,11 +83,6 @@ void TypeBodyParser<TypeDef>::parseProtocolConformance(const SourcePosition &p) 
 }
 
 template <typename TypeDef>
-void TypeBodyParser<TypeDef>::parseEnumValue(const SourcePosition &p, const Documentation &documentation) {
-    throw CompilerError(p, "Enum values can only be declared in enums.");
-}
-
-template <typename TypeDef>
 void TypeBodyParser<TypeDef>::parseInstanceVariable(const SourcePosition &p) {
     auto variableName = stream_.consumeToken(TokenType::Variable);
     auto instanceVar = InstanceVariableDeclaration(variableName.value(), parseType(), variableName.position());
@@ -219,10 +214,6 @@ void TypeBodyParser<TypeDef>::parse() {
                 break;
             case TokenType::Identifier:
                 switch (token.value().front()) {
-                    case E_RADIO_BUTTON:
-                        attributes.check(token.position(), package_->compiler());
-                        parseEnumValue(token.position(), documentation);
-                        continue;
                     case E_RECYCLING_SYMBOL:
                         attributes.check(token.position(), package_->compiler());
                         parseDeinitializer(token.position());
@@ -238,12 +229,6 @@ void TypeBodyParser<TypeDef>::parse() {
 }
 
 template<>
-void TypeBodyParser<Enum>::parseEnumValue(const SourcePosition &p, const Documentation &documentation) {
-    auto token = stream_.consumeToken(TokenType::Identifier);
-    typeDef_->addValueFor(token.value(), token.position(), documentation.get());
-}
-
-template<>
 void TypeBodyParser<Enum>::parseInstanceVariable(const SourcePosition &p) {
     throw CompilerError(p, "Enums cannot have instance variable.");
 }
@@ -252,7 +237,12 @@ template<>
 Initializer* TypeBodyParser<Enum>::parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
                                                     const Documentation &documentation, AccessLevel access,
                                                     const SourcePosition &p) {
-    throw CompilerError(p, "Enums cannot have custom initializers.");
+    if (access != AccessLevel::Default) {
+        package_->compiler()->error(CompilerError(p, "The access level of an enum value cannot be specified."));
+    }
+    attributes.check(p, package_->compiler());
+    typeDef_->addValueFor(name, p, documentation.get());
+    return nullptr;
 }
 
 template<>

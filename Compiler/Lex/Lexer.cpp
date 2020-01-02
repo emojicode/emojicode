@@ -45,7 +45,7 @@ Lexer::Lexer(SourceFile *source, bool minimalMode)
     singleTokens_.emplace(E_CROCODILE, TokenType::Protocol);
     singleTokens_.emplace(E_DOVE_OF_PEACE, TokenType::ValueType);
     singleTokens_.emplace(E_RABBIT, TokenType::Class);
-    singleTokens_.emplace(E_TURKEY, TokenType::Enumeration);
+    singleTokens_.emplace(E_RADIO_BUTTON, TokenType::Enumeration);
 }
 
 void Lexer::loadOperatorSingleTokens() {

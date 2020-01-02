@@ -35,8 +35,6 @@ public:
 protected:
     /// Called if an $protocol-conformance$ has been detected. The first token has already been parsed.
     void parseProtocolConformance(const SourcePosition &p);
-    /// Called if an $enum-value$ has been detected. The first token has already been parsed.
-    void parseEnumValue(const SourcePosition &p, const Documentation &documentation);
     /// Called if an $instance-variable$ has been detected. The first token has already been parsed.
     void parseInstanceVariable(const SourcePosition &p);
     /// Called if a $method$ has been detected. All tokens up to and including the name.
