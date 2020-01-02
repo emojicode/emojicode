@@ -169,25 +169,29 @@ void ASTListLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCateg
     }
 }
 
-Type ASTConcatenateLiteral::analyse(ExpressionAnalyser *analyser) {
+Type ASTInterpolationLiteral::analyse(ExpressionAnalyser *analyser) {
     Type sb = analyser->package()->getRawType(TypeIdentifier(U"🔠", kDefaultNamespace, position()));
-    init_ = sb.typeDefinition()->inits().lookup(U"🔡", Mood::Imperative, { Type(analyser->compiler()->sString) },
+    init_ = sb.typeDefinition()->inits().lookup(U"🐧", Mood::Imperative, { Type(analyser->compiler()->sInteger) },
                                                 Type(sb), analyser->typeContext(), analyser->semanticAnalyser());
 
-    append_ = sb.typeDefinition()->methods().lookup({0x1F43B}, Mood::Imperative,
+    append_ = sb.typeDefinition()->methods().lookup(U"🐻", Mood::Imperative,
                                                     {Type(analyser->compiler()->sString)}, Type(sb),
                                                     analyser->typeContext(), analyser->semanticAnalyser());
 
-    get_ = sb.typeDefinition()->methods().lookup({0x1F521}, Mood::Imperative, {}, Type(sb),
+    get_ = sb.typeDefinition()->methods().lookup(U"🔡", Mood::Imperative, {}, Type(sb),
                                                  analyser->typeContext(), analyser->semanticAnalyser());
-    auto stringType = Type(analyser->compiler()->sString);
-    for (auto &stringNode : values_) {
-        analyser->expectType(stringType, &stringNode);
+
+    auto magnet = Type(analyser->compiler()->sInterpolateable).applyMinimalBoxing().referenced();
+    toString_ = magnet.typeDefinition()->methods().lookup(U"🔡", Mood::Imperative, {}, magnet,
+                                                          analyser->typeContext(), analyser->semanticAnalyser());
+
+    for (auto &value : values_) {
+        analyser->expectType(magnet, &value);
     }
-    return stringType;
+    return analyser->compiler()->sString->type();
 }
 
-void ASTConcatenateLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
+void ASTInterpolationLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     for (auto &valueNode : values_) {
         valueNode->analyseMemoryFlow(analyser, MFFlowCategory::Borrowing);
     }

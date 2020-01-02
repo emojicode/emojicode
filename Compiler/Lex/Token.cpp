@@ -63,6 +63,9 @@ const char* Token::stringNameForType(TokenType type) {
         case TokenType::Generic: return "Generic";
         case TokenType::Decorator: return "Decorator";
         case TokenType::PackageDocumentationComment: return "Package Documentation Token";
+        case TokenType::BeginInterpolation: return "BeginInterpolation";
+        case TokenType::MiddleInterpolation: return "MiddleInterpolation";
+        case TokenType::EndInterpolation: return "EndInterpolation";
     }
 }
 

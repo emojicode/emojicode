@@ -7,9 +7,10 @@
     ⛔👇 🔤Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.🔤 🙌 🔤Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.🔤🔤Equal Long🔤❗️
     ⛔👇 ❎🔤-----🔤 🙌 🔤----.🔤❗️🔤String not equal🔤❗️
     ⛔👇 ❎🔤.----🔤 🙌 🔤-----🔤❗️🔤String not equal🔤❗️
-    ⛔👇 🍪 🔤12🔤 🔤34🔤 🍪 🙌 🔤1234🔤🔤🍪 2🔤❗️
-    ⛔👇 🍪 🔤12🔤 🔤34🔤 🔤zz🔤 🍪 🙌 🔤1234zz🔤🔤🍪 3🔤❗️
-    ⛔👇 🍪 🔤12🔤 🔤34🔤 🔤zz🔤 🔤456🔤 🍪 🙌 🔤1234zz456🔤🔤🍪 4🔤❗️
+    🔤34🔤 ➡️ s34
+    ⛔👇 🔤12🧲s34🧲🔤 🙌 🔤1234🔤🔤interpolate 2🔤❗️
+    ⛔👇 🔤12🧲s34🧲zz🔤 🙌 🔤1234zz🔤🔤inter 3🔤❗️
+    ⛔👇 🔤12🧲34🧲zz456🔤 🙌 🔤1234zz456🔤🔤interpolate 4🔤❗️
     🔡👇 🔪🔤Birne🔤 2 4❗️ 🔤rne🔤 🔤Slice 2 4🔤❗️
     🔡👇 🔪🔤Birne🔤 0 5❗️ 🔤Birne🔤 🔤Slice 0 5🔤❗️
     🔡👇 🔪🔤Birne🔤 0 20❗️ 🔤Birne🔤 🔤Slice 0 20🔤❗️
@@ -131,6 +132,10 @@
     ⛔👇 💯🔤e10🔤❗️🙌 🤷‍♀️🔤Nothingness - String double🔤❗️
     ⛔👇 💯🔤.e10🔤❗️🙌 🤷‍♀️🔤Nothingness - String double🔤❗️
     ⛔👇 💯🔤1e10.2🔤❗️🙌 🤷‍♀️🔤Nothingness - String double🔤❗️
+
+    ⛔👇 🔤:🧲1234🧲:🔤 🙌 🔤:1234:🔤🔤interpolate int🔤❗️
+    ⛔👇 🔤:🧲💧89❗️🧲:🔤 🙌 🔤:89:🔤🔤interpolate byte🔤❗️
+    ⛔👇 🔤:🧲29.123456789🧲:🔤 🙌 🔤:29.123456:🔤🔤interpolate real🔤❗️
 
     🔢👇 📏🎶🔤a🔤❗️❓ 1 🔤Split String to Symbols🔤❗️
     🔢👇 📏🎶🔤42🔤❗️❓ 2 🔤Split String to Symbols🔤❗️

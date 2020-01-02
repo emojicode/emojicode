@@ -3,6 +3,7 @@
 📗
 🌍 📻 🕊 🔢 🍇
   🐊 😛🐚🔢🍆
+  🐊 ↘️🔸🔡
 
   📗 Whether this value and *other* are considered equal. 📗
   🙌 other 🔢 ➡️ 👌 🍇
@@ -80,6 +81,11 @@
     `0123456789abcdefghijklmnopqrstuvxyz`.
   📗
   ❗️ 🔡 base 🔢 ➡️ 🔡 📻 🔤sIntToString🔤
+
+  📗 Creates a string representation of this integer in decimal base.📗
+  ❗️ 🔡 ➡️ 🔡 🍇
+    ↩️ 🔡👇 10❗️
+  🍉
 
   📗 Returns the double representation of this integer. 📗
   ❗️ 💯 ➡️ 💯 🍇

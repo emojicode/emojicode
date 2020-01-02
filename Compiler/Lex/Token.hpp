@@ -20,6 +20,12 @@ class Lexer;
 enum class TokenType {
     NoType,
     String,
+    /// String value from literal begin to first magnet
+    BeginInterpolation,
+    /// From ending magnet to next magnet
+    MiddleInterpolation,
+    /// From last magnet to end of string literal
+    EndInterpolation,
     MultilineComment,
     SinglelineComment,
     LineBreak,

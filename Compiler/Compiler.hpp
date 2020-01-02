@@ -193,6 +193,7 @@ public:
     ValueType *sList = nullptr;
     ValueType *sDictionary = nullptr;
     Protocol *sEnumerable = nullptr;
+    Protocol *sInterpolateable = nullptr;
     ValueType *sBoolean = nullptr;
     ValueType *sInteger = nullptr;
     ValueType *sReal = nullptr;
@@ -222,7 +223,6 @@ private:
     std::unique_ptr<CodeGenerator> generator_;
     std::unique_ptr<RecordingPackage> mainPackage_;
     SourceManager sourceManager_;
-    void archive();
 };
 
 }  // namespace EmojicodeCompiler

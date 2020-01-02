@@ -264,6 +264,8 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
     switch (token.type()) {
         case TokenType::String:
             return std::make_shared<ASTStringLiteral>(token.value(), token.position());
+        case TokenType::BeginInterpolation:
+            return parseInterpolation(token);
         case TokenType::BooleanTrue:
             return std::make_shared<ASTBooleanTrue>(token.position());
         case TokenType::BooleanFalse:
@@ -327,8 +329,6 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
             auto expr = parseExpr(kPrefixPrecedence);
             return std::make_shared<ASTCast>(expr, parseTypeExpr(token.position()), token.position());
         }
-        case E_COOKIE:
-            return parseListingLiteral<ASTConcatenateLiteral>(E_COOKIE, token);
         case E_ICE_CREAM:
             return parseListingLiteral<ASTListLiteral>(E_AUBERGINE, token);
         case E_HONEY_POT:
@@ -372,6 +372,18 @@ std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {
 
     function->setAst(FunctionParser(package_, stream_).parse());
     return std::make_shared<ASTClosure>(std::move(function), token.position(), escaping);
+}
+
+std::shared_ptr<ASTExpr> FunctionParser::parseInterpolation(const Token &token) {
+    auto literal = std::make_unique<ASTInterpolationLiteral>(token.position());
+    literal->addLiteral(token.value());
+    literal->addValue(parseExpr(0));
+    while (stream_.nextTokenIs(TokenType::MiddleInterpolation)) {
+        literal->addLiteral(stream_.consumeToken().value());
+        literal->addValue(parseExpr(0));
+    }
+    literal->addLiteral(stream_.consumeToken(TokenType::EndInterpolation).value());
+    return literal;
 }
 
 std::shared_ptr<ASTTypeExpr> FunctionParser::parseTypeExpr(const SourcePosition &p) {

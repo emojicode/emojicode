@@ -165,6 +165,9 @@ bool Lexer::beginToken(Token *token, TokenConstructionState *constState) const {
         case E_PINE_DECORATION:
             token->type_ = TokenType::Decorator;
             return true;
+        case E_MAGNET:
+            token->type_ = TokenType::MiddleInterpolation;
+            return true;
         default:
             break;
     }
@@ -218,6 +221,7 @@ Lexer::TokenState Lexer::continueToken(Token *token, TokenConstructionState *con
             token->value_.push_back(codePoint());
             return TokenState::Continues;
         case TokenType::String:
+        case TokenType::MiddleInterpolation:
             return continueStringToken(token, constState);
         case TokenType::Variable:
             return continueVariableToken(token);
@@ -326,6 +330,15 @@ Lexer::TokenState Lexer::continueStringToken(Token *token, Lexer::TokenConstruct
         return TokenState::Continues;
     }
     if (codePoint() == E_INPUT_SYMBOL_LATIN_LETTERS) {
+        if (token->type_ == TokenType::MiddleInterpolation) {
+            token->type_ = TokenType::EndInterpolation;
+        }
+        return TokenState::Ended;
+    }
+    if (codePoint() == E_MAGNET) {
+        if (token->type_ != TokenType::MiddleInterpolation) {
+            token->type_ = TokenType::BeginInterpolation;
+        }
         return TokenState::Ended;
     }
 
@@ -347,6 +360,9 @@ void Lexer::handleEscapeSequence(Token *token, Lexer::TokenConstructionState *co
             break;
         case 'r':
             token->value_.push_back('\r');
+            break;
+        case E_MAGNET:
+            token->value_.push_back(E_MAGNET);
             break;
         default: {
             throw CompilerError(sourcePosition_, "Unrecognized escape sequence ❌",

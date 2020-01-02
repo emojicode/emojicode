@@ -102,10 +102,11 @@ protected:
     Value *init(FunctionCodeGenerator *fg, std::vector<llvm::Value *> args) const;
 };
 
-class ASTConcatenateLiteral final : public ASTExpr {
+class ASTInterpolationLiteral final : public ASTExpr {
 public:
-    explicit ASTConcatenateLiteral(const SourcePosition &p) : ASTExpr(p) {}
+    explicit ASTInterpolationLiteral(const SourcePosition &p) : ASTExpr(p) {}
     Type analyse(ExpressionAnalyser *analyser) override;
+    void addLiteral(const std::u32string &literal) { literals_.emplace_back(literal); }
     void addValue(const std::shared_ptr<ASTExpr> &value) { values_.emplace_back(value); }
     Value* generate(FunctionCodeGenerator *fg) const override;
 
@@ -114,9 +115,13 @@ public:
 
 private:
     std::vector<std::shared_ptr<ASTExpr>> values_;
+    std::vector<std::u32string> literals_;
     Initializer *init_ = nullptr;
     Function *append_ = nullptr;
     Function *get_ = nullptr;
+    Function *toString_ = nullptr;
+    void append(FunctionCodeGenerator *fg, llvm::Value *value, llvm::Value *builder) const;
+    void append(FunctionCodeGenerator *fg, const std::u32string &literal, llvm::Value *builder) const;
 };
 
 class ASTListLiteral final : public ASTCollectionLiteral {

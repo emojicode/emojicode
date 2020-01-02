@@ -304,7 +304,7 @@ void ASTMethod::toCode(PrettyStream &pretty) const {
     }
 }
 
-void ASTConcatenateLiteral::toCode(PrettyStream &pretty) const {
+void ASTInterpolationLiteral::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
     pretty << "🍪 ";
     for (auto &val : values_) {

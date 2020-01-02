@@ -1,0 +1,13 @@
+📗
+  Protocol for string interpolation.
+
+  Every type that implements this protocol can be interpolated in a string
+  literal.
+📗
+🌍 🐊 ↘️🔸🔡 🍇
+  📗
+    Returns the string representation of the value that will be inserted into
+    the string.
+  📗
+  ❗️ 🔡 ➡️ 🔡
+🍉

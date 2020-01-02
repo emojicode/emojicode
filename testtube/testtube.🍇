@@ -58,7 +58,7 @@
       ✅👇 description❗️
     🍉
     🙅 🍇
-      🙁👇 🍪description 🔤 but expected 👎 🔤 🍪❗️
+      🙁👇 🔤🧲description🧲 but expected 👎 🔤❗️
     🍉
   🍉
 
@@ -71,7 +71,7 @@
       ✅👇 description❗️
     🍉
     🙅 🍇
-      🙁👇 🍪description 🔤 but it is 🔤 value 🍪❗️
+      🙁👇 🔤🧲description🧲 but it is 🧲value🧲🔤❗️
     🍉
   🍉
 
@@ -84,7 +84,7 @@
       ✅👇 description❗️
     🍉
     🙅 🍇
-      🙁👇 🍪description 🔤 but it is 🔤 🔡value 10❗️ 🍪❗️
+      🙁👇 🔤🧲description🧲 but it is 🧲value🧲🔤❗️
     🍉
   🍉
 
@@ -97,7 +97,7 @@
       ✅👇 description❗️
     🍉
     🙅 🍇
-      🙁👇 🍪description 🔤 but it is 🔤 🔡🔢value❗️ 10❗️ 🍪❗️
+      🙁👇 🔤🧲description🧲 but it is 🧲value🧲🔤❗️
     🍉
   🍉
 
@@ -110,7 +110,7 @@
       ✅👇 description❗️
     🍉
     🙅 🍇
-      🙁👇 🍪description 🔤 but it is 🔤 🔡value 5❗️ 🍪❗️
+      🙁👇 🔤🧲description🧲 but it is 🧲value🧲🔤❗️
     🍉
   🍉
 
@@ -119,7 +119,7 @@
   📗
   🔐❗️🙁 description 🔡 🍇
     asserts ⬅️➕ 1
-    😀 🍪🔤❌❌ Failed 🔤 description🍪❗️
+    😀 🔤❌❌ Failed 🧲description🧲 🔤❗️
     failed ⬅️➕ 1
   🍉
 
@@ -135,7 +135,7 @@
   📗
   ❗️ 👔 ➡️ 🔢 🍇
     🏁👇❗️
-    😀 🍪🔡asserts 10❗️ 🔤 assertions, 🔤 🔡failed 10❗️ 🔤 failures🔤🍪❗️
+    😀 🔤🧲asserts🧲 assertions, 🧲failed🧲 failures🔤❗️
     ↪️ failed ▶ 0  🍇
       ↩️ 1
     🍉

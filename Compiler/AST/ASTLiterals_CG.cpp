@@ -113,22 +113,44 @@ Value *ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
 }
 
 
-Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fg) const {
+Value* ASTInterpolationLiteral::generate(FunctionCodeGenerator *fg) const {
+    int64_t length = 0;
+    for (auto &literal : literals_) {
+        length += literal.size() + 6;
+    }
     auto type = init_->owner()->type();
-    auto it = values_.begin();
-    auto builder = ASTInitialization::initObject(fg, ASTArguments(position(), { *it++ }), init_, type, nullptr, true,
+    auto lengthNode = std::make_shared<ASTNumberLiteral>(length, U"", position());
+    auto builder = ASTInitialization::initObject(fg, ASTArguments(position(), {lengthNode}), init_, type, nullptr, true,
                                                  nullptr);
 
-    for (auto end = values_.end(); it != end; it++) {
-        auto args = ASTArguments(position(), { *it });
-
-        CallCodeGenerator(fg, CallType::StaticDispatch).generate(builder, type, args, append_, nullptr);
+    auto literalsIt = literals_.begin();
+    append(fg, *literalsIt++, builder);
+    for (auto &value : values_) {
+        auto str = CallCodeGenerator(fg, CallType::DynamicProtocolDispatch).generate(value->generate(fg), value->expressionType(),
+                                                                 ASTArguments(position()), toString_, nullptr);
+        append(fg, str, builder);
+        append(fg, *literalsIt++, builder);
     }
 
     auto str = CallCodeGenerator(fg, CallType::StaticDispatch).generate(builder, type,
                                                                         ASTArguments(position()), get_, nullptr);
     fg->release(builder, type);
     return handleResult(fg, str);
+}
+
+void
+ASTInterpolationLiteral::append(FunctionCodeGenerator *fg, llvm::Value *value, llvm::Value *builder) const {
+    CallCodeGenerator(fg, CallType::StaticDispatch).generate(builder, init_->owner()->type(), ASTArguments(position()),
+                                                             append_, nullptr,
+                                                             {value});
+}
+
+void
+ASTInterpolationLiteral::append(FunctionCodeGenerator *fg, const std::u32string &literal, llvm::Value *builder) const {
+    if (literal.empty()) {
+        return;
+    }
+    append(fg, fg->generator()->stringPool().pool(literal), builder);
 }
 
 }  // namespace EmojicodeCompiler

@@ -55,6 +55,7 @@ string, but those themselves are then immutable again.
 
   🐊 🔂🐚🔡🍆
   🐊 😛🐚🔡🍆
+  🐊 ↘️🔸🔡
 
   📗 Creates a 🔡 by copying the memory from the *memory*. 📗
   ☣️ 🆕 🧠 memory 🧠 🍼 count 🔢 🍇
@@ -292,6 +293,10 @@ string, but those themselves are then immutable again.
   ❗️ 🍡 ➡️ 🍡🐚🔡🍆 🍇
     ↩️ 🍡🎶❗️❗️
   🍉
+
+  ❗️ 🔡 ➡️ 🔡 🍇
+    ↩️ 👇
+  🍉
 🍉
 
 📗 Mutable sequence of characters (“string builder”). 📗
@@ -299,6 +304,8 @@ string, but those themselves are then immutable again.
   🖍🆕 data 🧠
   🖍🆕 count 🔢
   🖍🆕 size 🔢
+
+  🐊 ↘️🔸🔡
 
   📗 Creates an empty 🔠 with an initial capacity of 16. 📗
   🥯🆕 🍇
