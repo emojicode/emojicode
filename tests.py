@@ -67,6 +67,8 @@ compilation_tests = [
     "genericTypeMethod",
     "genericLocalAsArgToGeneric",
     "genericToConstraintOptional",
+    "genericsInferenceValueType",
+    "genericsInferenceClass",
     "variableInitAndScoping",
     "varInitPath",
     "valueTypeRemoteAdditional",
