@@ -6,8 +6,14 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
+#include "Generation/StringPool.hpp"
+#include "Generation/FunctionCodeGenerator.hpp"
+#include "Generation/RunTimeHelper.hpp"
+#include "Generation/CallCodeGenerator.hpp"
+#include "ASTInitialization.hpp"
 #include "ASTLiterals.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
+#include "Analysis/SemanticAnalyser.hpp"
 #include "Compiler.hpp"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Package/Package.hpp"
@@ -20,41 +26,48 @@
 
 namespace EmojicodeCompiler {
 
-Type ASTStringLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTStringLiteral::analyse(ExpressionAnalyser *analyser) {
     auto type = Type(analyser->compiler()->sString);
     type.setExact(true);
     return type;
 }
 
-Type ASTBooleanTrue::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTBooleanTrue::analyse(ExpressionAnalyser *analyser) {
     return analyser->boolean();
 }
 
-Type ASTBooleanFalse::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTBooleanFalse::analyse(ExpressionAnalyser *analyser) {
     return analyser->boolean();
 }
 
-Type ASTNumberLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTNumberLiteral::analyse(ExpressionAnalyser *analyser) {
     if (type_ == NumberType::Integer) {
-        if (expectation == analyser->real()) {
-            type_ = NumberType::Double;
-            doubleValue_ = integerValue_;
-            return analyser->real();
-        }
-        if (expectation == analyser->byte()) {
-            if (integerValue_ > 255) {
-                analyser->compiler()->warn(position(), "Literal implicitly is a byte integer literal but value does ",
-                                           "not fit into byte type.");
-            }
-            type_ = NumberType::Byte;
-            return analyser->byte();
-        }
-        return analyser->integer();
+        return Type::integerLiteral();
     }
     return analyser->real();
 }
 
-Type ASTThis::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTNumberLiteral::comply(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+    if (type_ == NumberType::Double) {
+        return analyser->real();
+    }
+    if (expectation == analyser->real()) {
+        type_ = NumberType::Double;
+        doubleValue_ = integerValue_;
+        return analyser->real();
+    }
+    if (expectation == analyser->byte()) {
+        if (integerValue_ > 255) {
+            analyser->compiler()->warn(position(), "Literal implicitly is a byte integer literal but value does ",
+                                       "not fit into byte type.");
+        }
+        type_ = NumberType::Byte;
+        return analyser->byte();
+    }
+    return analyser->integer();
+}
+
+Type ASTThis::analyse(ExpressionAnalyser *analyser) {
     analyser->checkThisUse(position());
 
     if (!isSelfAllowed(analyser->functionType())) {
@@ -68,7 +81,11 @@ void ASTThis::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory typ
     analyser->recordThis(type);
 }
 
-Type ASTNoValue::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTNoValue::analyse(ExpressionAnalyser *analyser) {
+    return Type::noValueLiteral();
+}
+
+Type ASTNoValue::comply(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     if (expectation.unboxedType() != TypeType::Optional && expectation.unboxedType() != TypeType::Something) {
         throw CompilerError(position(), "🤷‍ can only be used when an optional is expected.");
     }
@@ -76,28 +93,39 @@ Type ASTNoValue::analyse(ExpressionAnalyser *analyser, const TypeExpectation &ex
     return type_;
 }
 
-Type ASTDictionaryLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
-    type_ = Type(analyser->compiler()->sDictionary);
-    type_.typeDefinition()->lookupInitializer(U"🐴")->createUnspecificReification();
-    type_.typeDefinition()->lookupMethod(U"🐽", Mood::Assignment)->createUnspecificReification();
-
-    CommonTypeFinder finder;
+Type ASTDictionaryLiteral::analyse(ExpressionAnalyser *analyser) {
+    CommonTypeFinder finder(analyser->semanticAnalyser());
     for (auto it = values_.begin(); it != values_.end(); it++) {
-        analyser->expectType(Type(analyser->compiler()->sString), &*it);
+        analyser->analyse(*it);
         if (++it == values_.end()) {
             throw CompilerError(position(), "A value must be provided for every key.");
         }
-        finder.addType(analyser->expect(TypeExpectation(), &(*it)), analyser->typeContext());
+        finder.addType(analyser->analyse(*it), analyser->typeContext());
     }
+    return Type::dictionaryLiteral(finder.getCommonType(position(), analyser->compiler()));
+}
 
-    type_.setGenericArgument(0, finder.getCommonType(position(), analyser->compiler()));
+Type ASTDictionaryLiteral::comply(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+    if (expectation.type() == TypeType::ValueType && expectation.typeDefinition()->canInitFrom(expressionType())) {
+        type_ = expectation.copyType();
+    }
+    else {
+        type_ = analyser->semanticAnalyser()->defaultLiteralType(expressionType());
+    }
     type_.setExact(true);
 
-    auto elementType = analyser->compiler()->sList->typeForVariable(0).resolveOn(TypeContext(type_));
-    for (auto it = values_.begin() + 1; it - 1 != values_.end(); it += 2) {
-        analyser->comply((*it)->expressionType(), TypeExpectation(elementType), &(*it));
+    Type elementType = analyser->compiler()->sDictionary->typeForVariable(0).resolveOn(TypeContext(type_));
+    for (auto it = values_.begin(); it != values_.end(); it++) {
+        analyser->comply(TypeExpectation(analyser->compiler()->sString->type()), &(*it));
+        if (++it == values_.end()) {
+            throw CompilerError(position(), "A value must be provided for every key.");
+        }
+        analyser->comply(TypeExpectation(elementType), &(*it));
     }
-
+    initializer_ = type_.typeDefinition()->inits().lookup(U"🍪", Mood::Imperative,
+                                                          { analyser->compiler()->sMemory->type(), analyser->compiler()->sMemory->type(), analyser->integer() }, type_, analyser->typeContext(),
+                                                          analyser->semanticAnalyser());
+    initializer_->createUnspecificReification();
     return type_;
 }
 
@@ -107,35 +135,31 @@ void ASTDictionaryLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlo
     }
 }
 
-Type ASTListLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
-    type_ = Type(analyser->compiler()->sList);
-    type_.typeDefinition()->lookupInitializer(U"🐴")->createUnspecificReification();
-    type_.typeDefinition()->lookupMethod(U"🐻", Mood::Imperative)->createUnspecificReification();
-
-    if (expectation.type() == TypeType::ValueType && expectation.valueType() == analyser->compiler()->sList) {
-        auto type = analyser->compiler()->sList->typeForVariable(0).resolveOn(TypeContext(expectation.copyType()));
-        for (auto &valueNode : values_) {
-            analyser->expectType(type, &valueNode);
-        }
-        type_ = expectation.copyType();
-        type_.setExact(true);
-        return type_;
-    }
-
-    CommonTypeFinder finder;
+Type ASTListLiteral::analyse(ExpressionAnalyser *analyser) {
+    CommonTypeFinder finder(analyser->semanticAnalyser());
     for (auto &valueNode : values_) {
-        Type type = analyser->expect(TypeExpectation(), &valueNode);
-        finder.addType(type, analyser->typeContext());
+        finder.addType(analyser->analyse(valueNode), analyser->typeContext());
     }
+    return Type::listLiteral(finder.getCommonType(position(), analyser->compiler()));
+}
 
-    type_.setGenericArgument(0, finder.getCommonType(position(), analyser->compiler()));
+Type ASTListLiteral::comply(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+    if (expectation.type() == TypeType::ValueType && expectation.typeDefinition()->canInitFrom(expressionType())) {
+        type_ = expectation.copyType();
+    }
+    else {
+        type_ = analyser->semanticAnalyser()->defaultLiteralType(expressionType());
+    }
     type_.setExact(true);
 
-    auto elementType = analyser->compiler()->sList->typeForVariable(0).resolveOn(TypeContext(type_));
+    Type elementType = analyser->compiler()->sList->typeForVariable(0).resolveOn(TypeContext(type_));
     for (auto &valueNode : values_) {
-        analyser->comply(valueNode->expressionType(), TypeExpectation(elementType), &valueNode);
+        analyser->comply(TypeExpectation(elementType), &valueNode);
     }
-
+    initializer_ = type_.typeDefinition()->inits().lookup(U"🍪", Mood::Imperative,
+            { analyser->compiler()->sMemory->type(), analyser->integer() }, type_, analyser->typeContext(),
+            analyser->semanticAnalyser());
+    initializer_->createUnspecificReification();
     return type_;
 }
 
@@ -145,14 +169,21 @@ void ASTListLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCateg
     }
 }
 
-Type ASTConcatenateLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
-    type_ = analyser->package()->getRawType(TypeIdentifier(U"🔠", kDefaultNamespace, position()));
+Type ASTConcatenateLiteral::analyse(ExpressionAnalyser *analyser) {
+    Type sb = analyser->package()->getRawType(TypeIdentifier(U"🔠", kDefaultNamespace, position()));
+    init_ = sb.typeDefinition()->inits().lookup(U"🔡", Mood::Imperative, { Type(analyser->compiler()->sString) },
+                                                Type(sb), analyser->typeContext(), analyser->semanticAnalyser());
 
+    append_ = sb.typeDefinition()->methods().lookup({0x1F43B}, Mood::Imperative,
+                                                    {Type(analyser->compiler()->sString)}, Type(sb),
+                                                    analyser->typeContext(), analyser->semanticAnalyser());
+
+    get_ = sb.typeDefinition()->methods().lookup({0x1F521}, Mood::Imperative, {}, Type(sb),
+                                                 analyser->typeContext(), analyser->semanticAnalyser());
     auto stringType = Type(analyser->compiler()->sString);
     for (auto &stringNode : values_) {
         analyser->expectType(stringType, &stringNode);
     }
-    type_.setExact(true);
     return stringType;
 }
 

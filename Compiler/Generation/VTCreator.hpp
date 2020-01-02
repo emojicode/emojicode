@@ -10,7 +10,7 @@
 
 namespace llvm {
 class Constant;
-}
+} // namespace llvm
 
 namespace EmojicodeCompiler {
 
@@ -24,14 +24,13 @@ public:
     /// @param klass The class for which the virtual table should be created.
     VTCreator(Class *klass, CodeGenerator *cg);
 
-    /// Assings VTI’s to the methods of the class and assigns the generated table to Class::virtualTable.
+    /// Assigns VTI’s to the methods of the class and assigns the generated table to Class::virtualTable.
     void build();
 
 private:
     void assign();
     CodeGenerator *generator_;
     Class *klass_;
-    bool hasSuperClass_;
     size_t vti_;
     std::vector<llvm::Constant *> functions_;
 

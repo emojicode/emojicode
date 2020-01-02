@@ -175,7 +175,7 @@ void PrettyPrinter::printTypeDef(const Type &type) {
     prettyStream_ << "🍇\n";
 
     if (auto protocol = type.protocol()) {
-        for (auto method : protocol->methodList()) {
+        for (auto method : protocol->methods().list()) {
             print(moodEmoji(method->mood()), method, false, true);
         }
         prettyStream_ << "🍉\n\n";
@@ -234,20 +234,20 @@ void PrettyPrinter::printTypeDefName(const Type &type) {
 }
 
 void PrettyPrinter::printMethodsAndInitializers(TypeDefinition *typeDef) {
-    for (auto init : typeDef->initializerList()) {
+    for (auto init : typeDef->inits().list()) {
         print("🆕", init, true, true);
     }
-    for (auto method : typeDef->methodList()) {
+    for (auto method : typeDef->methods().list()) {
         print(moodEmoji(method->mood()), method, true, false);
     }
-    for (auto typeMethod : typeDef->typeMethodList()) {
+    for (auto typeMethod : typeDef->typeMethods().list()) {
         print(moodEmoji(typeMethod->mood()), typeMethod, true, true);
     }
 }
 
 void PrettyPrinter::printProtocolConformances(TypeDefinition *typeDef, const TypeContext &typeContext) {
     for (auto &protocol : typeDef->protocols()) {
-        prettyStream_.indent() << "🐊 " << protocol << "\n";
+        prettyStream_.indent() << "🐊 " << protocol.type << "\n";
     }
     prettyStream_.offerNewLineUnlessEmpty(typeDef->protocols());
 }

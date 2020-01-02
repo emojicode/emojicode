@@ -17,7 +17,7 @@ class ASTSuper final : public ASTCall, private ErrorSelfDestructing, private Err
 public:
     ASTSuper(std::u32string name, ASTArguments args, const SourcePosition &p)
     : ASTCall(p), name_(std::move(name)), args_(std::move(args)) {}
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;

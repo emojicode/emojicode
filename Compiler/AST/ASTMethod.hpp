@@ -74,7 +74,7 @@ class ASTMethod final : public ASTMethodable {
 public:
     ASTMethod(std::u32string name, std::shared_ptr<ASTExpr> callee, const ASTArguments &args, const SourcePosition &p)
     : ASTMethodable(p, args), name_(std::move(name)), callee_(std::move(callee)) {}
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser) override;
     void toCode(PrettyStream &pretty) const override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;

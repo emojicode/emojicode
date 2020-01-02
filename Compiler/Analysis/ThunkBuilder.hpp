@@ -10,6 +10,7 @@
 #define ThunkBuilder_hpp
 
 #include <memory>
+#include "SemanticAnalyser.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -26,7 +27,7 @@ std::unique_ptr<Function> buildBoxingThunk(const TypeContext &declarator, const 
                                            const Function *methodImplementation);
 std::unique_ptr<Function> buildCallableThunk(const TypeExpectation &expectation, const Type &destCallable,
                                            Package *pkg, const SourcePosition &p);
-std::unique_ptr<Function> buildRequiredInitThunk(Class *klass, const Initializer *init);
+std::unique_ptr<Function> buildRequiredInitThunk(Class *klass, const Initializer *init, SemanticAnalyser *analyser);
 
 } // namespace EmojicodeCompiler
 

@@ -17,7 +17,6 @@
 #include "Types/ValueType.hpp"
 #include "Types/CommonTypeFinder.hpp"
 #include "Types/TypeExpectation.hpp"
-#include "GenericInferer.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -67,50 +66,62 @@ Type ExpressionAnalyser::analyseTypeExpr(const std::shared_ptr<ASTTypeExpr> &nod
     return type;
 }
 
-Type ExpressionAnalyser::expectType(const Type &type, std::shared_ptr<ASTExpr> *node, GenericInferer *inf) {
-    auto returnType = (*node)->analyse(this, inf != nullptr ? TypeExpectation() : TypeExpectation(type));
-    if (!returnType.compatibleTo(type, typeContext_, inf)) {
-        throw CompilerError((*node)->position(), returnType.toString(typeContext_), " is not compatible to ",
+Type ExpressionAnalyser::expect(const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
+    analyse(*node);
+    return comply(expectation, node);
+}
+
+Type ExpressionAnalyser::analyse(const std::shared_ptr<ASTExpr> &ptr) {
+    assert(ptr->expressionType().is<TypeType::Invalid>() && "Expression was already analysed.");
+    Type type = ptr->analyse(this);
+    ptr->setExpressionType(type);
+    return type;
+}
+
+void ExpressionAnalyser::expectType(const Type &type, std::shared_ptr<ASTExpr> *node) {
+    analyse(*node);
+    auto resultType = comply(TypeExpectation(type), node);
+    if (!resultType.compatibleTo(type, typeContext_)) {
+        throw CompilerError((*node)->position(), resultType.toString(typeContext_), " is not compatible to ",
                             type.toString(typeContext_), ".");
     }
-    if (inf == nullptr) {
-        comply(returnType, TypeExpectation(type), node);
-    }
-    return returnType;
 }
 
-Type ExpressionAnalyser::analyseFunctionCall(ASTArguments *node, Type type, Function *function) {
-    return analyseFunctionCall(node, &type, function, false);
+/// Checks that the function can be accessed or issues an error. Checks that the function is not deprecated
+/// and issues a warning otherwise.
+void checkFunctionSafety(Function *function, const SourcePosition &p, ExpressionAnalyser *analyser) {
+    if (function->unsafe() && !analyser->isInUnsafeBlock()) {
+        analyser->compiler()->error(CompilerError(p, "Use of unsafe function ", utf8(function->name()), " requires ☣️  block."));
+    }
 }
 
-Type ExpressionAnalyser::analyseFunctionCall(ASTArguments *node, Type *type, Function *function, bool allowTypeArgInf) {
-    if (node->args().size() != function->parameters().size()) {
-        auto position = node->args().empty() ? node->position() : node->args().back()->position();
-        throw CompilerError(position, utf8(function->name()), " expects ", function->parameters().size(),
-                            " arguments but ", node->args().size(), " were supplied.");
+/// Issues a warning at the given position if the function is deprecated.
+void deprecatedWarning(Function *function, const SourcePosition &p, Compiler *compiler) {
+    if (function->deprecated()) {
+        if (!function->documentation().empty()) {
+            compiler->warn(p, utf8(function->name()), " is deprecated. Please refer to the "\
+                             "documentation for further information: ", utf8(function->documentation()));
+        }
+        else {
+            compiler->warn(p, utf8(function->name()), " is deprecated.");
+        }
     }
+}
 
-    auto inferedGenerics = ensureGenericArguments(node, type, function, allowTypeArgInf);
+Type ExpressionAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type, Function *function) {
     auto genericArgs = transformTypeAstVector(node->genericArguments(), typeContext());
 
-    TypeContext typeContext = TypeContext(*type, function, &genericArgs);
+    TypeContext typeContext = TypeContext(type, function, &genericArgs);
     function->requestReificationAndCheck(typeContext, genericArgs, node->position());
 
     for (size_t i = 0; i < function->parameters().size(); i++) {
         auto &paramType = function->parameters()[i].type->type();
-        Type exprType = Type::noReturn();
-        if (inferedGenerics) {  // No node may be analysed more than once!
-            exprType = comply(node->args()[i]->expressionType(),
-                              TypeExpectation(paramType.resolveOn(typeContext)), &node->args()[i]);
-        }
-        else {
-            exprType = expectType(paramType.resolveOn(typeContext), &node->args()[i]);
-        }
+        Type exprType = comply(TypeExpectation(paramType.resolveOn(typeContext)), &node->args()[i]);
 
         if (function->owner() != compiler()->sMemory) {
             if (paramType.is<TypeType::GenericVariable>()) {  // i.e. the value is not boxed
                 insertNode<ASTUpcast>(&node->args()[i], exprType,
-                                      type->typeDefinition()->constraintForIndex(paramType.genericVariableIndex()));
+                                      type.typeDefinition()->constraintForIndex(paramType.genericVariableIndex()));
             }
             if (paramType.is<TypeType::LocalGenericVariable>()) {  // i.e. the value is not boxed
                 insertNode<ASTUpcast>(&node->args()[i], exprType,
@@ -118,86 +129,21 @@ Type ExpressionAnalyser::analyseFunctionCall(ASTArguments *node, Type *type, Fun
             }
         }
     }
-    checkFunctionUse(function, node->position());
     node->setGenericArgumentTypes(genericArgs);
     auto rtType = function->returnType()->type().resolveOn(typeContext);
     if (rtType.isReference()) {
-        rtType.setMutable(type->isMutable());
+        rtType.setMutable(type.isMutable());
     }
+    checkFunctionSafety(function, node->position(), this);
+    deprecatedWarning(function, node->position(), compiler());
     return rtType;
 }
 
-void ExpressionAnalyser::checkFunctionUse(Function *function, const SourcePosition &p) const {
-    auto callee = typeContext_.calleeType();
-    if (callee.type() == TypeType::TypeAsValue) {
-        callee = callee.typeOfTypeValue();
-    }
-    if (function->accessLevel() == AccessLevel::Private) {
-        if (callee.type() != function->owner()->type().type() || function->owner() != callee.typeDefinition()) {
-            compiler()->error(CompilerError(p, utf8(function->name()), " is 🔒."));
-        }
-    }
-    else if (function->accessLevel() == AccessLevel::Protected) {
-        if (callee.type() != function->owner()->type().type()
-            || !callee.klass()->inheritsFrom(dynamic_cast<Class *>(function->owner()))) {
-            compiler()->error(CompilerError(p, utf8(function->name()), " is 🔐."));
-        }
-    }
-
-    deprecatedWarning(function, p);
-    checkFunctionSafety(function, p);
-}
-
-void ExpressionAnalyser::checkFunctionSafety(Function *function, const SourcePosition &p) const {
-    if (function->unsafe() && !isInUnsafeBlock()) {
-        compiler()->error(CompilerError(p, "Use of unsafe function ", utf8(function->name()), " requires ☣️  block."));
-    }
-}
-
-void ExpressionAnalyser::deprecatedWarning(Function *function, const SourcePosition &p) const {
-    if (function->deprecated()) {
-        if (!function->documentation().empty()) {
-            compiler()->warn(p, utf8(function->name()), " is deprecated. Please refer to the "\
-                             "documentation for further information: ", utf8(function->documentation()));
-        }
-        else {
-            compiler()->warn(p, utf8(function->name()), " is deprecated.");
-        }
-    }
-}
-
-bool ExpressionAnalyser::ensureGenericArguments(ASTArguments *node, Type *type, Function *function,
-                                                bool allowTypeArgInf) {
-    bool inferLocalArgs = node->genericArguments().empty() && !function->genericParameters().empty();
-    bool inferTypeArgs = allowTypeArgInf && type->genericArguments().empty() &&
-                         !type->typeDefinition()->genericParameters().empty();
-    if (!inferTypeArgs && !inferLocalArgs) {
-        return false;
-    }
-
-    GenericInferer inf(inferLocalArgs ? function->genericParameters().size() : 0,
-                       inferTypeArgs ? type->typeDefinition()->genericParameters().size() : 0);
-
-    TypeContext callTypeContext = TypeContext(inferTypeArgs ? Type::noReturn() : *type, function, nullptr);
-    size_t i = 0;
-    for (auto &param : function->parameters()) {
-        auto &arg = node->args()[i++];
-        arg->setExpressionType(expectType(param.type->type().resolveOn(callTypeContext), &arg, &inf));
-    }
-
-    if (inferLocalArgs) {
-        node->genericArguments() = inf.localArguments(node->position(), compiler());
-    }
-    if (inferTypeArgs) {
-        type->setGenericArguments(inf.typeArguments(node->position(), compiler()));
-        type->typeDefinition()->requestReificationAndCheck(typeContext(), type->genericArguments(), node->position());
-        *type = type->resolveOnSuperArgumentsAndConstraints(typeContext_);
-    }
-    return true;
-}
-
-Type ExpressionAnalyser::comply(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
-    (*node)->setExpressionType(exprType.resolveOnSuperArgumentsAndConstraints(typeContext()));
+Type ExpressionAnalyser::comply(const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
+    assert(!(*node)->expressionType().is<TypeType::Invalid>() &&
+            "Expression was not analysed with ExpressionAnalyser::analyse");
+    Type exprType = (*node)->comply(this, expectation).resolveOnSuperArgumentsAndConstraints(typeContext());
+    (*node)->setExpressionType(exprType);
     if (!expectation.shouldPerformBoxing()) {
         return exprType;
     }
@@ -337,10 +283,6 @@ Type ExpressionAnalyser::callableBox(Type exprType, const TypeExpectation &expec
         insertNode<ASTCallableBox>(node, exprType, std::move(layer));
     }
     return exprType;
-}
-
-Type ExpressionAnalyser::expect(const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
-    return comply((*node)->analyse(this, expectation), expectation, node);
 }
 
 }  // namespace EmojicodeCompiler

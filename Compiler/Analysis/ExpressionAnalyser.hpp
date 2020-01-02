@@ -58,20 +58,21 @@ public:
 
     virtual FunctionType functionType() const;
 
+    Type analyse(const std::shared_ptr<ASTExpr> &ptr);
     /// Parses an expression node, verifies it return type and boxes it according to the given expectation.
     /// Calls @c expect internally.
-    Type expectType(const Type &type, std::shared_ptr<ASTExpr>*, GenericInferer *inf = nullptr);
+    void expectType(const Type &type, std::shared_ptr<ASTExpr>*);
     /// Parses an expression node and boxes it according to the given expectation. Calls @c box internally.
     Type expect(const TypeExpectation &expectation, std::shared_ptr<ASTExpr>*);
     /// Makes the node comply with the expectation by dereferencing, temporarily storing or boxing it.
     /// @param node A pointer to the node pointer. The pointer to which this pointer points might be changed.
     /// @note Only use this if there is a good reason why expect() cannot be used.
-    Type comply(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node);
+    Type comply(const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node);
 
     /// Analyses @c node and sets the expression type of the node to the type that will be returned.
     /// @returns The type denoted by the $type-expression$ resolved by Type::resolveOnSuperArgumentsAndConstraints.
-    /// @param allowGenericInf If true, generic arguments must not be specified. The type will not contain any arguments in that case and must be inferred
-    ///                        with analyseFunctionCall().
+    /// @param allowGenericInf If true, generic arguments must not be specified. The type will not contain any arguments
+    /// in that case and must be inferred with analyseFunctionCall().
     Type analyseTypeExpr(const std::shared_ptr<ASTTypeExpr> &node, const TypeExpectation &exp,
                          bool allowGenericInf = false);
 
@@ -84,9 +85,7 @@ public:
     /// - Issues a warning if the function is deprecated.
     /// - Ensures that access control allows this function to be called.
     /// - Checks that the function is safe or ensures that we are in an unsafe block.
-    Type analyseFunctionCall(ASTArguments *node, Type type, Function *function);
-    /// Like analyseFunctionCall(ASTArguments *node, Type type, Function *function) but  can infer the type generic arguments additionally.
-    Type analyseFunctionCall(ASTArguments *node, Type *type, Function *function, bool allowTypeArgInf);
+    Type analyseFunctionCall(ASTArguments *node, const Type &type, Function *function);
 
     Type integer() const;
     Type boolean() const;
@@ -104,17 +103,6 @@ protected:
 private:
     Package *package_;
 
-    /// Issues a warning at the given position if the function is deprecated.
-    void deprecatedWarning(Function *function, const SourcePosition &p) const;
-
-    /// Ensures that node has the required number of generic arguments for a call to function, by inferring them if none are provided.
-    /// If inferTypeArgs is true, also infers the generic arguments to the callee type and store them in `type` with Type::setGenericArguments().
-    bool ensureGenericArguments(ASTArguments *node, Type *type, Function *function, bool allowTypeArgInf);
-
-    /// Checks that the function can be accessed or issues an error. Checks that the function is not deprecated
-    /// and issues a warning otherwise.
-    void checkFunctionUse(Function *function, const SourcePosition &p) const;
-
     /// Returns true if exprType and expectation are callables and there is a mismatch between the argument or return
     /// StorageTypes.
     bool callableBoxingRequired(const TypeExpectation &expectation, const Type &exprType) const;
@@ -128,10 +116,6 @@ private:
     void makeIntoSimple(Type &exprType, std::shared_ptr<ASTExpr> *node) const;
 
     void makeIntoSimpleOptional(Type &exprType, std::shared_ptr<ASTExpr> *node) const;
-
-    void checkFunctionSafety(Function *function, const SourcePosition &p) const;
-
-    void makeIntoSimpleError(Type &exprType, std::shared_ptr<ASTExpr> *node, const TypeExpectation &exp) const;
 
     Type upcast(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const;
 

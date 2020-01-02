@@ -54,10 +54,7 @@ void TypeDescriptionGenerator::addType(const Type &type) {
                                   "values is not available yet. Casts and other reflection may not behave as "\
                                   "expected with these types.");
             break;
-        case TypeType::NoReturn:
-        case TypeType::Box:
-        case TypeType::Optional:
-        case TypeType::StorageExpectation:
+        default:
             throw std::logic_error("Cannot create type description for compile-time type.");
     }
 

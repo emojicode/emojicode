@@ -50,7 +50,7 @@ void buildBoxingThunkAst(Function *thunk, const Function *destinationFunction, c
     thunk->setAst(std::move(block));
 }
 
-std::unique_ptr<Function> makeBoxingThunk(std::u32string name, TypeDefinition *owner, Package *package,
+std::unique_ptr<Function> makeBoxingThunk(const std::u32string& name, TypeDefinition *owner, Package *package,
                                           SourcePosition p, std::vector<Parameter> &&params, const Type &returnType,
                                           FunctionType functionType) {
     auto function = std::make_unique<Function>(name, AccessLevel::Private, true, owner, package, p, false,
@@ -72,7 +72,7 @@ std::unique_ptr<Function> buildBoxingThunk(const TypeContext &declarator, const 
     }
 
     auto name = declarator.calleeType().type() == TypeType::NoReturn ? std::u32string({ 'S' }) + methodImplementation->name()
-        : methodImplementation->protocolBoxingThunk(declarator.calleeType().typeDefinition()->name());
+        : declarator.calleeType().typeDefinition()->name() + methodImplementation->name();
     auto function = makeBoxingThunk(name, methodImplementation->owner(), methodImplementation->package(),
                                     methodImplementation->position(), std::move(params),
                                     method->returnType()->type().resolveOn(declarator),
@@ -97,10 +97,10 @@ std::unique_ptr<Function> buildCallableThunk(const TypeExpectation &expectation,
     return function;
 }
 
-std::unique_ptr<Function> buildRequiredInitThunk(Class *klass, const Initializer *init) {
+std::unique_ptr<Function> buildRequiredInitThunk(Class *klass, const Initializer *init, SemanticAnalyser *analyser) {
     auto name = std::u32string({ E_KEY }) + init->name();
     auto overriding = klass->superclass() != nullptr &&
-                      klass->superclass()->lookupTypeMethod(name, Mood::Imperative) != nullptr;
+                      klass->superclass()->typeMethods().lookup(init, TypeContext(klass->type()), analyser) != nullptr;
     auto function = std::make_unique<Function>(name, AccessLevel::Public, false, init->owner(),
                                                init->package(), init->position(),
                                                overriding, std::u32string(), false, false, Mood::Imperative,

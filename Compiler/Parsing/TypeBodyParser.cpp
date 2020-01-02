@@ -113,7 +113,7 @@ void TypeBodyParser<TypeDef>::doParseMethod(const std::u32string &name, TypeBody
                                                      FunctionType::ClassMethod : FunctionType::Function,
                                                      attributes.has(Attribute::Inline));
         parseFunction(typeMethod.get(), false, attributes.has(Attribute::Escaping));
-        typeDef_->addTypeMethod(std::move(typeMethod));
+        typeDef_->typeMethods().add(std::move(typeMethod));
     }
     else {
         auto mutating = !std::is_same<TypeDef, ValueType>::value || attributes.has(Attribute::Mutating);
@@ -124,7 +124,7 @@ void TypeBodyParser<TypeDef>::doParseMethod(const std::u32string &name, TypeBody
                                                  std::is_same<TypeDef, Class>::value ? FunctionType::ObjectMethod :
                                                  FunctionType::ValueTypeMethod, attributes.has(Attribute::Inline));
         parseFunction(method.get(), false, attributes.has(Attribute::Escaping));
-        typeDef_->addMethod(std::move(method));
+        typeDef_->methods().add(std::move(method));
     }
 }
 
@@ -152,7 +152,7 @@ Initializer* TypeBodyParser<TypeDef>::doParseInitializer(const std::u32string &n
                                                      FunctionType::ValueTypeInitializer,
                                                      attributes.has(Attribute::Inline));
     parseFunction(initializer.get(), true, attributes.has(Attribute::Escaping));
-    return typeDef_->addInitializer(std::move(initializer));
+    return typeDef_->inits().add(std::move(initializer));
 }
 
 template <typename TypeDef>
@@ -296,7 +296,7 @@ void TypeBodyParser<Protocol>::parseMethod(const std::u32string &name, TypeBodyA
         method->setParameterMFType(i, MFFlowCategory::Escaping);
     }
 
-    typeDef_->addMethod(std::move(method));
+    typeDef_->methods().add(std::move(method));
 }
 
 template<>
@@ -334,7 +334,7 @@ void TypeBodyParser<Class>::parseDeinitializer(const SourcePosition &p) {
     if (deinit->isExternal()) {
         deinit->setMemoryFlowTypeForThis(MFFlowCategory::Borrowing);
     }
-    typeDef_->setDeinitializer(typeDef_->addMethod(std::move(deinit)));
+    typeDef_->setDeinitializer(typeDef_->methods().add(std::move(deinit)));
 }
 
 template class TypeBodyParser<Enum>;

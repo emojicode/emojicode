@@ -24,11 +24,14 @@ ASTClosure::ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition
 
 ASTClosure::~ASTClosure() = default;
 
-Type ASTClosure::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTClosure::analyse(ExpressionAnalyser *analyser) {
     closure_->setClosure();
     analyser->configureClosure(closure_.get());
     analyser->semanticAnalyser()->analyseFunctionDeclaration(closure_.get());
+    return Type(closure_.get());
+}
 
+Type ASTClosure::comply(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     applyBoxingFromExpectation(analyser, expectation);
 
     auto scoper = std::make_unique<CapturingSemanticScoper>(analyser, isEscaping_);

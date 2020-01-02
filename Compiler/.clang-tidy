@@ -1,4 +1,4 @@
-Checks: '*,-readability-named-parameter,-google-readability-todo,-llvm-header-guard,-misc-unused-parameters,-google-runtime-int,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-google-default-arguments,-google-runtime-references,-modernize-return-braced-init-list,-cppcoreguidelines-special-member-functions,-hicpp-special-member-functions,-fuchsia-default-arguments'
+Checks: '*,-readability-named-parameter,-google-readability-todo,-llvm-header-guard,-misc-unused-parameters,-google-runtime-int,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-google-default-arguments,-google-runtime-references,-modernize-return-braced-init-list,-cppcoreguidelines-special-member-functions,-hicpp-special-member-functions,-fuchsia-default-arguments,fuchsia-multiple-inheritance'
 #Checks: '-*,modernize-pass-by-value,modernize-use-using,readability-braces-around-statement,google-explicit-constructor,llvm-include-order,llvm-namespace-comment'
 HeaderFilterRegex: '.*'
 CheckOptions:
@@ -24,3 +24,5 @@ CheckOptions:
     value: ''
   - key: readability-identifier-naming.StaticVariableCase
     value: 'camelBack'
+  - key: readability-identifier-naming.VariableThreshold
+    value: 30

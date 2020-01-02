@@ -126,7 +126,7 @@
 📗
 🌍 🕊 🍯🐚Element ⚪🍆️ 🍇
   🖍🆕 data 🌸🐚Element🍆️
-  🖍🆕 count 🔢
+  🖍🆕 count 🔢 ⬅️ 0
 
   🐇❗🛷 n 🔢 ➡️ 🔢 🍇
     ↪️ n ◀️ 7 🍇
@@ -175,14 +175,20 @@
 
   📗 Creates an empty 🍯. 📗
   🥯🆕 🐸 🍇
-    0 ➡️ 🖍count
     🆕🌸🐚Element🍆️🆕 7❗️➡️ 🖍data
   🍉
 
   📗 Creates an empty 🍯 with a capacity of at least *minCapacity*. 📗
   🆕 🐴 minCapacity 🔢 🍇
-    0 ➡️ 🖍count
     🆕🌸🐚Element🍆️🆕 🛷🕊🍯🐚Element🍆 minCapacity❗️❗️➡️ 🖍data
+  🍉
+
+  ☣️ 🆕 🍪 keys 🧠 values 🧠 count 🔢 🍇
+    🆕🌸🐚Element🍆️🆕 🛷🕊🍯🐚Element🍆 count❗️❗️➡️ 🖍data
+    🔂 i 🆕⏩⏩ 0 count❗️ 🍇
+      🐽🐚🔡🍆 keys i✖️⚖️🔡❗️ ➡️ key
+      🐽🐚Element🍆 values i✖️⚖️Element❗️➡️ 🐽👇 key❗
+    🍉
   🍉
 
   🔒❓ 🔑 entry 🐝🐚🔡Element🍆 key 🔡 hash 🔢 ➡️ 👌 🍇

@@ -16,7 +16,7 @@ namespace EmojicodeCompiler {
 class ASTTypeAsValue final : public ASTExpr {
 public:
     ASTTypeAsValue(std::unique_ptr<ASTType> type, TokenType tokenType, const SourcePosition &p);
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;

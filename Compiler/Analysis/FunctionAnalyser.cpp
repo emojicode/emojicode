@@ -87,8 +87,9 @@ void FunctionAnalyser::analyse() {
 
     function_->ast()->analyse(this);
 
-    analyseReturn(function()->ast());
-    analyseInitializationRequirements();
+    if (analyseInitializationRequirements()) {  // Prevent multiple errors if super initializer not called
+        analyseReturn(function()->ast());
+    }
 
     function_->ast()->popScope(this);
     function_->setVariableCount(scoper_->variableIdCount());
@@ -107,8 +108,7 @@ void FunctionAnalyser::analyseBabyBottle() {
             throw CompilerError(initializer->position(), "🍼 was applied to \"",
                                 utf8(var), "\" but instance variable has incompatible type.");
         }
-        pathAnalyser().record(PathAnalyserIncident(PathAnalyserIncident::InstanceVarInit,
-                                                           instanceVariable.id()));
+        pathAnalyser().record(PathAnalyserIncident(true, instanceVariable.id()));
 
         auto getVar = std::make_shared<ASTGetVariable>(argumentVariable.name(), initializer->position());
         auto assign = std::make_unique<ASTInstanceVariableInitialization>(instanceVariable.name(),
@@ -146,8 +146,8 @@ void FunctionAnalyser::analyseReturn(ASTBlock *root) {
             !pathAnalyser_.hasCertainly(PathAnalyserIncident::Returned)) {
         auto initializer = dynamic_cast<Initializer *>(function_);
         auto thisNode = std::dynamic_pointer_cast<ASTExpr>(std::make_shared<ASTThis>(root->position()));
-        comply(typeContext().calleeType(), TypeExpectation(initializer->constructedType(typeContext().calleeType())),
-               &thisNode);
+        ExpressionAnalyser::analyse(thisNode);
+        comply(TypeExpectation(initializer->constructedType(typeContext().calleeType())), &thisNode);
         auto ret = std::make_unique<ASTReturn>(thisNode, root->position());
         ret->setIsInitReturn();
         root->appendNode(std::move(ret));
@@ -174,7 +174,7 @@ void FunctionAnalyser::analyseReturn(ASTBlock *root) {
     }
 }
 
-void FunctionAnalyser::analyseInitializationRequirements() {
+bool FunctionAnalyser::analyseInitializationRequirements() {
     if (isFullyInitializedCheckRequired(function_->functionType())) {
         uninitializedVariablesCheck(function_->position(), "Instance variable \"", "\" must be initialized.");
     }
@@ -188,8 +188,10 @@ void FunctionAnalyser::analyseInitializationRequirements() {
             else {
                 compiler()->error(CompilerError(function_->position(), "Superinitializer is not called."));
             }
+            return false;
         }
     }
+    return true;
 }
 
 void FunctionAnalyser::uninitializedVariablesCheck(const SourcePosition &p, const char *errorMessageFront,

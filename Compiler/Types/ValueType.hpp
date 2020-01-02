@@ -45,6 +45,10 @@ public:
 
     bool storesGenericArgs() const override;
 
+    bool canInitFrom(const Type &literal) const override { return literal.type() == constructibleFrom_; }
+
+    TypeType constructibleFrom_ = TypeType::NoReturn;
+
     virtual ~ValueType();
 
 private:

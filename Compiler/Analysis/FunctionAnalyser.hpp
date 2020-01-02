@@ -51,7 +51,7 @@ private:
     bool inUnsafeBlock_;
 
     void analyseReturn(ASTBlock *root);
-    void analyseInitializationRequirements();
+    bool analyseInitializationRequirements();
 
     void analyseBabyBottle();
     void initOptionalInstanceVariables();

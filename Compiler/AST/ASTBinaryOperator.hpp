@@ -24,7 +24,7 @@ public:
     OperatorType operatorType() const { return operator_; }
     const std::shared_ptr<ASTExpr>& right() const { return right_; }
 
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(PrettyStream &pretty) const override;
     void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;

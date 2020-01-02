@@ -19,7 +19,7 @@ namespace EmojicodeCompiler {
 class ASTBoxing : public ASTUnaryMFForwarding {
 public:
     ASTBoxing(std::shared_ptr<ASTExpr> expr, const SourcePosition &p, const Type &exprType);
-    Type analyse(ExpressionAnalyser *, const TypeExpectation &) final { return expressionType(); }
+    Type analyse(ExpressionAnalyser *) final { return expressionType(); }
     
 protected:
     /// Gets a pointer to the value area of box and bit-casts it to the type matching the ASTExpr::expressionType()

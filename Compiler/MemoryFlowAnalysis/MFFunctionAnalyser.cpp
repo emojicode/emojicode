@@ -57,22 +57,20 @@ void MFFunctionAnalyser::checkMFPromises() const {
             compiler->error(CompilerError(function_->position(), "👇 must not escape from ♻️."));
         }
     }
-    else if (auto klass = dynamic_cast<Class *>(function_->owner())) {
-        if (klass->superclass() != nullptr) {
-            if (auto super = klass->findSuperFunction(function_)) {
-                analyseIfNecessary(super);
+    else if (dynamic_cast<Class *>(function_->owner()) != nullptr) {
+        if (auto super = function_->superFunction()) {
+            analyseIfNecessary(super);
 
-                if (!function_->memoryFlowTypeForThis().fulfillsPromise(super->memoryFlowTypeForThis())) {
-                    compiler->error(CompilerError(function_->position(), "Function lets this context escape, which "\
-                                                  "violates the overriden function’s promise."));
-                }
-                for (size_t i = 0; i < super->parameters().size(); i++) {
-                    auto &param = function_->parameters()[i];
-                    if (!param.memoryFlowType.fulfillsPromise(super->parameters()[i].memoryFlowType)) {
-                        compiler->error(CompilerError(param.type->position(), "Function lets parameter \"",
-                                                      utf8(param.name),
-                                                      "\" escape, which violates the overriden function’s promise."));
-                    }
+            if (!function_->memoryFlowTypeForThis().fulfillsPromise(super->memoryFlowTypeForThis())) {
+                compiler->error(CompilerError(function_->position(), "Function lets this context escape, which "\
+                                              "violates the overridden function’s promise."));
+            }
+            for (size_t i = 0; i < super->parameters().size(); i++) {
+                auto &param = function_->parameters()[i];
+                if (!param.memoryFlowType.fulfillsPromise(super->parameters()[i].memoryFlowType)) {
+                    compiler->error(CompilerError(param.type->position(), "Function lets parameter \"",
+                                                  utf8(param.name),
+                                                  "\" escape, which violates the overridden function’s promise."));
                 }
             }
         }

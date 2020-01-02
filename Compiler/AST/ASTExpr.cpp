@@ -17,14 +17,14 @@ namespace EmojicodeCompiler {
 
 ASTSizeOf::ASTSizeOf(std::unique_ptr<ASTType> type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}
 
-Type ASTSizeOf::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTSizeOf::analyse(ExpressionAnalyser *analyser) {
     type_->analyseType(analyser->typeContext());
     return analyser->integer();
 }
 
 ASTSizeOf::~ASTSizeOf() = default;
 
-Type ASTCallableCall::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTCallableCall::analyse(ExpressionAnalyser *analyser) {
     Type type = analyser->expect(TypeExpectation(false, false), &callable_);
     if (type.type() != TypeType::Callable) {
         throw CompilerError(position(), "Given value is not callable.");

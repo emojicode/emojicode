@@ -16,7 +16,7 @@
 
 namespace EmojicodeCompiler {
 
-Type ASTSuper::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTSuper::analyse(ExpressionAnalyser *analyser) {
     if (isSuperconstructorRequired(analyser->functionType())) {
         analyseSuperInit(analyser);
         return Type::noReturn();
@@ -31,9 +31,8 @@ Type ASTSuper::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expe
         throw CompilerError(position(), "Class has no superclass.");
     }
 
-    function_ = superclass->getMethod(name_, Type(superclass), analyser->typeContext(),
-                                      args_.mood(), position());
     calleeType_ = Type(superclass);
+    function_ = superclass->methods().get(name_, args_.mood(), &args_, &calleeType_, analyser, position());
     return analyser->analyseFunctionCall(&args_, calleeType_, function_);
 }
 
@@ -51,9 +50,9 @@ void ASTSuper::analyseSuperInit(ExpressionAnalyser *analyser) {
 
     init_ = true;
     auto eclass = analyser->typeContext().calleeType().klass();
-    auto initializer = eclass->superclass()->getInitializer(name_, Type(eclass),
-                                                            analyser->typeContext(), position());
     calleeType_ = Type(eclass->superclass());
+    auto initializer = eclass->superclass()->inits().get(name_, Mood::Imperative, &args_,
+                                                         &calleeType_, analyser, position());
     analyser->analyseFunctionCall(&args_, calleeType_, initializer);
     analyseSuperInitErrorProneness(analyser, initializer);
     function_ = initializer;

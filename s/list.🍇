@@ -134,6 +134,17 @@
     🆕🍧🐚Element🍆🆕0 theCapacity❗️ ➡️ 🖍data
   🍉
 
+  ☣️ 🆕 🍪 values 🧠 count 🔢 🍇
+    count➡️🖍🆕theCapacity
+    ↪️ count ◀️🙌 0 🍇
+      10 ➡️ 🖍theCapacity
+    🍉
+    🆕🍧🐚Element🍆🆕count theCapacity❗️ ➡️ 🖍data
+    🔂 i 🆕⏩⏩ 0 count❗️ 🍇
+      🐽🐚Element🍆 values i✖️⚖️Element❗️ ➡️ 🐽🐚Element🍆🧠data❗️ i✖️⚖️Element❗️
+    🍉
+  🍉
+
   📗 Creates an containing the specified number of a single, repeated value. 📗
   🆕 🦊 repeatedValue Element count 🔢 🍇
     🆕🍧🐚Element🍆🆕count count❗️ ➡️ 🖍data
@@ -477,7 +488,7 @@
 
   📗 Returns an iterator to iterate over the elements of this list. 📗
   ❗️ 🍡 ➡️ 🌳🐚Element🍆 🍇
-    ↩️ 🆕⚫️🆕👇❗️
+    ↩️ 🆕🌳🐚Element🍆🆕👇❗️
   🍉
 🍉
 

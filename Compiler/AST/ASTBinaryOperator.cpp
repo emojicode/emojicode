@@ -16,7 +16,7 @@
 
 namespace EmojicodeCompiler {
 
-Type ASTBinaryOperator::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTBinaryOperator::analyse(ExpressionAnalyser *analyser) {
     if (operator_ == OperatorType::Equal) {
         if (std::dynamic_pointer_cast<ASTNoValue>(right_) != nullptr) {
             return analyseIsNoValue(analyser, left_, BuiltInType::IsNoValueLeft);
@@ -26,11 +26,11 @@ Type ASTBinaryOperator::analyse(ExpressionAnalyser *analyser, const TypeExpectat
         }
     }
 
-    Type otype = left_->analyse(analyser, TypeExpectation());
+    Type otype = analyser->analyse(left_);
 
     auto pair = builtInPrimitiveOperator(analyser, otype);
     if (pair.first) {
-        Type type = analyser->comply(otype, TypeExpectation(false, false), &left_);
+        Type type = analyser->comply(TypeExpectation(false, false), &left_);
         analyser->expectType(type, &right_);
         return pair.second.returnType;
     }

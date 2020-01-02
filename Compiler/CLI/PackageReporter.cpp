@@ -118,9 +118,8 @@ void PackageReporter::reportType(const Type &type, const TypeContext &tc) {
             writer_.String(typeName);
             break;
         }
-        case TypeType::StorageExpectation:
-        case TypeType::Box:
-            throw std::domain_error("Generating report for type StorageExpectation");
+        default:
+            throw std::domain_error("Generating report for compile-time only type");
     }
 
     writer_.EndObject();
@@ -239,7 +238,7 @@ void PackageReporter::reportExportedType(const Type &type) {
     writer_.Key("conformances");
     writer_.StartArray();
     for (auto &protocol : typeDef->protocols()) {
-        reportType(protocol->type(), TypeContext(type));
+        reportType(protocol.type->type(), TypeContext(type));
     }
     writer_.EndArray();
 
@@ -247,13 +246,13 @@ void PackageReporter::reportExportedType(const Type &type) {
     reportDocumentation(typeDef->documentation());
 
     writer_.Key("methods");
-    printFunctions(typeDef->methodList(), type);
+    printFunctions(typeDef->methods().list(), type);
 
     writer_.Key("initializers");
-    printFunctions(typeDef->initializerList(), type);
+    printFunctions(typeDef->inits().list(), type);
 
     writer_.Key("typeMethods");
-    printFunctions(typeDef->typeMethodList(), type);
+    printFunctions(typeDef->typeMethods().list(), type);
 
     if (type.type() == TypeType::Class) {
         auto klass = type.klass();

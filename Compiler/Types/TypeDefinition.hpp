@@ -11,8 +11,9 @@
 
 #include "CompilerError.hpp"
 #include "Generic.hpp"
-#include "Lex/SourcePosition.hpp"
+#include "Package/Definition.hpp"
 #include "Type.hpp"
+#include "Functions/FunctionResolver.hpp"
 #include <functional>
 #include <map>
 #include <utility>
@@ -41,24 +42,23 @@ struct InstanceVariableDeclaration {
     std::shared_ptr<ASTExpr> expr;
 };
 
+struct ProtocolConformance {
+    explicit ProtocolConformance(std::shared_ptr<ASTType> &&type) : type(std::move(type)) {}
+
+    std::shared_ptr<ASTType> type;
+    /// Contains the functions that will be placed in the dispatch table in same order as the method list of the protocol.
+    std::vector<Function*> implementations;
+};
+
 struct TypeDefinitionReification {
     llvm::Type *type = nullptr;
 };
 
-class TypeDefinition : public Generic<TypeDefinition, TypeDefinitionReification> {
+class TypeDefinition : public Generic<TypeDefinition, TypeDefinitionReification>, public Definition {
 public:
     TypeDefinition(const TypeDefinition&) = delete;
 
     virtual Type type() = 0;
-
-    /// Returns a documentation token documenting this type definition.
-    const std::u32string& documentation() const { return documentation_; }
-    /// Returns the name of the type definition.
-    std::u32string name() const { return name_; }
-    /// Returns the package in which this type was defined.
-    Package* package() const { return package_; }
-    /// The position at which this type was initially defined.
-    const SourcePosition& position() const { return position_; }
 
     /// The generic arguments of the super type.
     /// @returns The generic arguments of the Type passed to setSuperType().
@@ -70,42 +70,23 @@ public:
     /// @see Type::resolveOn
     virtual bool canResolve(TypeDefinition *resolutionConstraint) const = 0;
 
-    /// Returns a method by the given identifier token or throws an exception if the method does not exist.
-    /// @throws CompilerError
-    Function *getMethod(const std::u32string &name, const Type &type, const TypeContext &typeContext, Mood mood,
-                            const SourcePosition &p) const;
-    /// Returns an initializer by the given identifier token or throws an exception if the method does not exist.
-    /// @throws CompilerError
-    Initializer* getInitializer(const std::u32string &name, const Type &type, const TypeContext &typeContext,
-                                const SourcePosition &p) const;
-    /// Returns a method by the given identifier token or throws an exception if the method does not exist.
-    /// @throws CompilerError
-    Function *getTypeMethod(const std::u32string &name, const Type &type, const TypeContext &typeContext,
-                            Mood mood, const SourcePosition &p) const;
+    /// Determines whether an instance of this type can be created by the literal described by `literal`.
+    /// This method shall not take generic arguments into account. This is handled by Type::compatibleTo.
+    virtual bool canInitFrom(const Type &literal) const { return false; }
 
-    /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function *lookupMethod(const std::u32string &name, Mood mood) const;
-    /** Returns a initializer by the given identifier token or @c nullptr if the initializer does not exist. */
-    virtual Initializer* lookupInitializer(const std::u32string &name) const;
-    /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function *lookupTypeMethod(const std::u32string &name, Mood mood) const;
-
-    Function* addMethod(std::unique_ptr<Function> &&method);
-    Initializer* addInitializer(std::unique_ptr<Initializer> &&initializer);
-    Function* addTypeMethod(std::unique_ptr<Function> &&method);
     virtual void addInstanceVariable(const InstanceVariableDeclaration&);
 
-    /// A vector containing all methods in the order they were added via ::addMethod
-    const std::vector<Function *>& methodList() const { return methodList_; }
-    /// A vector containing all initializers in the order they were added via ::addInitializer
-    const std::vector<Initializer *>& initializerList() const { return initializerList_; }
-    /// A vector containing all type methods in the order they were added via ::addTypeMethod
-    const std::vector<Function *>& typeMethodList() const { return typeMethodList_; }
+    const FunctionResolver<Function>& methods() const { return methods_; }
+    const FunctionResolver<Function>& typeMethods() const { return typeMethods_; }
+    const FunctionResolver<Initializer>& inits() const { return inits_; }
+    FunctionResolver<Function>& methods() { return methods_; }
+    FunctionResolver<Function>& typeMethods() { return typeMethods_; }
+    FunctionResolver<Initializer>& inits() { return inits_; }
 
-    /** Declares that this class agrees to the given protocol. */
+    /// Declares conformance of the type to a protocol.
     void addProtocol(std::shared_ptr<ASTType> type) { protocols_.emplace_back(std::move(type)); }
     /** Returns a list of all protocols to which this class conforms. */
-    const std::vector<std::shared_ptr<ASTType>>& protocols() const { return protocols_; };
+    std::vector<ProtocolConformance>& protocols() { return protocols_; }
 
     /// Calls the given function with every Function that is defined for this TypeDefinition, i.e. all methods,
     /// type methods and initializers.
@@ -115,7 +96,7 @@ public:
     void eachFunctionWithoutInitializers(const std::function<void(Function *)>& cb) const;
 
     /// @retunrs A reference to the instance scope for SemanticAnalysis.
-    Scope& instanceScope() { return *scope_.get(); }
+    Scope& instanceScope() { return *scope_; }
 
     /// Whether the type was exported in the package it was defined in.
     bool exported() const { return exported_; }
@@ -138,6 +119,7 @@ public:
     /// Contains the type’s instance variables. In a class, this will also contain inherited instance variables after
     /// calling Class::inherit().
     const std::vector<InstanceVariableDeclaration>& instanceVariables() const { return instanceVariables_; }
+    std::vector<InstanceVariableDeclaration>& instanceVariablesMut() { return instanceVariables_; }
 
     void setProtocolTables(std::map<Type, llvm::Constant*> &&tables) { protocolTables_ = std::move(tables); }
     llvm::Constant* protocolTableFor(const Type &type) { return protocolTables_.find(type)->second; }
@@ -146,43 +128,19 @@ public:
 protected:
     TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation, bool exported);
 
-    std::vector<std::shared_ptr<ASTType>> protocols_;
-
-    std::vector<InstanceVariableDeclaration>& instanceVariablesMut() { return instanceVariables_; }
-
-    /// Called if a required initializer is passed to addInitializer().
-    /// @param init The initializer passed to addInitializer().
-    virtual void handleRequiredInitializer(Initializer *init);
-
-    template <typename T>
-    void duplicateDeclarationCheck(T *function, const std::map<std::u32string, std::unique_ptr<T>> &dict) {
-        auto prev = dict.find(methodTableName(function->name(), function->mood()));
-        if (prev != dict.end()) {
-            auto ce = CompilerError(function->position(), utf8(function->name()), " is declared twice.");
-            ce.addNotes(prev->second->position(), "Previous declaration is here");
-            throw ce;
-        }
-    }
+    std::vector<ProtocolConformance> protocols_;
 
     virtual ~TypeDefinition();
 
 private:
     std::unique_ptr<Scope> scope_;
 
-    std::map<std::u32string, std::unique_ptr<Function>> methods_;
-    std::map<std::u32string, std::unique_ptr<Function>> typeMethods_;
-    std::map<std::u32string, std::unique_ptr<Initializer>> initializers_;
-
-    std::vector<Function *> methodList_;
-    std::vector<Initializer *> initializerList_;
-    std::vector<Function *> typeMethodList_;
+    FunctionResolver<Function> methods_;
+    FunctionResolver<Function> typeMethods_;
+    FunctionResolver<Initializer> inits_;
 
     std::pair<llvm::Function*, llvm::Function*> boxRetainRelease_;
 
-    std::u32string name_;
-    Package *package_;
-    std::u32string documentation_;
-    SourcePosition position_;
     bool exported_;
     bool genericDynamismDisabled_ = false;
 
@@ -191,8 +149,6 @@ private:
     std::vector<InstanceVariableDeclaration> instanceVariables_;
 
     llvm::Function *destructor_ = nullptr;
-
-    std::u32string methodTableName(const std::u32string &name, Mood mood) const;
 };
 
 }  // namespace EmojicodeCompiler

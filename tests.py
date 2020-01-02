@@ -30,6 +30,7 @@ compilation_tests = [
     "classOverride",
     "classSuper",
     "classSubInstanceVar",
+    "overload",
     "optionalParameter",
     "returnInBlock",
     "returnInIf",

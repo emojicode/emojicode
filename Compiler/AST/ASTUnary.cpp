@@ -13,6 +13,8 @@
 #include "Types/TypeExpectation.hpp"
 #include "Functions/Function.hpp"
 #include "Scoping/SemanticScoper.hpp"
+#include "Compiler.hpp"
+#include "Types/Class.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -20,9 +22,11 @@ void ASTUnaryMFForwarding::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlo
     expr_->analyseMemoryFlow(analyser, type);
 }
 
-Type ASTUnwrap::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTUnwrap::analyse(ExpressionAnalyser *analyser) {
     auto call = dynamic_cast<ASTCall *>(expr_.get());
-    if (call != nullptr) call->setHandledError();
+    if (call != nullptr) {
+        call->setHandledError();
+    }
 
     Type t = analyser->expect(TypeExpectation(false, false), &expr_);
 
@@ -31,13 +35,16 @@ Type ASTUnwrap::analyse(ExpressionAnalyser *analyser, const TypeExpectation &exp
     }
     if (call != nullptr && call->isErrorProne()) {
         error_ = true;
+        auto error = analyser->compiler()->sError;
+        method_ = error->methods().lookup(U"🤯", Mood::Imperative, { Type(analyser->compiler()->sString) }, Type(error),
+                                          TypeContext(), analyser->semanticAnalyser());
         return t;
     }
 
     throw CompilerError(position(), "🍺 can only be used with optionals or error-prone calls.");
 }
 
-Type ASTReraise::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTReraise::analyse(ExpressionAnalyser *analyser) {
     auto call = dynamic_cast<ASTCall *>(expr_.get());
     if (call != nullptr) call->setHandledError();
     Type t = analyser->expect(TypeExpectation(false, false), &expr_);

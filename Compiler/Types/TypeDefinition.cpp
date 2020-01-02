@@ -18,101 +18,10 @@ namespace EmojicodeCompiler {
 
 TypeDefinition::TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation,
                                bool exported)
-    : scope_(std::make_unique<Scope>()), name_(std::move(name)), package_(p), documentation_(std::move(documentation)),
-      position_(pos), exported_(exported) {}
+    : Definition(p, std::move(documentation), std::move(name), pos),
+      scope_(std::make_unique<Scope>()), exported_(exported) {}
 
 TypeDefinition::~TypeDefinition() = default;
-
-Initializer* TypeDefinition::lookupInitializer(const std::u32string &name) const {
-    auto pos = initializers_.find(name);
-    if (pos != initializers_.end()) {
-        return pos->second.get();
-    }
-    return nullptr;
-}
-
-Function* TypeDefinition::lookupMethod(const std::u32string &name, Mood mood) const {
-    auto pos = methods_.find(methodTableName(name, mood));
-    if (pos != methods_.end()) {
-        return pos->second.get();
-    }
-    return nullptr;
-}
-
-Function* TypeDefinition::lookupTypeMethod(const std::u32string &name, Mood mood) const {
-    auto pos = typeMethods_.find(methodTableName(name, mood));
-    if (pos != typeMethods_.end()) {
-        return pos->second.get();
-    }
-    return nullptr;
-}
-
-Initializer* TypeDefinition::getInitializer(const std::u32string &name, const Type &type,
-                                            const TypeContext &typeContext, const SourcePosition &p) const {
-    auto initializer = lookupInitializer(name);
-    if (initializer == nullptr) {
-        throw CompilerError(p, type.toString(typeContext), " has no initializer ", utf8(name), ".");
-    }
-    return initializer;
-}
-
-Function* TypeDefinition::getMethod(const std::u32string &name, const Type &type, const TypeContext &typeContext,
-                                    Mood mood, const SourcePosition &p) const {
-    auto method = lookupMethod(name, mood);
-    if (method == nullptr) {
-        auto eclass = type.toString(typeContext);
-        throw CompilerError(p, type.toString(typeContext), " has no method ", utf8(name), ".");
-    }
-    return method;
-}
-
-Function * TypeDefinition::getTypeMethod(const std::u32string &name, const Type &type, const TypeContext &typeContext,
-                                         Mood mood, const SourcePosition &p) const {
-    auto method = lookupTypeMethod(name, mood);
-    if (method == nullptr) {
-        throw CompilerError(p, type.toString(typeContext), " has no type method ", utf8(name), ".");
-    }
-    return method;
-}
-
-Function* TypeDefinition::addTypeMethod(std::unique_ptr<Function> &&method) {
-    duplicateDeclarationCheck(method.get(), typeMethods_);
-    auto rawPtr = method.get();
-    typeMethods_.emplace(methodTableName(rawPtr->name(), rawPtr->mood()), std::move(method));
-    typeMethodList_.push_back(rawPtr);
-    return rawPtr;
-}
-
-Function* TypeDefinition::addMethod(std::unique_ptr<Function> &&method) {
-    duplicateDeclarationCheck(method.get(), methods_);
-    auto rawPtr = method.get();
-    methods_.emplace(methodTableName(rawPtr->name(), rawPtr->mood()), std::move(method));
-    methodList_.push_back(rawPtr);
-    return rawPtr;
-}
-
-std::u32string TypeDefinition::methodTableName(const std::u32string &name, Mood mood) const {
-    switch (mood) {
-    case Mood::Assignment:
-        return name + U"=";
-    case Mood::Interogative:
-        return name + U"?";
-    case Mood::Imperative:
-        return name;
-    }
-}
-
-Initializer* TypeDefinition::addInitializer(std::unique_ptr<Initializer> &&initializer) {
-    duplicateDeclarationCheck(initializer.get(), initializers_);
-    auto rawPtr = initializer.get();
-    initializers_.emplace(initializer->name(), std::move(initializer));
-    initializerList_.push_back(rawPtr);
-
-    if (rawPtr->required()) {
-        handleRequiredInitializer(rawPtr);
-    }
-    return rawPtr;
-}
 
 void TypeDefinition::addInstanceVariable(const InstanceVariableDeclaration &variable) {
     auto duplicate = std::find_if(instanceVariables_.begin(), instanceVariables_.end(),
@@ -123,22 +32,18 @@ void TypeDefinition::addInstanceVariable(const InstanceVariableDeclaration &vari
     instanceVariables_.push_back(variable);
 }
 
-void TypeDefinition::handleRequiredInitializer(Initializer *init) {
-
-}
-
 void TypeDefinition::eachFunction(const std::function<void (Function *)>& cb) const {
     eachFunctionWithoutInitializers(cb);
-    for (auto function : initializerList()) {
+    for (auto function : inits().list()) {
         cb(function);
     }
 }
 
 void TypeDefinition::eachFunctionWithoutInitializers(const std::function<void (Function *)>& cb) const {
-    for (auto function : methodList()) {
+    for (auto function : methods().list()) {
         cb(function);
     }
-    for (auto function : typeMethodList()) {
+    for (auto function : typeMethods().list()) {
         cb(function);
     }
 }

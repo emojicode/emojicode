@@ -11,6 +11,7 @@
 
 #include "StorageType.hpp"
 #include <string>
+#include <utility>
 #include <vector>
 #include <tuple>
 #include <cassert>
@@ -34,6 +35,7 @@ class Initializer;
 class GenericInferer;
 
 enum class TypeType {
+    Invalid,
     Box,
     Optional,
     Class,
@@ -52,6 +54,14 @@ enum class TypeType {
     Callable,
     TypeAsValue,
     StorageExpectation,
+    /// May only be used for overload resolution, i.e. returned by ASTExpr::analysed and must be replaced by ASTExpr::comply.
+    IntegerLiteral,
+    /// May only be used for overload resolution, i.e. returned by ASTExpr::analysed and must be replaced by ASTExpr::comply.
+    ListLiteral,
+    /// May only be used for overload resolution, i.e. returned by ASTExpr::analysed and must be replaced by ASTExpr::comply.
+    DictionaryLiteral,
+    /// May only be used for overload resolution, i.e. returned by ASTExpr::analysed and must be replaced by ASTExpr::comply.
+    NoValueLiteral,
 };
 
 struct MakeTypeAsValueType {};
@@ -92,6 +102,13 @@ public:
     static Type something() { return Type(TypeType::Something); }
     static Type noReturn() { return Type(TypeType::NoReturn); }
     static Type someobject() { return Type(TypeType::Someobject); }
+    static Type integerLiteral() { return Type(TypeType::IntegerLiteral); }
+    static Type listLiteral(Type element) { return Type(TypeType::ListLiteral, { std::move(element) }); }
+    static Type dictionaryLiteral(Type element) {
+        return Type(TypeType::DictionaryLiteral, { std::move(element) });
+    }
+    static Type noValueLiteral() { return Type(TypeType::NoValueLiteral); }
+    static Type invalid() { return Type(TypeType::Invalid); }
 
     /// @returns The type of this type, i.e. Protocol, Class instance etc.
     TypeType type() const { return typeContent_; }
@@ -311,6 +328,9 @@ protected:
 private:
     explicit Type(TypeType t) : typeContent_(t) {}
 
+    Type(TypeType typeType, std::vector<Type> genArgs)
+        : typeContent_(typeType), genericArguments_(std::move(genArgs)) {}
+
     struct MakeOptionalType {};
     Type(MakeOptionalType makeOptional, Type type)
         : typeContent_(TypeType::Optional), genericArguments_({ std::move(type) }) {
@@ -325,6 +345,7 @@ private:
 //                   genericArguments_[1].type() == TypeType::Something);
             assert(genericArguments_.front().type() != TypeType::Box);
             assert(genericArguments_[1].type() != TypeType::Box);
+            assert(genericArguments_.front().type() != TypeType::NoValueLiteral);
         }
 
     TypeType typeContent_;

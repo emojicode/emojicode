@@ -18,8 +18,8 @@
 
 namespace EmojicodeCompiler {
 
-Type ASTInitialization::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
-    auto type = analyser->analyseTypeExpr(typeExpr_, expectation, true);
+Type ASTInitialization::analyse(ExpressionAnalyser *analyser) {
+    auto type = analyser->analyseTypeExpr(typeExpr_, TypeExpectation(), true);
 
     if (type.type() == TypeType::Enum) {
         return analyseEnumInit(analyser, type);
@@ -27,25 +27,32 @@ Type ASTInitialization::analyse(ExpressionAnalyser *analyser, const TypeExpectat
 
     if (type.type() == TypeType::ValueType) {
         initType_ = type.valueType() == analyser->compiler()->sMemory ? InitType::MemoryAllocation : InitType::ValueType;
-
-        type.setMutable(expectation.isMutable());
     }
 
-    auto init = type.typeDefinition()->getInitializer(name_, type, analyser->typeContext(), position());
+    auto init = type.typeDefinition()->inits().get(name_, Mood::Imperative, &args_, &type, analyser, position());
     if (!type.isExact()) {
         if (!init->required()) {
             throw CompilerError(position(), "Type is not exact; can only use required initializer.");
         }
-        initializer_ = type.typeDefinition()->lookupTypeMethod(std::u32string({ E_KEY }) + name_, Mood::Imperative);
+        initializer_ = type.typeDefinition()->typeMethods().get(std::u32string({ E_KEY }) + name_, Mood::Imperative,
+                                                                &args_, &type, analyser, position());
     }
     else {
         initializer_ = init;
     }
 
-    analyser->analyseFunctionCall(&args_, &type, init, true);
-    typeExpr_->setExpressionType(type);
+    analyser->analyseFunctionCall(&args_, type, init);
     ensureErrorIsHandled(analyser);
     return init->constructedType(type);
+}
+
+Type ASTInitialization::comply(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+    if (typeExpr_->expressionType().type() == TypeType::ValueType) {
+        auto type = expressionType();
+        type.setMutable(expectation.isMutable());
+        return static_cast<Initializer*>(initializer_)->constructedType(type);
+    }
+    return expressionType();
 }
 
 const Type& ASTInitialization::errorType() const {

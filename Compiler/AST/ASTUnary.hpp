@@ -48,21 +48,21 @@ protected:
 class ASTUnwrap final : public ASTUnaryMFForwarding, public ErrorHandling {
     using ASTUnaryMFForwarding::ASTUnaryMFForwarding;
 public:
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
 
 private:
     bool error_ = false;
-
+    Function *method_;
     Value* generateErrorUnwrap(FunctionCodeGenerator *fg) const;
 };
 
 class ASTReraise final : public ASTUnaryMFForwarding, public ErrorHandling, public Releasing {
     using ASTUnaryMFForwarding::ASTUnaryMFForwarding;
 public:
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;

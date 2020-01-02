@@ -13,8 +13,8 @@
 
 namespace EmojicodeCompiler {
 
-Type ASTCast::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
-    auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
+Type ASTCast::analyse(ExpressionAnalyser *analyser) {
+    auto type = analyser->analyseTypeExpr(typeExpr_, TypeExpectation());
 
     Type originalType = analyser->expect(TypeExpectation(), &expr_);
 
@@ -35,11 +35,11 @@ Type ASTCast::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expec
     if (type.type() == TypeType::Class && (originalType.type() == TypeType::Someobject ||
                                            originalType.type() == TypeType::Class)) {
         isDowncast_ = true;
-        analyser->comply(originalType, TypeExpectation(false, false), &expr_);
+        analyser->comply(TypeExpectation(false, false), &expr_);
         return type.optionalized();
     }
 
-    analyser->comply(originalType, TypeExpectation(true, false), &expr_);
+    analyser->comply(TypeExpectation(true, false), &expr_);
 
     if (type.unboxedType() == TypeType::Protocol) {
         if (!type.genericArguments().empty()) {

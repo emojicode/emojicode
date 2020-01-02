@@ -23,14 +23,6 @@ namespace EmojicodeCompiler {
 class Type;
 class SemanticAnalyser;
 
-template <typename FT>
-FT* ifNotPrivate(FT *function) {
-    if (function == nullptr) {
-        return nullptr;
-    }
-    return function->accessLevel() == AccessLevel::Private ? nullptr : function;
-}
-
 class Class : public TypeDefinition {
 public:
     Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32string &documentation, bool exported,
@@ -59,9 +51,6 @@ public:
     bool inheritsFrom(Class *from) const;
     /** Whether this class can be subclassed. */
     bool final() const { return final_; }
-    /** Whether this class is eligible for initializer inheritance. */
-    bool inheritsInitializers() const { return inheritsInitializers_; }
-
     bool foreign() const { return foreign_; }
 
     /// @returns The variable containing the class info or nullptr if none has been set yet.
@@ -71,31 +60,11 @@ public:
 
     std::vector<llvm::Constant *>& virtualTable() { return virtualTable_; }
 
-    Function *lookupMethod(const std::u32string &name, Mood mood) const override;
-    Initializer* lookupInitializer(const std::u32string &name) const override;
-    Function *lookupTypeMethod(const std::u32string &name, Mood mood) const override;
-
     bool canResolve(TypeDefinition *resolutionConstraint) const override;
     void addInstanceVariable(const InstanceVariableDeclaration &declaration) override;
 
     void inherit(SemanticAnalyser *analyser);
     void analyseSuperType();
-
-    /// @pre superclass() != nullptr
-    template <typename FT>
-    FT* findSuperFunction(FT *function) const {
-        switch (function->functionType()) {
-            case FunctionType::ObjectMethod:
-            case FunctionType::Deinitializer:
-                return ifNotPrivate(superclass()->lookupMethod(function->name(), function->mood()));
-            case FunctionType::ClassMethod:
-                return ifNotPrivate(superclass()->lookupTypeMethod(function->name(), function->mood()));
-            case FunctionType::ObjectInitializer:
-                return findSuperFunction(static_cast<Initializer *>(function));
-            default:
-                throw std::logic_error("Function of unexpected type in class");
-        }
-    }
 
     /// Makes hasSubclass() return true.
     void setHasSubclass() { hasSubclass_ = true; }
@@ -114,8 +83,6 @@ public:
     bool storesGenericArgs() const override;
 
 private:
-    std::set<std::u32string> requiredInitializers_;
-
     std::unique_ptr<ASTType> superType_ = nullptr;
 
     /// Checks that @c function, if at all, is a valid override.
@@ -123,32 +90,19 @@ private:
     /// @throws CompilerError if the override is improper, e.g. implicit
     void checkOverride(Function *function, SemanticAnalyser *analyser);
 
+    Function *findSuperFunction(Function *function, SemanticAnalyser *analyser);
+
     std::vector<llvm::Constant *> virtualTable_;
     size_t virtualFunctionCount_ = 0;
 
     bool final_;
     bool foreign_;
-    bool inheritsInitializers_ = false;
     bool hasSubclass_ = false;
 
     llvm::GlobalVariable *classInfo_ = nullptr;
 
     Function *deinitializer_ = nullptr;
-
-    void handleRequiredInitializer(Initializer *init) override;
 };
-
-inline Initializer* ifRequired(Initializer *init) {
-    if (init == nullptr) {
-        return nullptr;
-    }
-    return init->required() ? init : nullptr;
-}
-
-template <>
-inline Initializer* Class::findSuperFunction<Initializer>(Initializer *function) const {
-    return ifRequired(ifNotPrivate(superclass()->lookupInitializer(function->name())));
-}
 
 }  // namespace EmojicodeCompiler
 

@@ -46,7 +46,7 @@ void PackageCreator::createProtocol(Protocol *protocol) {
                                                mangleProtocolRunTimeTypeInfo(protocol)));
 
     size_t tableIndex = 0;
-    for (auto function : protocol->methodList()) {
+    for (auto function : protocol->methods().list()) {
         function->createUnspecificReification();
         function->eachReification([&](auto &reification) {
             generator_->typeHelper().withReificationContext(ReificationContext(*function, reification), [&] {
@@ -164,4 +164,4 @@ void ImportedPackageCreator::createFunction(Function *function) {
     generator_->declareLlvmFunction(function);
 }
 
-}
+}  // namespace EmojicodeCompiler

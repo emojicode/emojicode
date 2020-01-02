@@ -12,10 +12,10 @@
 
 namespace EmojicodeCompiler {
 
-class GenericInferer {
+class GenericInferer {  // TODO: store TypeContext in attribute
 public:
-    GenericInferer(size_t localCount, size_t typeCount)
-        : local_(localCount, CommonTypeFinder()), type_(typeCount, CommonTypeFinder()) {}
+    GenericInferer(size_t localCount, size_t typeCount, SemanticAnalyser *analyser)
+        : local_(localCount, CommonTypeFinder(analyser)), type_(typeCount, CommonTypeFinder(analyser)) {}
     bool inferringLocal() const { return !local_.empty(); }
     bool inferringType() const { return !type_.empty(); }
 

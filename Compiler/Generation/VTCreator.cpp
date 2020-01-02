@@ -10,12 +10,12 @@
 namespace EmojicodeCompiler {
 
 VTCreator::VTCreator(Class *klass, CodeGenerator *cg)
-    : generator_(cg), klass_(klass), hasSuperClass_(klass->superclass() != nullptr),
-    vti_(hasSuperClass_ ? klass->superclass()->virtualFunctionCount() : 0) {}
+    : generator_(cg), klass_(klass),
+     vti_(klass->superclass() != nullptr ? klass->superclass()->virtualFunctionCount() : 0) {}
 
 void VTCreator::assign(Function *function) {
     decltype(vti_) designatedVti;
-    if (auto sf = hasSuperClass_ ? klass_->findSuperFunction(function) : nullptr) {
+    if (auto sf = function->superFunction()) {
         designatedVti = sf->unspecificReification().vti();
     }
     else {
@@ -51,7 +51,7 @@ void VTCreator::build() {
 }
 
 void VTCreator::assign() {
-    for (auto init : klass_->initializerList()) {
+    for (auto init : klass_->inits().list()) {
         init->createUnspecificReification();
         generator_->declareLlvmFunction(init);
     }

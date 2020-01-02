@@ -13,8 +13,7 @@
 #include "Generation/CallCodeGenerator.hpp"
 #include "Compiler.hpp"
 #include "ASTLiterals.hpp"
-#include "Types/Class.hpp"
-#include <llvm/Support/raw_ostream.h>
+#include "Types/TypeContext.hpp"
 #include <sstream>
 
 namespace EmojicodeCompiler {
@@ -52,12 +51,12 @@ Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
 Value* ASTUnwrap::generateErrorUnwrap(FunctionCodeGenerator *fg) const {
     auto errorDest = prepareErrorDestination(fg, expr_.get());
     auto value = expr_->generate(fg);
-    fg->createIfElseBranchCond(createExpectFalse(fg, isError(fg, errorDest)), [this, fg, errorDest]() {
-        auto error = fg->compiler()->sError;
+    fg->createIfElseBranchCond(createExpectFalse(fg, isError(fg, errorDest)), [&]() {
         auto string = std::make_shared<ASTCGUTF8Literal>(position().toRuntimeString(), position());
         CallCodeGenerator(fg, CallType::StaticDispatch).generate(fg->builder().CreateLoad(errorDest),
-                                                                 Type(error), ASTArguments(position(), { string }),
-                                                                 error->lookupMethod(U"🤯", Mood::Imperative), nullptr);
+                                                                 Type(fg->compiler()->sError),
+                                                                 ASTArguments(position(), { string }),
+                                                                 method_, nullptr);
         fg->builder().CreateUnreachable();
         return false;
     }, []() { return true; });

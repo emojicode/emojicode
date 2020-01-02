@@ -202,14 +202,19 @@ ValueType *getStandardValueType(const std::u32string &name, Package *_) {
 void Compiler::assignSTypes(Package *s) {
     sBoolean = getStandardValueType(U"👌", s);
     sInteger = getStandardValueType(U"🔢", s);
+    sInteger->constructibleFrom_ = TypeType::IntegerLiteral;
     sReal = getStandardValueType(std::u32string(1, E_HUNDRED_POINTS_SYMBOL), s);
+    sReal->constructibleFrom_ = TypeType::IntegerLiteral;
     sMemory = getStandardValueType(U"🧠", s);
     sByte = getStandardValueType(U"💧", s);
+    sByte->constructibleFrom_ = TypeType::IntegerLiteral;
     sWeak = getStandardValueType(U"📶", s);
     sString = getStandardClass(U"🔡", s);
     sError = getStandardClass(U"🚧", s);
     sList = getStandardValueType(U"🍨", s);
+    sList->constructibleFrom_ = TypeType::ListLiteral;
     sDictionary = getStandardValueType(U"🍯", s);
+    sDictionary->constructibleFrom_ = TypeType::DictionaryLiteral;
 
     sEnumerable = getStandardProtocol(
             std::u32string(1, E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), s);

@@ -24,7 +24,7 @@ class ASTTypeExpr : public ASTExpr {
 public:
     ASTTypeExpr(const SourcePosition &p) : ASTExpr(p) {}
     void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override {}
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) final;
+    Type analyse(ExpressionAnalyser *analyser) final;
     virtual Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation,
                          bool allowGenericInference) = 0;
 };

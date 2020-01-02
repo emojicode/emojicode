@@ -40,8 +40,8 @@ void ProtocolsTableGenerator::generate(const Type &type) {
     auto boxInfo = generator_->boxInfoFor(type);
 
     for (auto &protocol : type.typeDefinition()->protocols()) {
-        auto conformance = createDispatchTable(type, protocol->type(), boxInfo);
-        tables.emplace(protocol->type().unboxed(), conformance);
+        auto conformance = createDispatchTable(type, protocol, boxInfo);
+        tables.emplace(protocol.type->type().unboxed(), conformance);
     }
 
     type.typeDefinition()->setProtocolTables(std::move(tables));
@@ -54,7 +54,7 @@ void ProtocolsTableGenerator::declareImported(const Type &type) {
     }
 
     for (auto &protocol : type.typeDefinition()->protocols()) {
-        tables.emplace(protocol->type().unboxed(), getConformanceVariable(type, protocol->type(), nullptr));
+        tables.emplace(protocol.type->type().unboxed(), getConformanceVariable(type, protocol.type->type(), nullptr));
     }
 
     type.typeDefinition()->setProtocolTables(std::move(tables));
@@ -82,23 +82,19 @@ llvm::GlobalVariable* ProtocolsTableGenerator::multiprotocol(const Type &multipr
     return var;
 }
 
-llvm::GlobalVariable* ProtocolsTableGenerator::createDispatchTable(const Type &type, const Type &protocol,
-                                                                  llvm::Constant *boxInfo) {
-    auto typeDef = type.typeDefinition();
-    auto arrayType = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(generator_->context()),
-                                          protocol.protocol()->methodList().size());
+llvm::GlobalVariable* ProtocolsTableGenerator::createDispatchTable(const Type &type,
+                                                                   const ProtocolConformance &conformance,
+                                                                   llvm::Constant *boxInfo) {
+    auto &list = conformance.type->type().protocol()->methods().list();
+    auto arrayType = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(generator_->context()), list.size());
 
     std::vector<llvm::Constant *> virtualTable;
-    virtualTable.resize(protocol.protocol()->methodList().size());
+    virtualTable.resize(list.size());
 
-    for (auto protocolMethod : protocol.protocol()->methodList()) {
+    for (size_t i = 0; i < list.size(); i++) {
+        auto protocolMethod = list[i];
         for (auto reification : protocolMethod->reificationMap()) {
-            auto implFunction = typeDef->lookupMethod(protocolMethod->protocolBoxingThunk(protocol.protocol()->name()),
-                                                      protocolMethod->mood());
-            if (implFunction == nullptr) {
-                implFunction = typeDef->lookupMethod(protocolMethod->name(), protocolMethod->mood());
-            }
-            auto implReif = implFunction->reificationFor(reification.first).function;
+            auto implReif = conformance.implementations[i]->reificationFor(reification.first).function;
             assert(implReif != nullptr);
             virtualTable[reification.second.entity.vti()] = implReif;
         }
@@ -112,9 +108,9 @@ llvm::GlobalVariable* ProtocolsTableGenerator::createDispatchTable(const Type &t
     auto load = llvm::ConstantInt::get(llvm::Type::getInt1Ty(generator_->context()),
                                        (type.type() == TypeType::Class ||
                                         generator_->typeHelper().isRemote(type)) ? 1 : 0);
-    auto conformance = llvm::ConstantStruct::get(generator_->typeHelper().protocolConformance(),
-                                                 {load, avGep, llvm::ConstantExpr::getBitCast(boxInfo, generator_->typeHelper().boxInfo()->getPointerTo()), typeDef->boxRetainRelease().first, typeDef->boxRetainRelease().second });
-    return getConformanceVariable(type, protocol, conformance);
+    auto conformanceStruct = llvm::ConstantStruct::get(generator_->typeHelper().protocolConformance(),
+                                                 {load, avGep, llvm::ConstantExpr::getBitCast(boxInfo, generator_->typeHelper().boxInfo()->getPointerTo()), type.typeDefinition()->boxRetainRelease().first, type.typeDefinition()->boxRetainRelease().second });
+    return getConformanceVariable(type, conformance.type->type(), conformanceStruct);
 }
 
 llvm::GlobalVariable* ProtocolsTableGenerator::getConformanceVariable(const Type &type, const Type &protocol,

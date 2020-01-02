@@ -6,6 +6,7 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
+#include <utility>
 #include "ASTInitialization.hpp"
 #include "ASTLiterals.hpp"
 #include "Generation/TypeDescriptionGenerator.hpp"
@@ -60,57 +61,73 @@ Value* ASTNoValue::generate(FunctionCodeGenerator *fg) const {
     return fg->buildSimpleOptionalWithoutValue(type_);
 }
 
-Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
-    auto init = type_.typeDefinition()->lookupInitializer(U"🐴");
-    auto capacity = std::make_shared<ASTNumberLiteral>(static_cast<int64_t>(values_.size() / 2), U"", position());
-
-    auto dict = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(type_));
+Value* ASTCollectionLiteral::init(FunctionCodeGenerator *fg, std::vector<llvm::Value*> args) const {
     auto td = TypeDescriptionGenerator(fg, TypeDescriptionUser::ValueTypeOrValue).generate(type_.genericArguments());
-    CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, ASTArguments(position(), { capacity }),
-                                                             init, nullptr, { td });
-    for (auto it = values_.begin(); it != values_.end(); it++) {
-        auto key = *(it++);
-        auto args = ASTArguments(position(), { *it, key });
-        auto method = type_.typeDefinition()->lookupMethod(U"🐽", Mood::Assignment);
-        CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, args, method, nullptr);
-    }
-    handleResult(fg, nullptr, dict);
-    return fg->builder().CreateLoad(dict);
+    auto value = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(type_));
+    args.emplace_back(td);
+    CallCodeGenerator(fg, CallType::StaticDispatch).generate(value, type_, ASTArguments(position()),
+                                                             initializer_, nullptr, args);
+    handleResult(fg, nullptr, value);
+    return fg->builder().CreateLoad(value);
 }
+
+std::pair<llvm::Value *, llvm::Value *> EmojicodeCompiler::ASTCollectionLiteral::prepareValueArray(FunctionCodeGenerator *fg, llvm::Type *type, size_t count,
+                                                                                                   const char *name) const {
+    auto arrayType = llvm::ArrayType::get(type, count);
+    auto structType = llvm::StructType::get(fg->generator()->context(),
+                                            { fg->builder().getInt8PtrTy(), arrayType });
+
+    auto structure = fg->createEntryAlloca(structType, name);
+    fg->builder().CreateStore(fg->generator()->runTime().ignoreBlockPtr(),
+                              fg->builder().CreateConstInBoundsGEP2_32(structType, structure, 0, 0));
+    auto values = fg->builder().CreateConstInBoundsGEP2_32(structType, structure, 0, 1);
+    return std::make_pair(fg->builder().CreateConstInBoundsGEP2_32(arrayType, values, 0, 0), structure);
+}
+
 
 Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
-    auto init = type_.typeDefinition()->lookupInitializer(U"🐴");
-    auto capacity = std::make_shared<ASTNumberLiteral>(static_cast<int64_t>(values_.size()), U"", position());
-
-    auto list = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(type_));
-    auto td = TypeDescriptionGenerator(fg, TypeDescriptionUser::ValueTypeOrValue).generate(type_.genericArguments());
-    CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, ASTArguments(position(), { capacity }), init,
-                                                             nullptr, { td });
+    llvm::Value *current, *structure;
+    std::tie(current, structure) = prepareValueArray(fg, fg->typeHelper().box(), values_.size(), "items");
     for (auto &value : values_) {
-        auto args = ASTArguments(position(), { value });
-        auto method = type_.typeDefinition()->lookupMethod(U"🐻", Mood::Imperative);
-        CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, args, method, nullptr);
+        fg->builder().CreateStore(value->generate(fg), current);
+        current = fg->builder().CreateConstInBoundsGEP1_32(fg->typeHelper().box(), current, 1);
     }
-    handleResult(fg, nullptr, list);
-    return fg->builder().CreateLoad(list);
+    return init(fg, { fg->builder().CreateBitCast(structure, fg->builder().getInt8PtrTy()),
+                      fg->int64(values_.size()) });
 }
 
-Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fg) const {
-    auto init = type_.typeDefinition()->lookupInitializer(U"🔡");
-
+Value *ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
+    llvm::Value *keys, *values, *currentKey, *currentValue;
+    auto string = fg->typeHelper().llvmTypeFor(Type(fg->compiler()->sString));
+    std::tie(currentKey, keys) = prepareValueArray(fg, string, values_.size() / 2, "keys");
+    std::tie(currentValue, values) = prepareValueArray(fg, fg->typeHelper().box(), values_.size() / 2, "values");
     auto it = values_.begin();
-    auto builder = ASTInitialization::initObject(fg, ASTArguments(position(), { *it++ }), init, type_, nullptr, true,
+    while (it != values_.end()) {
+        fg->builder().CreateStore((*it++)->generate(fg), currentKey);
+        fg->builder().CreateStore((*it++)->generate(fg), currentValue);
+        currentKey = fg->builder().CreateConstInBoundsGEP1_32(string, currentKey, 1);
+        currentValue = fg->builder().CreateConstInBoundsGEP1_32(fg->typeHelper().box(), currentValue, 1);
+    }
+    return init(fg, {fg->builder().CreateBitCast(keys, fg->builder().getInt8PtrTy()),
+                     fg->builder().CreateBitCast(values, fg->builder().getInt8PtrTy()), fg->int64(values_.size() / 2)});
+}
+
+
+Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fg) const {
+    auto type = init_->owner()->type();
+    auto it = values_.begin();
+    auto builder = ASTInitialization::initObject(fg, ASTArguments(position(), { *it++ }), init_, type, nullptr, true,
                                                  nullptr);
 
     for (auto end = values_.end(); it != end; it++) {
         auto args = ASTArguments(position(), { *it });
-        auto method = type_.typeDefinition()->lookupMethod({ 0x1F43B }, Mood::Imperative);
-        CallCodeGenerator(fg, CallType::StaticDispatch).generate(builder, type_, args, method, nullptr);
+
+        CallCodeGenerator(fg, CallType::StaticDispatch).generate(builder, type, args, append_, nullptr);
     }
-    auto method = type_.typeDefinition()->lookupMethod({ 0x1F521 }, Mood::Imperative);
-    auto str = CallCodeGenerator(fg, CallType::StaticDispatch).generate(builder, type_,
-                                                                        ASTArguments(position()), method, nullptr);
-    fg->release(builder, type_);
+
+    auto str = CallCodeGenerator(fg, CallType::StaticDispatch).generate(builder, type,
+                                                                        ASTArguments(position()), get_, nullptr);
+    fg->release(builder, type);
     return handleResult(fg, str);
 }
 

@@ -16,6 +16,7 @@ class GlobalVariable;
 
 namespace EmojicodeCompiler {
 
+struct ProtocolConformance;
 class TypeDefinition;
 class CodeGenerator;
 
@@ -49,7 +50,8 @@ private:
     /// @param protocol The protocol for which the dispatch table is created.
     /// @param type The type definition from which methods will be dispatched.
     /// @param boxInfo The pointer to the box info for @c type that is stored in the protocol dispatch table.
-    llvm::GlobalVariable* createDispatchTable(const Type &type, const Type &protocol, llvm::Constant *boxInfo);
+    llvm::GlobalVariable* createDispatchTable(const Type &type, const ProtocolConformance &conformance,
+                                              llvm::Constant *boxInfo);
 
     llvm::GlobalVariable* getConformanceVariable(const Type &type, const Type &protocol,
                                                  llvm::Constant *conformance) const;

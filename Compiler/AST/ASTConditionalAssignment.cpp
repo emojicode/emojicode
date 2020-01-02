@@ -29,7 +29,7 @@ Value* ASTConditionalAssignment::generate(FunctionCodeGenerator *fg) const {
     return fg->buildOptionalHasValue(optional, expr_->expressionType());
 }
 
-Type ASTConditionalAssignment::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTConditionalAssignment::analyse(ExpressionAnalyser *analyser) {
     Type t = analyser->expect(TypeExpectation(false, false), &expr_);
     if (t.unboxedType() != TypeType::Optional) {
         throw CompilerError(position(), "Condition assignment can only be used with optionals.");

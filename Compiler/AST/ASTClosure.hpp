@@ -9,6 +9,7 @@
 #ifndef ASTClosure_hpp
 #define ASTClosure_hpp
 
+#include <utility>
 #include "ASTExpr.hpp"
 #include "ASTBoxing.hpp"
 #include "Scoping/CapturingSemanticScoper.hpp"
@@ -16,7 +17,7 @@
 
 namespace llvm {
 class Function;
-}
+}  // namespace llvm
 
 namespace EmojicodeCompiler {
 
@@ -35,13 +36,14 @@ class ASTClosure : public ASTExpr, public MFHeapAutoAllocates {
 public:
     ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition &p, bool isEscaping);
 
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser) override;
+    Type comply(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const final;
 
     void toCode(PrettyStream &pretty) const override;
     void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
 
-    ~ASTClosure();
+    ~ASTClosure() override;
 
 private:
     std::unique_ptr<Function> closure_;
@@ -64,7 +66,7 @@ public:
     llvm::Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(PrettyStream &pretty) const override {}
 
-    ~ASTCallableBox();
+    ~ASTCallableBox() override;
 
 private:
     static llvm::Function* getRelease(CodeGenerator *cg);
@@ -74,13 +76,16 @@ private:
 
 class ASTCallableThunkDestination : public ASTExpr {
 public:
-    ASTCallableThunkDestination(const SourcePosition &p, const Type &destinationType)
-        : ASTExpr(p) { setExpressionType(destinationType); }
+    ASTCallableThunkDestination(const SourcePosition &p, Type destinationType)
+        : ASTExpr(p), type_(std::move(destinationType)) {}
 
-    Type analyse(ExpressionAnalyser *, const TypeExpectation &) final { return expressionType(); }
+    Type analyse(ExpressionAnalyser *) final { return type_; }
     void toCode(PrettyStream &pretty) const override {}
     llvm::Value* generate(FunctionCodeGenerator *fg) const override;
-    virtual void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override {}
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override {}
+
+private:
+    Type type_;
 };
 
 }  // namespace EmojicodeCompiler

@@ -53,14 +53,6 @@ void Class::analyseSuperType() {
     }
     type.klass()->setHasSubclass();
 
-    std::vector<std::u32string> missing;
-    std::set_difference(type.klass()->requiredInitializers_.begin(), type.klass()->requiredInitializers_.end(),
-                        requiredInitializers_.begin(), requiredInitializers_.end(), std::back_inserter(missing));
-    for (auto &name : missing) {
-        package()->compiler()->error(CompilerError(position(), "Required initializer ",
-                                                   utf8(name), " was not implemented."));
-    }
-
     offsetIndicesBy(type.genericArguments().size());
     for (size_t i = type.typeDefinition()->superGenericArguments().size(); i < type.genericArguments().size(); i++) {
         if (type.genericArguments()[i].type() == TypeType::GenericVariable) {
@@ -75,6 +67,28 @@ void Class::analyseSuperType() {
     }
 }
 
+Function* Class::findSuperFunction(Function *function, SemanticAnalyser *analyser) {
+    Function *f;
+    switch (function->functionType()) {
+        case FunctionType::ObjectMethod:
+        case FunctionType::Deinitializer:
+            f = superclass()->methods().lookup(function, TypeContext(type()), analyser);
+            break;
+        case FunctionType::ClassMethod:
+            f = superclass()->typeMethods().lookup(function, TypeContext(type()), analyser);
+            break;
+        case FunctionType::ObjectInitializer:
+            f = superclass()->inits().lookup(function, TypeContext(type()), analyser);
+            if (f != nullptr && !static_cast<Initializer*>(f)->required()) return nullptr;
+            break;
+        default:
+            throw std::logic_error("Function of unexpected type in class");
+    }
+    if (f == nullptr) return f;
+    if (f->accessLevel() == AccessLevel::Private) return nullptr;
+    return f;
+}
+
 void Class::inherit(SemanticAnalyser *analyser) {
     if (superType() == nullptr) {
         analyser->declareInstanceVariables(Type(this));
@@ -86,8 +100,10 @@ void Class::inherit(SemanticAnalyser *analyser) {
         return;
     }
 
-    if (instanceVariables().empty() && initializerList().empty()) {
-        inheritsInitializers_ = true;
+    methods().setSuper(&superclass()->methods());
+    typeMethods().setSuper(&superclass()->typeMethods());
+    if (instanceVariables().empty() && inits().list().empty()) {
+        inits().setSuper(&superclass()->inits());
     }
 
     instanceScope() = superclass()->instanceScope();
@@ -101,14 +117,25 @@ void Class::inherit(SemanticAnalyser *analyser) {
 
     protocols_.reserve(superclass()->protocols().size());
     for (auto &protocol : superclass()->protocols()) {
-        auto find = std::find_if(protocols_.begin(), protocols_.end(), [&classType, &protocol](auto &a) {
-            return a->type().identicalTo(protocol->type(), TypeContext(classType), nullptr);
+        auto find = std::find_if(protocols_.begin(), protocols_.end(), [&](auto &a) {
+            return a.type->type().identicalTo(protocol.type->type(), TypeContext(classType), nullptr);
         });
         if (find != protocols_.end()) {
             analyser->compiler()->error(CompilerError(position(), "Superclass already declared conformance to ",
-                                                      protocol->type().toString(TypeContext(classType)), "."));
+                                                      protocol.type->type().toString(TypeContext(classType)), "."));
         }
-        protocols_.emplace_back(protocol);
+        ProtocolConformance conf = protocol;
+        conf.implementations.clear();
+        protocols_.emplace_back(conf);
+    }
+
+    for (Initializer *init : superclass()->inits().list()) {
+        if (!init->required() || inits().lookup(init, TypeContext(classType), analyser) != nullptr) {
+            continue;
+        }
+        auto error = CompilerError(position(), "Required initializer ", utf8(init->name()), " was not implemented.");
+        error.addNotes(init->position(), "Initializer is required here.");
+        package()->compiler()->error(error);
     }
 
     eachFunctionWithoutInitializers([this, analyser](Function *function) {
@@ -120,29 +147,30 @@ void Class::checkOverride(Function *function, SemanticAnalyser *analyser) {
     if (function->functionType() == FunctionType::Deinitializer) {
         return;
     }
-    auto superFunction = findSuperFunction(function);
+    auto superFunction = findSuperFunction(function, nullptr);
     if (function->overriding()) {
         if (superFunction == nullptr) {
             throw CompilerError(function->position(), utf8(function->name()),
                                 " was declared ✒️ but does not override anything.");
         }
-        auto layer = analyser->enforcePromises(function, superFunction, Type(superclass()),
+        auto thunk = analyser->enforcePromises(function, superFunction, Type(superclass()),
                                                TypeContext(Type(this)), TypeContext());
         if (function->accessLevel() == AccessLevel::Default) {
             function->setAccessLevel(superFunction->accessLevel());
         }
-        if (layer != nullptr) {
-            function->setVirtualTableThunk(layer.get());
-            addMethod(std::move(layer));
+        if (thunk != nullptr) {
+            function->setVirtualTableThunk(thunk.get());
+            methods().add(std::move(thunk));
         }
     }
-    else if (superFunction != nullptr) {
+    else if (superFunction != nullptr && !function->isThunk()) {
         analyser->compiler()->error(CompilerError(function->position(), "If you want to override ",
                                                   utf8(function->name()), " add ✒️."));
     }
     else if (function->accessLevel() == AccessLevel::Default) {
         function->setAccessLevel(AccessLevel::Public);
     }
+    function->setSuperFunction(superFunction);
 }
 
 void Class::addInstanceVariable(const InstanceVariableDeclaration &declaration) {
@@ -166,40 +194,6 @@ bool Class::inheritsFrom(Class *from) const {
         }
     }
     return false;
-}
-
-Initializer* Class::lookupInitializer(const std::u32string &name) const {
-    for (auto klass = this; klass != nullptr; klass = klass->superclass()) {
-        if (auto initializer = klass->TypeDefinition::lookupInitializer(name)) {
-            return initializer;
-        }
-        if (!klass->inheritsInitializers()) {
-            break;
-        }
-    }
-    return nullptr;
-}
-
-Function * Class::lookupMethod(const std::u32string &name, Mood mood) const {
-    for (auto klass = this; klass != nullptr; klass = klass->superclass()) {
-        if (auto method = klass->TypeDefinition::lookupMethod(name, mood)) {
-            return method;
-        }
-    }
-    return nullptr;
-}
-
-Function * Class::lookupTypeMethod(const std::u32string &name, Mood mood) const {
-    for (auto klass = this; klass != nullptr; klass = klass->superclass()) {
-        if (auto method = klass->TypeDefinition::lookupTypeMethod(name, mood)) {
-            return method;
-        }
-    }
-    return nullptr;
-}
-
-void Class::handleRequiredInitializer(Initializer *init) {
-    requiredInitializers_.insert(init->name());
 }
 
 bool Class::storesGenericArgs() const {

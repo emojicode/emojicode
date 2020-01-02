@@ -61,7 +61,7 @@ void ASTBlock::popScope(FunctionAnalyser *analyser) {
 }
 
 void ASTExprStatement::analyse(FunctionAnalyser *analyser)  {
-    expr_->setExpressionType(expr_->analyse(analyser, TypeExpectation()));
+    analyser->ExpressionAnalyser::expect(TypeExpectation(), &expr_);
 }
 
 void ASTExprStatement::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
@@ -88,7 +88,7 @@ void ASTReturn::analyse(FunctionAnalyser *analyser) {
 
     auto rtType = analyser->function()->returnType()->type();
 
-    auto type = value_->analyse(analyser, TypeExpectation(rtType));
+    auto type = analyser->ExpressionAnalyser::analyse(value_);
     if (!type.compatibleTo(rtType, analyser->typeContext())) {
         analyser->error(CompilerError(position(), "Declared return type is ",
                                                   rtType.toString(analyser->typeContext())));
@@ -97,7 +97,7 @@ void ASTReturn::analyse(FunctionAnalyser *analyser) {
         returnReference(analyser, type);
     }
     else {
-        analyser->comply(type, TypeExpectation(analyser->function()->returnType()->type()), &value_);
+        analyser->comply(TypeExpectation(rtType), &value_);
     }
 }
 

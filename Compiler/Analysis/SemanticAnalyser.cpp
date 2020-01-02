@@ -42,20 +42,20 @@ void SemanticAnalyser::analyse(bool executable) {
         });
     }
     for (auto &vt : package_->valueTypes()) {
+        enqueueFunctionsOfTypeDefinition(vt.get());
         checkProtocolConformance(Type(vt.get()));
         declareInstanceVariables(Type(vt.get()));
-        enqueueFunctionsOfTypeDefinition(vt.get());
     }
     for (auto &klass : package_->classes()) {
-        for (auto init : klass->initializerList()) {
+        for (auto init : klass->inits().list()) {
             if (init->required()) {
-                klass->addTypeMethod(buildRequiredInitThunk(klass.get(), init));
+                klass->typeMethods().add(buildRequiredInitThunk(klass.get(), init, this));
             }
         }
 
+        enqueueFunctionsOfTypeDefinition(klass.get());
         klass->inherit(this);
         checkProtocolConformance(Type(klass.get()));
-        enqueueFunctionsOfTypeDefinition(klass.get());
 
         if (!klass->hasSubclass() && !klass->exported()) {
             klass->setFinal();
@@ -145,22 +145,16 @@ void SemanticAnalyser::declareInstanceVariables(const Type &type) {
     scoper->pushScope();  // For closure analysis
     ExpressionAnalyser analyser(this, context, package_, std::move(scoper));
 
-    for (auto &var : typeDef->instanceVariables()) {
+    for (auto &var : typeDef->instanceVariablesMut()) {
         typeDef->instanceScope().declareVariable(var.name, var.type->analyseType(context), false,
                                                  var.position);
 
         if (var.expr != nullptr) {
-            auto type = var.expr->analyse(&analyser, TypeExpectation(var.type->type()));
-            if (!type.compatibleTo(var.type->type(), context)) {
-                package_->compiler()->error(CompilerError(var.expr->position(),
-                                                          "Cannot initialize instance variable of type ",
-                                                          var.type->type().toString(context), " with value of type ",
-                                                          type.toString(context), "."));
-            }
+            analyser.expectType(var.type->type(), &var.expr);
         }
     }
 
-    if (!typeDef->instanceVariables().empty() && typeDef->initializerList().empty()) {
+    if (!typeDef->instanceVariables().empty() && typeDef->inits().list().empty()) {
         package_->compiler()->warn(typeDef->position(), "Type defines ", typeDef->instanceVariables().size(),
                                    " instances variables but has no initializers.");
     }
@@ -202,7 +196,9 @@ std::unique_ptr<Function> SemanticAnalyser::enforcePromises(Function *sub, Funct
     bool isReturnOk = checkReturnPromise(sub, subContext, super, superContext, superSource);
     bool isParamsOk = checkArgumentPromise(sub, super, subContext, superContext) ;
     if (!isParamsOk || !isReturnOk) {
-        return buildBoxingThunk(superContext, super, sub);
+        auto thunk = buildBoxingThunk(superContext, super, sub);
+        enqueueFunction(thunk.get());  // promises are enforced after calls to enqueueFunctionsOfTypeDefinition
+        return thunk;
     }
     return nullptr;
 }
@@ -231,14 +227,17 @@ bool SemanticAnalyser::checkArgumentPromise(const Function *sub, const Function 
     return compatible;
 }
 
-void SemanticAnalyser::finalizeProtocol(const Type &type, const Type &protocol, const SourcePosition &p) {
-    for (auto method : protocol.protocol()->methodList()) {
-        auto methodImplementation = type.typeDefinition()->lookupMethod(method->name(), method->mood());
-        if (methodImplementation == nullptr) {
+void SemanticAnalyser::finalizeProtocol(const Type &type, ProtocolConformance &conformance) {
+    auto protocol = conformance.type->type().unboxed();
+    conformance.implementations.reserve(protocol.protocol()->methods().list().size());
+    for (auto method : protocol.protocol()->methods().list()) {
+        auto implementation = type.typeDefinition()->methods().lookup(method,
+                                                                      TypeContext(conformance.type->type()),this);
+        if (implementation == nullptr) {
             package_->compiler()->error(
-                    CompilerError(p, type.toString(TypeContext()), " does not conform to protocol ",
-                                  protocol.toString(TypeContext()), ": Method ",
-                                  utf8(method->name()), " not provided."));
+                    CompilerError(conformance.type->position(), type.toString(TypeContext()),
+                                  " does not conform to protocol ", protocol.toString(TypeContext()),
+                                  ": Method ", utf8(method->name()), " not provided."));
             continue;
         }
 
@@ -246,17 +245,21 @@ void SemanticAnalyser::finalizeProtocol(const Type &type, const Type &protocol, 
             continue;
         }
 
-        methodImplementation->createUnspecificReification();
-        auto layer = enforcePromises(methodImplementation, method, protocol, TypeContext(type), TypeContext(protocol));
-        if (layer != nullptr) {
-            type.typeDefinition()->addMethod(std::move(layer));
+        implementation->createUnspecificReification();
+        auto thunk = enforcePromises(implementation, method, protocol, TypeContext(type), TypeContext(protocol));
+        if (thunk != nullptr) {
+            conformance.implementations.emplace_back(thunk.get());
+            type.typeDefinition()->methods().add(std::move(thunk));
+        }
+        else {
+            conformance.implementations.emplace_back(implementation);
         }
     }
 }
 
 void SemanticAnalyser::checkProtocolConformance(const Type &type) {
     for (auto &protocol : type.typeDefinition()->protocols()) {
-        finalizeProtocol(type, protocol->type(), protocol->position());
+        finalizeProtocol(type, protocol);
     }
 }
 
@@ -264,18 +267,36 @@ void SemanticAnalyser::finalizeProtocols(const Type &type) {
     std::set<Type> protocols;
 
     for (auto &protocol : type.typeDefinition()->protocols()) {
-        auto &protocolType = protocol->analyseType(TypeContext(type));
-        if (protocolType.unboxedType() != TypeType::Protocol) {
-            package_->compiler()->error(CompilerError(protocol->position(), "Type is not a protocol."));
+        auto &protocolType = protocol.type->analyseType(TypeContext(type));
+        Type unboxed = protocolType.unboxed();
+        if (!unboxed.is<TypeType::Protocol>()) {
+            package_->compiler()->error(CompilerError(protocol.type->position(), "Type is not a protocol."));
             continue;
         }
-        if (protocols.find(protocolType.unboxed()) != protocols.end()) {
-            package_->compiler()->error(CompilerError(protocol->position(),
+        if (protocols.find(unboxed) != protocols.end()) {
+            package_->compiler()->error(CompilerError(protocol.type->position(),
                                                       "Conformance to protocol was already declared."));
             continue;
         }
-        protocols.emplace(protocolType.unboxed());
+        protocols.emplace(unboxed);
     }
+}
+
+Type SemanticAnalyser::defaultLiteralType(const Type &type) const {
+    if (type.is<TypeType::IntegerLiteral>()) {
+        return compiler()->sInteger->type();
+    }
+    if (type.is<TypeType::ListLiteral>()) {
+        Type dtype = compiler()->sList->type();
+        dtype.setGenericArgument(0, type.genericArguments()[0]);
+        return dtype;
+    }
+    if (type.is<TypeType::DictionaryLiteral>()) {
+        Type dtype = compiler()->sDictionary->type();
+        dtype.setGenericArgument(0, type.genericArguments()[0]);
+        return dtype;
+    }
+    return type;
 }
 
 }  // namespace EmojicodeCompiler

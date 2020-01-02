@@ -38,18 +38,18 @@ public:
     explicit TypeContext(Type callee) : calleeType_(std::move(callee)) {}
     /// Constructs a TypeContext with a calleeType and a function.
     TypeContext(Type callee, Function *p) : calleeType_(std::move(callee)), function_(p) {}
-    TypeContext(Type callee, Function *p, std::vector<Type> *args)
+    TypeContext(Type callee, Function *p, const std::vector<Type> *args)
         : calleeType_(std::move(callee)), function_(p), functionGenericArguments_(args) {}
 
     const Type& calleeType() const { return calleeType_; }
     /// Returns the function in whose context the code is.
     /// @returns The function with which this TypeContext was constructed or @c nullptr if no function is provided.
     Function* function() const { return function_; }
-    std::vector<Type>* functionGenericArguments() const { return functionGenericArguments_; }
+    const std::vector<Type>* functionGenericArguments() const { return functionGenericArguments_; }
 private:
     Type calleeType_;
     Function *function_ = nullptr;
-    std::vector<Type> *functionGenericArguments_ = nullptr;
+    const std::vector<Type> *functionGenericArguments_ = nullptr;
 };
 
 }  // namespace EmojicodeCompiler

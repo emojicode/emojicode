@@ -16,19 +16,22 @@ namespace EmojicodeCompiler {
 
 class Compiler;
 struct SourcePosition;
+class SemanticAnalyser;
 
 class CommonTypeFinder {
 public:
+    explicit CommonTypeFinder(SemanticAnalyser *analyser) : analyser_(analyser) {}
     /// Tells the common type finder about the type of another element in the collection.
     void addType(const Type &type, const TypeContext &typeContext);
-    /** Returns the common type and issues a warning at @c warningToken if the common type is ambigious. */
-    Type getCommonType(const SourcePosition &p, Compiler *app) const;
+    /** Returns the common type and issues a warning at @c warningToken if the common type is ambiguous. */
+    Type getCommonType(const SourcePosition &p, Compiler *compiler) const;
 private:
     void updateCommonProtocols(const Type &type, const TypeContext &typeContext);
     void updateCommonType(const Type &type, const TypeContext &typeContext);
     bool firstTypeFound_ = false;
     Type commonType_ = Type::something();
     std::vector<Type> commonProtocols_;
+    SemanticAnalyser *analyser_;
 
     void setCommonType(const Type &type);
 };

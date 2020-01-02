@@ -17,7 +17,7 @@ class ASTConditionalAssignment final : public ASTExpr {
 public:
     ASTConditionalAssignment(std::u32string varName, std::shared_ptr<ASTExpr> expr,
                              const SourcePosition &p) : ASTExpr(p), varName_(std::move(varName)), expr_(std::move(expr)) {}
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;

@@ -29,7 +29,7 @@ void AccessesAnyVariable::setVariableAccess(const ResolvedVariable &var, Express
     }
 }
 
-Type ASTGetVariable::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTGetVariable::analyse(ExpressionAnalyser *analyser) {
     auto var = analyser->scoper().getVariable(name(), position());
     setVariableAccess(var, analyser);
     analyser->pathAnalyser().uninitalizedError(var, position());
@@ -38,6 +38,7 @@ Type ASTGetVariable::analyse(ExpressionAnalyser *analyser, const TypeExpectation
         !analyser->typeContext().calleeType().isMutable()) {
         type.setMutable(false);
     }
+    assert(!type.is<TypeType::NoReturn>());
     return type;
 }
 
@@ -54,7 +55,7 @@ void ASTGetVariable::mutateReference(ExpressionAnalyser *analyser) {
     analyser->scoper().getVariable(name(), position()).variable.mutate(position());
 }
 
-Type ASTIsOnlyReference::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTIsOnlyReference::analyse(ExpressionAnalyser *analyser) {
     auto rvar = analyser->scoper().getVariable(name(), position());
     if (rvar.variable.type().type() != TypeType::Someobject && rvar.variable.type().type() != TypeType::Class) {
         analyser->error(CompilerError(position(), "🏮 can only be used with objects."));

@@ -7,6 +7,7 @@
 
 #include <string>
 #include <map>
+#include <utility>
 #include <vector>
 #include <memory>
 #include <functional>
@@ -18,7 +19,7 @@ struct SourcePosition;
 
 class SourceFile {
 public:
-    explicit SourceFile(std::u32string file, std::string path) : content_(std::move(file)), path_(path) {}
+    explicit SourceFile(std::u32string file, std::string path) : content_(std::move(file)), path_(std::move(path)) {}
     const std::u32string& file() const { return content_; }
     const std::string& path() const { return path_; }
 

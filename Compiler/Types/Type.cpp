@@ -163,7 +163,7 @@ bool Type::canHaveGenericArguments() const {
         return genericArguments_[0].canHaveGenericArguments();
     }
     return type() == TypeType::Class || type() == TypeType::Protocol || type() == TypeType::ValueType
-            || type() == TypeType::Enum;
+            || type() == TypeType::Enum || type() == TypeType::ListLiteral || type() == TypeType::DictionaryLiteral;
 }
 
 void Type::setGenericArguments(std::vector<Type> &&args) {
@@ -341,8 +341,23 @@ bool Type::compatibleTo(const Type &to, const TypeContext &tc, GenericInferer *i
         }
         return optionalType().compatibleTo(to.optionalType(), tc, inf);
     }
+    if (is<TypeType::NoValueLiteral>() && to.type() == TypeType::Optional) {
+        return true;
+    }
     if (this->type() != TypeType::Optional && to.type() == TypeType::Optional) {
         return compatibleTo(to.optionalType(), tc, inf);
+    }
+
+    if (is<TypeType::IntegerLiteral>() && to.is<TypeType::ValueType>() &&
+            to.typeDefinition()->canInitFrom(*this)) {
+        return true;
+    }
+    if ((is<TypeType::ListLiteral>() || is<TypeType::DictionaryLiteral>()) &&
+            to.is<TypeType::ValueType>() && to.typeDefinition()->canInitFrom(*this)) {
+        return std::equal(genericArguments().begin(), genericArguments().end(),
+                to.genericArguments().begin(), to.genericArguments().end(), [&](const Type &a, const Type &b) {
+            return a.compatibleTo(b, tc, inf);
+        });
     }
 
     if ((this->type() == TypeType::GenericVariable && to.type() == TypeType::GenericVariable) ||
@@ -416,12 +431,12 @@ bool Type::isCompatibleToTypeAsValue(const Type &to, const TypeContext &tc,
 bool Type::isCompatibleToMultiProtocol(const Type &to, const TypeContext &ct, GenericInferer *inf) const {
     if (type() == TypeType::MultiProtocol) {
         return std::equal(protocols().begin(), protocols().end(), to.protocols().begin(), to.protocols().end(),
-                          [ct, inf](const Type &a, const Type &b) {
+                          [&](const Type &a, const Type &b) {
                               return a.compatibleTo(b, ct, inf);
                           });
     }
 
-    return std::all_of(to.protocols().begin(), to.protocols().end(), [this, ct](const Type &p) {
+    return std::all_of(to.protocols().begin(), to.protocols().end(), [&](const Type &p) {
         return compatibleTo(p, ct);
     });
 }
@@ -430,7 +445,7 @@ bool Type::isCompatibleToProtocol(const Type &to, const TypeContext &ct, Generic
     if (type() == TypeType::Class) {
         for (Class *a = this->klass(); a != nullptr; a = a->superclass()) {
             for (auto &protocol : a->protocols()) {
-                if (protocol->type().resolveOn(TypeContext(*this)).compatibleTo(to.resolveOn(ct), ct, inf)) {
+                if (protocol.type->type().resolveOn(TypeContext(*this)).compatibleTo(to.resolveOn(ct), ct, inf)) {
                     return true;
                 }
             }
@@ -439,7 +454,7 @@ bool Type::isCompatibleToProtocol(const Type &to, const TypeContext &ct, Generic
     }
     if (type() == TypeType::ValueType || type() == TypeType::Enum) {
         for (auto &protocol : typeDefinition()->protocols()) {
-            if (protocol->type().resolveOn(TypeContext(*this)).compatibleTo(to.resolveOn(ct), ct, inf)) {
+            if (protocol.type->type().resolveOn(TypeContext(*this)).compatibleTo(to.resolveOn(ct), ct, inf)) {
                 return true;
             }
         }

@@ -9,24 +9,26 @@
 #include "Types/CommonTypeFinder.hpp"
 #include "Compiler.hpp"
 #include "Types/TypeContext.hpp"
+#include "Analysis/SemanticAnalyser.hpp"
 #include "Types/TypeDefinition.hpp"
 #include <algorithm>
 
 namespace EmojicodeCompiler {
 
 void CommonTypeFinder::addType(const Type &type, const TypeContext &typeContext) {
+    auto aType = analyser_->defaultLiteralType(type);
     if (!firstTypeFound_) {
-        setCommonType(type);
+        setCommonType(aType);
         firstTypeFound_ = true;
-        if (type.canHaveProtocol()) {
-            std::transform(type.typeDefinition()->protocols().begin(), type.typeDefinition()->protocols().end(),
-                           std::back_inserter(commonProtocols_), [](auto &type) { return type->type(); });
+        if (aType.canHaveProtocol()) {
+            std::transform(aType.typeDefinition()->protocols().begin(), aType.typeDefinition()->protocols().end(),
+                           std::back_inserter(commonProtocols_), [](auto &conf) { return conf.type->type(); });
         }
         return;
     }
 
-    updateCommonType(type, typeContext);
-    updateCommonProtocols(type, typeContext);
+    updateCommonType(aType, typeContext);
+    updateCommonProtocols(aType, typeContext);
 }
 
 void CommonTypeFinder::setCommonType(const Type &type) {
@@ -59,19 +61,19 @@ void CommonTypeFinder::updateCommonProtocols(const Type &type, const TypeContext
         std::vector<Type> newCommonProtocols;
         for (auto &protocol : protocols) {
             auto b = std::any_of(commonProtocols_.begin(), commonProtocols_.end(), [&protocol, &typeContext](auto &p) {
-                return protocol->type().identicalTo(p, typeContext, nullptr);
+                return protocol.type->type().identicalTo(p, typeContext, nullptr);
             });
             if (b) {
-                newCommonProtocols.emplace_back(protocol->type());
+                newCommonProtocols.emplace_back(protocol.type->type());
             }
         }
         commonProtocols_ = newCommonProtocols;
     }
 }
 
-Type CommonTypeFinder::getCommonType(const SourcePosition &p, Compiler *app) const {
+Type CommonTypeFinder::getCommonType(const SourcePosition &p, Compiler *compiler) const {
     if (!firstTypeFound_) {
-        app->warn(p, "Type is ambiguous without more context.");
+        compiler->warn(p, "Type is ambiguous without more context.");
     }
     else if (commonType_.unboxedType() == TypeType::Something || commonType_.unboxedType() == TypeType::Someobject) {
         if (commonProtocols_.size() > 1) {
@@ -80,7 +82,7 @@ Type CommonTypeFinder::getCommonType(const SourcePosition &p, Compiler *app) con
         if (commonProtocols_.size() == 1) {
             return commonProtocols_.front();
         }
-        app->warn(p, "Common type was inferred to be ", commonType_.toString(TypeContext()), ".");
+        compiler->warn(p, "Common type was inferred to be ", commonType_.toString(TypeContext()), ".");
     }
     return commonType_;
 }

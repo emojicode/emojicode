@@ -9,6 +9,7 @@
 #include "ASTMethod.hpp"
 #include "ASTVariables.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
+#include "Analysis/SemanticAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Emojis.h"
 #include "Functions/Function.hpp"
@@ -22,8 +23,7 @@ namespace EmojicodeCompiler {
 
 Type ASTMethodable::analyseMethodCall(ExpressionAnalyser *analyser, const std::u32string &name,
                                       std::shared_ptr<ASTExpr> &callee) {
-    Type otype = callee->analyse(analyser, TypeExpectation());
-    return analyseMethodCall(analyser, name, callee, otype);
+    return analyseMethodCall(analyser, name, callee, analyser->analyse(callee));
 
 }
 
@@ -40,8 +40,8 @@ Type ASTMethodable::analyseMethodCall(ExpressionAnalyser *analyser, const std::u
 
     determineCallType(analyser);
 
-    method_ = calleeType_.typeDefinition()->getMethod(name, calleeType_, analyser->typeContext(),
-                                                      args_.mood(), position());
+    method_ = calleeType_.typeDefinition()->methods().get(name, args_.mood(), &args_,
+                                                          &calleeType_, analyser, position());
 
     if (calleeType_.type() == TypeType::Class && (method_->accessLevel() == AccessLevel::Private || calleeType_.isExact())) {
         callType_ = CallType::StaticDispatch;
@@ -70,12 +70,13 @@ bool ASTMethodable::isErrorProne() const {
 
 void ASTMethodable::determineCalleeType(ExpressionAnalyser *analyser, const std::u32string &name,
                                         std::shared_ptr<ASTExpr> &callee, const Type &otype) {
-    Type type = otype.resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
+    Type type = analyser->semanticAnalyser()->defaultLiteralType(otype.resolveOnSuperArgumentsAndConstraints(analyser->typeContext()));
     if (builtIn(analyser, type, name)) {
-        calleeType_ = analyser->comply(type, TypeExpectation(false, false), &callee);
+        calleeType_ = analyser->comply(TypeExpectation(false, false), &callee);
     }
     else {
-        calleeType_ = analyser->comply(type, TypeExpectation(true, false), &callee).resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
+        calleeType_ = analyser->comply(TypeExpectation(true, false),
+                                       &callee).resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
     }
 }
 
@@ -130,8 +131,8 @@ Type ASTMethodable::analyseTypeMethodCall(ExpressionAnalyser *analyser, const st
         throw CompilerError(position(), calleeType_.toString(analyser->typeContext()), " does not provide methods.");
     }
 
-    method_ = calleeType_.typeDefinition()->getTypeMethod(name, calleeType_, analyser->typeContext(),
-                                                              args_.mood(), position());
+    method_ = calleeType_.typeDefinition()->typeMethods().get(name, args_.mood(), &args_,
+                                                              &calleeType_, analyser, position());
 
     if (calleeType_.type() == TypeType::Class && (method_->accessLevel() == AccessLevel::Private || calleeType_.isExact())) {
         callType_ = CallType::StaticDispatch;
@@ -141,13 +142,19 @@ Type ASTMethodable::analyseTypeMethodCall(ExpressionAnalyser *analyser, const st
 }
 
 Type ASTMethodable::analyseMultiProtocolCall(ExpressionAnalyser *analyser, const std::u32string &name) {
-    for (; multiprotocolN_ < calleeType_.protocols().size(); multiprotocolN_++) {
-        auto &protocol = calleeType_.protocols()[multiprotocolN_];
-        if ((method_ = protocol.protocol()->lookupMethod(name, args_.mood())) != nullptr) {
-            builtIn_ = BuiltInType::Multiprotocol;
-            callType_ = CallType::DynamicProtocolDispatch;
-            return analyser->analyseFunctionCall(&args_, protocol, method_);
+    auto resolution = FunctionResolution<Function>(name, args_.mood(), &args_, calleeType_, analyser);
+    for (auto &protocol : calleeType_.protocols()) {
+        resolution.addResolver(&protocol.protocol()->methods());
+    }
+    if ((method_ = resolution.resolveAndReificate(&args_, &calleeType_)) != nullptr) {
+        for (; multiprotocolN_ < calleeType_.protocols().size(); multiprotocolN_++) {
+            if (calleeType_.protocols()[multiprotocolN_].protocol() == method_->owner()) {
+                break;
+            }
         }
+        builtIn_ = BuiltInType::Multiprotocol;
+        callType_ = CallType::DynamicProtocolDispatch;
+        return analyser->analyseFunctionCall(&args_, calleeType_, method_);
     }
     throw CompilerError(position(), "No type in ", calleeType_.toString(analyser->typeContext()),
                         " provides a method ", utf8(name), ".");
@@ -205,7 +212,7 @@ bool ASTMethodable::builtIn(ExpressionAnalyser *analyser, const Type &btype, con
     return false;
 }
 
-Type ASTMethod::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTMethod::analyse(ExpressionAnalyser *analyser) {
     return analyseMethodCall(analyser, name_, callee_);
 }
 

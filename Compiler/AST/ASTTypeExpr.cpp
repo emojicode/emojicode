@@ -43,8 +43,8 @@ Type ASTStaticType::analyse(ExpressionAnalyser *analyser, const TypeExpectation 
     return type_->type();
 }
 
-Type ASTTypeExpr::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
-    return analyse(analyser, expectation, false);
+Type ASTTypeExpr::analyse(ExpressionAnalyser *analyser) {
+    return analyse(analyser, TypeExpectation(), false);
 }
 
 ASTThisType::ASTThisType(const SourcePosition &p) : ASTTypeFromExpr(std::make_shared<ASTThis>(p), p) {}

@@ -22,7 +22,7 @@ class ASTCast final : public ASTUnaryMFForwarding {
 public:
     ASTCast(std::shared_ptr<ASTExpr> value, std::shared_ptr<ASTTypeExpr> type,
             const SourcePosition &p) : ASTUnaryMFForwarding(std::move(value), p), typeExpr_(std::move(type)) {}
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;

@@ -31,20 +31,27 @@ class Prettyprinter;
 class MFFunctionAnalyser;
 class ASTCall;
 class ASTType;
+class ASTReturn;
 
 /// The superclass of all syntax tree nodes representing an expression.
+///
+/// The order in which every expression is visited is normally:
+/// - `analyse` is called to determine a provisional expectation-independent result type
+/// - `comply` is called to determine the final result type and allow adjustment to the expectation
+/// - `analyseMemoryFlow` is called to analyse memory flow.
+/// - `generate` is called to generate IR code.
 class ASTExpr : public ASTNode {
+    friend ExpressionAnalyser;
+    friend ASTReturn;
 public:
     explicit ASTExpr(const SourcePosition &p) : ASTNode(p) {}
     /// Set after semantic analysis and transformation.
     /// Iff this node represents an expression type this type is the exact type produced by this node.
     const Type& expressionType() const { return expressionType_; }
-    void setExpressionType(const Type &type) { expressionType_ = type; }
 
     /// Subclasses must override this method to generate IR.
     /// If the expression potentially evaluates to an managed value, handleResult() must be called.
     virtual Value* generate(FunctionCodeGenerator *fg) const = 0;
-    virtual Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) = 0;
     virtual void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) = 0;
 
     /// Informs this expression that if it creates a temporary object the object must not be released after the
@@ -79,9 +86,13 @@ protected:
     /// @see MFFunctionAnalyser for a detailed explanation.
     bool isTemporary() const { return isTemporary_; }
 
+    virtual Type analyse(ExpressionAnalyser *analyser) = 0;
+    virtual Type comply(ExpressionAnalyser *analyser, const TypeExpectation &expectation) { return expressionType(); }
+    void setExpressionType(const Type &type) { expressionType_ = type; }
+
 private:
     bool isTemporary_ = true;
-    Type expressionType_ = Type::noReturn();
+    Type expressionType_ = Type::invalid();
 };
 
 /// All expressions that represent a call (method, initializer, callable) that potentially raises an error inherit
@@ -119,7 +130,7 @@ std::shared_ptr<T> insertNode(std::shared_ptr<ASTExpr> *node, Args&&... args) {
 class ASTSizeOf final : public ASTExpr {
 public:
     ASTSizeOf(std::unique_ptr<ASTType> type, const SourcePosition &p);
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
@@ -164,7 +175,7 @@ class ASTCallableCall final : public ASTCall {
 public:
     ASTCallableCall(std::shared_ptr<ASTExpr> value, ASTArguments args,
                     const SourcePosition &p) : ASTCall(p), callable_(std::move(value)), args_(std::move(args)) {}
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;

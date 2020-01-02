@@ -17,6 +17,7 @@ class Type;
 class TypeContext;
 class Compiler;
 class Class;
+struct ProtocolConformance;
 struct SourcePosition;
 
 /// Manages the semantic analysis of a package.
@@ -32,6 +33,10 @@ public:
     void analyse(bool executable);
 
     void enqueueFunction(Function *);
+
+    /// Iff `type` is a literal type, returns the default inferred type for the literal type. Otherwise the type is
+    /// returned.
+    Type defaultLiteralType(const Type &literal) const;
 
     Compiler* compiler() const;
 
@@ -49,8 +54,7 @@ private:
     void enqueueFunctionsOfTypeDefinition(TypeDefinition *typeDef);
     void finalizeProtocols(const Type &type);
     void checkProtocolConformance(const Type &type);
-    void finalizeProtocol(const Type &type, const Type &protocol, const SourcePosition &p);
-    void finalizeSuperclass(Class *klass);
+    void finalizeProtocol(const Type &type, ProtocolConformance &conformance);
     void checkStartFlagFunction(bool executable);
 
     Package *package_;
