@@ -1,4 +1,4 @@
-    //
+//
 //  Lexer.c
 //  Emojicode
 //
@@ -13,7 +13,8 @@
 
 namespace EmojicodeCompiler {
 
-Lexer::Lexer(SourceFile *source) : sourcePosition_(1, 0, source), source_(source) {
+Lexer::Lexer(SourceFile *source, bool minimalMode)
+        : sourcePosition_(1, 0, source), source_(source), minimalMode_(minimalMode) {
     skipWhitespace();
 
     loadOperatorSingleTokens();
@@ -75,7 +76,9 @@ bool Lexer::detectWhitespace() {
     if (isNewline()) {
         sourcePosition_.character = 0;
         sourcePosition_.line++;
-        source_->endLine(i_ + 1);
+        if (!minimalMode_) {
+            source_->endLine(i_ + 1);
+        }
         return false;
     }
     return isWhitespace();
@@ -99,8 +102,11 @@ void Lexer::nextCharOrEnd() {
 }
 
 Token Lexer::lex() {
-    auto token = readToken();
+    Token token = readToken();
     skipWhitespace();
+    if (minimalMode_ && (token.type() == TokenType::MultilineComment || token.type() == TokenType::SinglelineComment)) {
+        return lex();
+    }
     return token;
 }
 
@@ -244,7 +250,9 @@ Lexer::TokenState Lexer::continueMultilineComment(Token *token, TokenConstructio
     if (codePoint() == E_END_ARROW) {
         constState->commentDetermined_ = false;
     }
-    token->value_.push_back(codePoint());
+    if (!minimalMode_) {
+        token->value_.push_back(codePoint());
+    }
     return TokenState::Continues;
 }
 
@@ -260,7 +268,9 @@ Lexer::TokenState Lexer::continueSingleLineToken(Token *token, TokenConstruction
     if (isNewline()) {
         return TokenState::Ended;
     }
-    token->value_.push_back(codePoint());
+    if (!minimalMode_) {
+        token->value_.push_back(codePoint());
+    }
     return TokenState::Continues;
 }
 

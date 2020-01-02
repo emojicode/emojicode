@@ -13,6 +13,11 @@
 namespace EmojicodeCompiler {
 
 SourceFile* SourceManager::read(std::string file) {
+    auto find = cache_.find(file);
+    if (find != cache_.end() && !find->second->wasCleared()) {
+        return find->second.get();
+    }
+
     std::ifstream f(file, std::ios_base::binary | std::ios_base::in);
     if (f.fail()) {
         throw CompilerError(SourcePosition(), "Couldn't read input file ", file, ".");
@@ -20,8 +25,14 @@ SourceFile* SourceManager::read(std::string file) {
 
     auto string = std::string(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());
     std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+    auto content = conv.from_bytes(string);
 
-    auto cache = std::make_unique<SourceFile>(conv.from_bytes(string), file);
+    if (find != cache_.end()) {
+        find->second->setContent(std::move(content));
+        return find->second.get();
+    }
+
+    auto cache = std::make_unique<SourceFile>(std::move(content), file);
     auto ptr = cache.get();
     cache_.emplace(file, std::move(cache));
     return ptr;

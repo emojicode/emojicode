@@ -13,7 +13,7 @@
 namespace EmojicodeCompiler {
 
 std::u32string SourcePosition::wholeLine() const {
-    if (file == nullptr) {
+    if (file == nullptr || file->hasNoLines()) {
         return std::u32string();
     }
 

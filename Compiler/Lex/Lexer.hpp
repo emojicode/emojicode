@@ -27,7 +27,8 @@ namespace EmojicodeCompiler {
 class Lexer {
 public:
     /// @param sourceCode The Emojicode source code that shall be analyzed.
-    Lexer(SourceFile *source);
+    /// @param minimalMode In minimal mode comments and line endings are discarded.
+    Lexer(SourceFile *source, bool minimalMode);
 
     /// @returns The next token.
     /// @throws CompilerError if an error occurs during tokenization.
@@ -109,6 +110,8 @@ private:
     SourceFile *source_;
     size_t i_ = 0;
     std::map<char32_t, TokenType> singleTokens_;
+
+    const bool minimalMode_;
 
     TokenState continueIdentifierToken(Token *token, TokenConstructionState *constState) const;
 

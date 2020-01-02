@@ -32,8 +32,18 @@ public:
 
     void findComments(const SourcePosition &a, const SourcePosition &b,
                       const std::function<void (const Token &)> &comment) const;
+
+    /// Clears the file content from memory.
+    void clearContent() { content_ = U""; }
+
+    void setContent(std::u32string content) { content_ = std::move(content); }
+
+    bool wasCleared() const { return content_.empty(); }
+
+    bool hasNoLines() const { return wasCleared() || lines_.size() == 1; }
+
 private:
-    const std::u32string content_;
+    std::u32string content_;
     const std::string path_;
     std::vector<size_t> lines_ = {0};
     std::map<std::pair<size_t, size_t>, Token> comments_;

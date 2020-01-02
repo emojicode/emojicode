@@ -30,6 +30,7 @@ struct ExportedType {
 struct TypeIdentifier;
 struct SourcePosition;
 class Compiler;
+class SourceFile;
 
 /// Package is the class used to load, parse and analyse packages.
 class Package {
@@ -127,7 +128,7 @@ private:
     /// Verifies that no type with name @c name has already been exported and adds the type to ::exportedTypes_
     void exportType(Type t, std::u32string name, const SourcePosition &p);
 
-    TokenStream lexFile(const std::string &path);
+    std::pair<SourceFile*, TokenStream> lexFile(const std::string &path);
 
     const std::string name_;
     const std::string path_;
