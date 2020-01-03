@@ -305,6 +305,8 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
             parseMainArguments(&args, token.position());
             return std::make_shared<ASTCallableCall>(expr, args, token.position());
         }
+        case TokenType::SelectionOperator:
+            return std::make_shared<ASTSelection>(parseExpr(0), parseTypeExpr(token.position()), token.position());
         case TokenType::Class:
         case TokenType::Enumeration:
         case TokenType::ValueType:

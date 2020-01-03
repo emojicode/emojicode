@@ -411,4 +411,8 @@ void ASTLiteralType::toCode(PrettyStream &pretty) const {
     pretty << type();
 }
 
+void ASTSelection::toCode(PrettyStream &pretty) const {
+    pretty << "📣 " << expr_ << " " << typeExpr_;
+}
+
 } // namespace EmojicodeCompiler

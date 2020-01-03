@@ -71,6 +71,7 @@ enum class TokenType {
     Enumeration,
     ValueType,
     Protocol,
+    SelectionOperator,
 };
 
 class Token {

@@ -89,7 +89,7 @@ compilation_tests = [
     "valueTypeBoxCopySelf",
     "includer",
     "threads",
-    "inferListLiteralFromExpec",
+    "inferLiteralFromExpec",
     "sequenceTypeNames",
     "typeValues",
     "deinitializer",

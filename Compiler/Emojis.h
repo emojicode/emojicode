@@ -107,7 +107,8 @@ enum Emojis {
     E_PINE_DECORATION = 0x1F38D,
     E_OIL_DRUM = 0x1F6E2,
     E_HAND_POINTING_DOWN = 0x1F447,
-    E_MAGNET = U'🧲'
+    E_MAGNET = U'🧲',
+    E_CHEERING_MEGAPHONE = U'📣',
 };
 
 }  // namespace EmojicodeCompiler

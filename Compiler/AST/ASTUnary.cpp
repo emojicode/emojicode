@@ -72,4 +72,17 @@ void ASTReraise::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory 
     analyser->releaseAllVariables(this, stats_, position());
 }
 
+Type ASTSelection::analyse(ExpressionAnalyser *analyser) {
+    analyser->analyse(expr_);
+    return analyser->analyseTypeExpr(typeExpr_, TypeExpectation());
+}
+
+Type ASTSelection::comply(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+    if (!analyser->comply(TypeExpectation(expressionType()), &expr_)
+            .compatibleTo(expressionType(), analyser->typeContext())) {
+        analyser->compiler()->error(CompilerError(position(), "Expression cannot satisfy expectation."));
+    }
+    return expressionType();
+}
+
 }  // namespace EmojicodeCompiler

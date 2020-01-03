@@ -73,6 +73,19 @@ private:
     SemanticScopeStats stats_;
 };
 
+class ASTSelection final : public ASTUnaryMFForwarding {
+public:
+    ASTSelection(std::shared_ptr<ASTExpr> value, std::shared_ptr<ASTTypeExpr> type, const SourcePosition &p)
+        : ASTUnaryMFForwarding(std::move(value), p), typeExpr_(std::move(type)) {}
+    Type analyse(ExpressionAnalyser *analyser) override;
+    Value* generate(FunctionCodeGenerator *fg) const override { return expr_->generate(fg); }
+    Type comply(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
+    void toCode(PrettyStream &pretty) const override;
+
+private:
+    std::shared_ptr<ASTTypeExpr> typeExpr_;
+};
+
 }  // namespace EmojicodeCompiler
 
 #endif /* ASTUnary_hpp */
