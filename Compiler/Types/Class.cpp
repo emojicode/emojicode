@@ -85,6 +85,7 @@ Function* Class::findSuperFunction(Function *function, SemanticAnalyser *analyse
             throw std::logic_error("Function of unexpected type in class");
     }
     if (f == nullptr) return f;
+    if (!f->genericParameters().empty()) return nullptr;
     if (f->accessLevel() == AccessLevel::Private) return nullptr;
     return f;
 }
@@ -147,7 +148,7 @@ void Class::checkOverride(Function *function, SemanticAnalyser *analyser) {
     if (function->functionType() == FunctionType::Deinitializer) {
         return;
     }
-    auto superFunction = findSuperFunction(function, nullptr);
+    auto superFunction = findSuperFunction(function, analyser);
     if (function->overriding()) {
         if (superFunction == nullptr) {
             throw CompilerError(function->position(), utf8(function->name()),

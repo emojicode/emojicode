@@ -24,9 +24,11 @@ class TypeContext;
 class Function;
 enum class Mood;
 class SemanticAnalyser;
+class CompilerError;
 
 template <typename T>
 struct Candidate;
+struct NonCandidate;
 
 struct FunctionTableKey {
     FunctionTableKey(std::u32string name, Mood mood, int paramCount)
@@ -99,11 +101,18 @@ public:
     /// `type`.
     T* resolveAndReificate(ASTArguments *args, Type *type);
 
+    /// Adds notes to a CompilerError explaining why no suitable candidate was found.
+    /// If there are no methods with matching name, mood and parameter count, no notes will be added.
+    /// @pre resolve() or resolveAndReificate() must have returned nullopt or nullptr respectively.
+    void explain(CompilerError *error) const;
+
     ~FunctionResolution();
 
 private:
-    bool checkFunctionAccess(Function *function) const;
-    std::optional<GenericInferer> checkCallSignature(Function *function) const;
+    bool checkFunctionAccess(Function *function);
+    std::optional<GenericInferer> checkCallSignature(Function *function);
+    bool checkGenericArguments(Function *function, const std::vector<Type> &args);
+    bool moreSpecific(Function *a, Function *b) const;
 
     FunctionTableKey key_;
     const Type &callee_;
@@ -112,7 +121,11 @@ private:
     const TypeContext &typeContext_;
     SemanticAnalyser *analyser_;
 
-    std::list<Candidate<T>> candidates_;
+    std::optional<Candidate<T>> pick();
+
+    std::vector<Candidate<T>> candidates_;
+    std::vector<NonCandidate> nonCandidates_;
+    std::map<std::pair<Function*, Function*>, bool> moreSpecific_;
 };
 
 }  // namespace EmojicodeCompiler

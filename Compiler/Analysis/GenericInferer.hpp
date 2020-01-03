@@ -31,6 +31,14 @@ public:
         return result;
     }
 
+    std::vector<Type> localArgumentsType(const SourcePosition &p, Compiler *compiler) const {
+        std::vector<Type> result;
+        for (auto &finder : local_) {
+            result.emplace_back(finder.getCommonType(p, compiler));
+        }
+        return result;
+    }
+
     std::vector<Type> typeArguments(const SourcePosition &p, Compiler *compiler) const {
         std::vector<Type> result;
         for (auto &finder : type_) {
