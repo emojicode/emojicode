@@ -59,15 +59,7 @@ private:
         return std::make_shared<T>(parseExpr(kPrefixPrecedence), token.position());
     }
 
-    template <typename T>
-    std::shared_ptr<T> parseListingLiteral(Emojis end, const Token &token) {
-        auto node = std::make_shared<T>(token.position());
-        while (stream_.nextTokenIsEverythingBut(end)) {
-            node->addValue(parseExpr(0));
-        }
-        stream_.consumeToken();
-        return node;
-    }
+    std::shared_ptr<ASTExpr> parseListingLiteral(const SourcePosition &position);
 
     int peakOperatorPrecedence();
 

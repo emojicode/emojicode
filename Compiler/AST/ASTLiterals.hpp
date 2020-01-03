@@ -92,14 +92,26 @@ class ASTCollectionLiteral : public ASTExpr {
 public:
     explicit ASTCollectionLiteral(const SourcePosition &p) : ASTExpr(p) {}
 
+    Type analyse(ExpressionAnalyser *analyser) override;
+    Type comply(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
+
+    Value* generate(FunctionCodeGenerator *fg) const override;
+    void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
+
     void addValue(const std::shared_ptr<ASTExpr> &value) { values_.emplace_back(value); }
 
     std::pair<Value*, Value*> prepareValueArray(FunctionCodeGenerator *fg, llvm::Type *type, size_t count, const char *name) const;
+    void setPairs() { pairs_ = true; }
+
 protected:
     std::vector<std::shared_ptr<ASTExpr>> values_;
     Type type_ = Type::noReturn();
     Initializer *initializer_ = nullptr;
     Value *init(FunctionCodeGenerator *fg, std::vector<llvm::Value *> args) const;
+    bool pairs_ = false;
+    Value* generatePairs(FunctionCodeGenerator *fg) const;
+    Type complyPairs(ExpressionAnalyser *analyser, const TypeExpectation &expectation);
 };
 
 class ASTInterpolationLiteral final : public ASTExpr {
@@ -122,28 +134,6 @@ private:
     Function *toString_ = nullptr;
     void append(FunctionCodeGenerator *fg, llvm::Value *value, llvm::Value *builder) const;
     void append(FunctionCodeGenerator *fg, const std::u32string &literal, llvm::Value *builder) const;
-};
-
-class ASTListLiteral final : public ASTCollectionLiteral {
-public:
-    explicit ASTListLiteral(const SourcePosition &p) : ASTCollectionLiteral(p) {}
-    Type analyse(ExpressionAnalyser *analyser) override;
-    Type comply(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
-
-    Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
-};
-
-class ASTDictionaryLiteral final : public ASTCollectionLiteral {
-public:
-    explicit ASTDictionaryLiteral(const SourcePosition &p) : ASTCollectionLiteral(p) {}
-    Type analyse(ExpressionAnalyser *analyser) override;
-    Type comply(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
-
-    Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
 };
 
 class ASTThis : public ASTExpr {

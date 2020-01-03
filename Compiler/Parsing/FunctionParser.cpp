@@ -305,8 +305,12 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
             parseMainArguments(&args, token.position());
             return std::make_shared<ASTCallableCall>(expr, args, token.position());
         }
-        case TokenType::SelectionOperator:
-            return std::make_shared<ASTSelection>(parseExpr(0), parseTypeExpr(token.position()), token.position());
+        case TokenType::SelectionOperator: {
+            auto expr = parseExpr(0);
+            return std::make_shared<ASTSelection>(expr, parseTypeExpr(token.position()), token.position());
+        }
+        case TokenType::CollectionLiteral:
+            return parseListingLiteral(token.position());
         case TokenType::Class:
         case TokenType::Enumeration:
         case TokenType::ValueType:
@@ -331,10 +335,6 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
             auto expr = parseExpr(kPrefixPrecedence);
             return std::make_shared<ASTCast>(expr, parseTypeExpr(token.position()), token.position());
         }
-        case E_ICE_CREAM:
-            return parseListingLiteral<ASTListLiteral>(E_AUBERGINE, token);
-        case E_HONEY_POT:
-            return parseListingLiteral<ASTDictionaryLiteral>(E_AUBERGINE, token);
         case E_IZAKAYA_LANTERN:
             return std::make_shared<ASTIsOnlyReference>(stream_.consumeToken(TokenType::Variable).value(),
                                                         token.position());
@@ -385,6 +385,32 @@ std::shared_ptr<ASTExpr> FunctionParser::parseInterpolation(const Token &token) 
         literal->addValue(parseExpr(0));
     }
     literal->addLiteral(stream_.consumeToken(TokenType::EndInterpolation).value());
+    return literal;
+}
+
+std::shared_ptr<ASTExpr> FunctionParser::parseListingLiteral(const SourcePosition &position) {
+    auto literal = std::make_shared<ASTCollectionLiteral>(position);
+    if (stream_.consumeTokenIf(TokenType::RightProductionOperator)) {
+        literal->setPairs();
+    }
+    else if (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
+        literal->addValue(parseExpr(0));
+        if (stream_.consumeTokenIf(TokenType::RightProductionOperator)) {
+            literal->setPairs();
+            literal->addValue(parseExpr(0));
+            while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
+                literal->addValue(parseExpr(0));
+                stream_.consumeToken(TokenType::RightProductionOperator);
+                literal->addValue(parseExpr(0));
+            }
+        }
+        else {
+            while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
+                literal->addValue(parseExpr(0));
+            }
+        }
+    }
+    stream_.consumeToken();
     return literal;
 }
 

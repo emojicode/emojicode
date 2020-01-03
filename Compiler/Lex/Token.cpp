@@ -67,6 +67,7 @@ const char* Token::stringNameForType(TokenType type) {
         case TokenType::MiddleInterpolation: return "MiddleInterpolation";
         case TokenType::EndInterpolation: return "EndInterpolation";
         case TokenType::SelectionOperator: return "SelectionOperator";
+        case TokenType::CollectionLiteral: return "CollectionLiteral";
     }
 }
 

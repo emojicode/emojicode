@@ -85,7 +85,8 @@ std::pair<llvm::Value *, llvm::Value *> EmojicodeCompiler::ASTCollectionLiteral:
 }
 
 
-Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
+Value* ASTCollectionLiteral::generate(FunctionCodeGenerator *fg) const {
+    if (pairs_) return generatePairs(fg);
     llvm::Value *current, *structure;
     std::tie(current, structure) = prepareValueArray(fg, fg->typeHelper().box(), values_.size(), "items");
     for (auto &value : values_) {
@@ -96,7 +97,7 @@ Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
                       fg->int64(values_.size()) });
 }
 
-Value *ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
+Value *ASTCollectionLiteral::generatePairs(FunctionCodeGenerator *fg) const {
     llvm::Value *keys, *values, *currentKey, *currentValue;
     auto string = fg->typeHelper().llvmTypeFor(Type(fg->compiler()->sString));
     std::tie(currentKey, keys) = prepareValueArray(fg, string, values_.size() / 2, "keys");

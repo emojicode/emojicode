@@ -72,6 +72,7 @@ enum class TokenType {
     ValueType,
     Protocol,
     SelectionOperator,
+    CollectionLiteral,
 };
 
 class Token {

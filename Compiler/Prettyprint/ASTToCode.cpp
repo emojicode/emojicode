@@ -314,20 +314,17 @@ void ASTInterpolationLiteral::toCode(PrettyStream &pretty) const {
     pretty << "🔤";
 }
 
-void ASTListLiteral::toCode(PrettyStream &pretty) const {
+void ASTCollectionLiteral::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << "🍨 ";
-    for (auto &val : values_) {
-        pretty << val << " ";
-    }
-    pretty << "🍆";
-}
-
-void ASTDictionaryLiteral::toCode(PrettyStream &pretty) const {
-    pretty.printComments(position());
-    pretty << "🍯 ";
-    for (auto &val : values_) {
-        pretty << val << " ";
+    pretty << "🍿 ";
+    if (pairs_) {
+        for (auto it = values_.begin(); it != values_.end(); it++) {
+            pretty << *it++ << " ➡️ " << *it;
+        }
+    } else {
+        for (auto &val : values_) {
+            pretty << val << " ";
+        }
     }
     pretty << "🍆";
 }

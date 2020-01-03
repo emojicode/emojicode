@@ -93,19 +93,27 @@ Type ASTNoValue::comply(ExpressionAnalyser *analyser, const TypeExpectation &exp
     return type_;
 }
 
-Type ASTDictionaryLiteral::analyse(ExpressionAnalyser *analyser) {
+Type ASTCollectionLiteral::analyse(ExpressionAnalyser *analyser) {
     CommonTypeFinder finder(analyser->semanticAnalyser());
-    for (auto it = values_.begin(); it != values_.end(); it++) {
-        analyser->analyse(*it);
-        if (++it == values_.end()) {
-            throw CompilerError(position(), "A value must be provided for every key.");
+
+    if (pairs_) {
+        for (auto it = values_.begin(); it != values_.end(); it++) {
+            analyser->analyse(*it);
+            if (++it == values_.end()) {
+                throw CompilerError(position(), "A value must be provided for every key.");
+            }
+            finder.addType(analyser->analyse(*it), analyser->typeContext());
         }
-        finder.addType(analyser->analyse(*it), analyser->typeContext());
+        return Type::dictionaryLiteral(finder.getCommonType(position(), analyser->compiler()));
     }
-    return Type::dictionaryLiteral(finder.getCommonType(position(), analyser->compiler()));
+
+    for (auto &valueNode : values_) {
+        finder.addType(analyser->analyse(valueNode), analyser->typeContext());
+    }
+    return Type::listLiteral(finder.getCommonType(position(), analyser->compiler()));
 }
 
-Type ASTDictionaryLiteral::comply(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTCollectionLiteral::complyPairs(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     if (expectation.type() == TypeType::ValueType && expectation.typeDefinition()->canInitFrom(expressionType())) {
         type_ = expectation.copyType();
     }
@@ -129,21 +137,14 @@ Type ASTDictionaryLiteral::comply(ExpressionAnalyser *analyser, const TypeExpect
     return type_;
 }
 
-void ASTDictionaryLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
+void ASTCollectionLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     for (auto &valueNode : values_) {
         valueNode->analyseMemoryFlow(analyser, MFFlowCategory::Escaping);
     }
 }
 
-Type ASTListLiteral::analyse(ExpressionAnalyser *analyser) {
-    CommonTypeFinder finder(analyser->semanticAnalyser());
-    for (auto &valueNode : values_) {
-        finder.addType(analyser->analyse(valueNode), analyser->typeContext());
-    }
-    return Type::listLiteral(finder.getCommonType(position(), analyser->compiler()));
-}
-
-Type ASTListLiteral::comply(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTCollectionLiteral::comply(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+    if (pairs_) return complyPairs(analyser, expectation);
     if (expectation.type() == TypeType::ValueType && expectation.typeDefinition()->canInitFrom(expressionType())) {
         type_ = expectation.copyType();
     }
@@ -161,12 +162,6 @@ Type ASTListLiteral::comply(ExpressionAnalyser *analyser, const TypeExpectation 
             analyser->semanticAnalyser());
     initializer_->createUnspecificReification();
     return type_;
-}
-
-void ASTListLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
-    for (auto &valueNode : values_) {
-        valueNode->analyseMemoryFlow(analyser, MFFlowCategory::Escaping);
-    }
 }
 
 Type ASTInterpolationLiteral::analyse(ExpressionAnalyser *analyser) {

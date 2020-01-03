@@ -33,13 +33,13 @@
     🔡👇 🍺🐽dict 🔤Peter🔤❗️ 🔤Paul🔤🔤Peter = Paul🔤❗️
     🔤Berlauch🔤 ➡️🐽dict🔤Freiherr🔤❗️
     🔡👇 🍺🐽dict 🔤Freiherr🔤❗️🔤Berlauch🔤🔤Freiherr = Berlauch🔤❗️
-    🍯 🔤Grapefruit🔤 34  🔤Birne🔤 24  🔤Apfel🔤 111  🍆 ➡️ literalDictionary
+    🍿 🔤Grapefruit🔤 ➡️ 34 🔤Birne🔤 ➡️ 24  🔤Apfel🔤 ➡️ 111 🍆 ➡️ literalDictionary
     🔢👇 🍺🐽literalDictionary 🔤Grapefruit🔤❗️34 🔤Grapefruit = 34🔤❗️
     🔢👇 🍺🐽literalDictionary 🔤Birne🔤❗️24 🔤Birne = 24🔤❗️
     🔢👇 🍺🐽literalDictionary 🔤Apfel🔤❗️ 111 🔤Apfel = 111🔤❗️
-    🍯 🔤Grapefruit🔤 34  🔤Birne🔤 24  🔤Apfel🔤 111  🍆 ➡️ keysDictionary
+    🍿 🔤Grapefruit🔤 ➡️ 34 🔤Birne🔤 ➡️ 24  🔤Apfel🔤 ➡️ 111 🍆 ➡️ keysDictionary
 
-    🍨 🔤Grapefruit🔤 🔤Birne🔤 🔤Apfel🔤 🍆 ➡️ 🖍🆕keys
+    🍿 🔤Grapefruit🔤 🔤Birne🔤 🔤Apfel🔤 🍆 ➡️ 🖍🆕keys
     🦁keys 🍇a 🔡 b 🔡 ➡️ 🔢
       ↩️ ↔a b❗️
     🍉
@@ -51,12 +51,12 @@
     ❗️
     ⛔👇 keys 🙌 dictKeys🔤🍯 🐙 should be equal to its keys🔤❗
 
-    🍯 🔤Grapefruit🔤 34 🔤Birne🔤 24  🔤Apfel🔤 111 🍆 ➡️ 🖍🆕clearDictionary
+    🍿 🔤Grapefruit🔤 ➡️ 34 🔤Birne🔤 ➡️ 24  🔤Apfel🔤 ➡️ 111 🍆 ➡️ 🖍🆕clearDictionary
     🔢👇 🐗clearDictionary❗️ 3 🔤Cleared Amount = 3🔤❗️
     ⛔👇 🐽clearDictionary 🔤Grapefruit🔤❗️🙌 🤷‍♀️ 🔤Cleared Item not accessible🔤❗️
     🔢👇 📏clearDictionary❓ 0 🔤Cleared Dictionary Size = 0🔤❗️
 
-    🍯 🔤Grapefruit🔤 34  🔤Birne🔤 24  🔤Apfel🔤 111🍆 ➡️ 🖍🆕containsDictionary
+    🍿 🔤Grapefruit🔤 ➡️ 34 🔤Birne🔤 ➡️ 24  🔤Apfel🔤 ➡️ 111 🍆 ➡️ 🖍🆕containsDictionary
     ⛔👇 🐣containsDictionary 🔤Birne🔤❗️🔤Dictionary contains Birne🔤❗️
     ⛔👇 🐣containsDictionary 🔤Apfel🔤❗️🔤Dictionary contains Apfel🔤❗️
     ❎👇 🐣containsDictionary 🔤42🔤❗️🔤Dictionary doesn't contain 42🔤❗️
@@ -66,7 +66,7 @@
     10➡️🐽containsDictionary 🔤42🔤❗️
     🔢👇 📏containsDictionary❓ 4 🔤Dictionary size = 4🔤❗️
 
-    🍯 🔤pancake🔤 99 🔤waffles🔤 11 🔤muffin🔤 22 🍆 ➡️ dictA
+    🍿 🔤pancake🔤 ➡️ 99 🔤waffles🔤 ➡️ 11 🔤muffin🔤 ➡️ 22 🍆 ➡️ dictA
     dictA ➡️ 🖍🆕dictB
     🔢👇 🍺🐽dictA 🔤pancake🔤❗️ 99 🔤pancake = 99 in A🔤❗️
     🔢👇 🍺🐽dictA 🔤waffles🔤❗️ 11 🔤waffles = 11 in A🔤❗️
