@@ -79,14 +79,14 @@
 
     You cannot read from a file opened with this initializer.
   📗
-  🆕📝 message 🔡 🚧🚧🔸↕️  📻 🔤filesFileNewWriting🔤
+  🆕 ▶️📝 path 🔡 🚧🚧🔸↕️  📻 🔤filesFileNewWriting🔤
   📗
     Opens the file at the given path for reading. The file pointer is set to the
     beginning of the file.
 
     You cannot write to a file opened with this initializer.
   📗
-  🆕📜 message 🔡 🚧🚧🔸↕️  📻 🔤filesFileNewReading🔤
+  🆕 ▶️📜 path 🔡 🚧🚧🔸↕️  📻 🔤filesFileNewReading🔤
 
   📗 Write the data at the current file pointer position. 📗
   ❗️ ✏️ data 📇 🚧🚧🔸↕️  📻 🔤filesFileWrite🔤

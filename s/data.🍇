@@ -8,8 +8,8 @@
   🐊 😛🐚📇🍆
 
   📗 Creates a 📇 instance by copying the memory from the provided memory. 📗
-  ☣️ 🆕 🧠 memory 🧠 🍼 count 🔢 🍇
-    🆕🧠🆕 count❗️➡️ 🖍data
+  ☣️ 🆕 memory 🧠 🍼 count 🔢 🍇
+    🆕🧠 count❗️➡️ 🖍data
     🚜 data 0 memory 0 count❗️
   🍉
 
@@ -65,7 +65,7 @@
   ❗️ 🔪 from 🔢 length 🔢 ➡️ 📇 🍇
     ↪️ from ▶️️🙌 count 🍇
       ☣️ 🍇
-        ↩️ 🆕📇🧠 🆕🧠🆕 0❗️ 0❗️
+        ↩️ 🆕📇 🆕🧠 0❗️ 0❗️
       🍉
     🍉
     length ➡️ 🖍🆕normal_length
@@ -74,9 +74,9 @@
     🍉
 
     ☣️ 🍇
-      🆕🧠🆕 normal_length❗️ ➡️ new
+      🆕🧠 normal_length❗️ ➡️ new
       🚜 new 0 data from normal_length❗️
-      ↩️ 🆕📇🧠 new normal_length❗️
+      ↩️ 🆕📇 new normal_length❗️
     🍉
   🍉
 
@@ -94,15 +94,15 @@
   ➕ b 📇 ➡️ 📇 🍇
     count ➕ 📏b❓ ➡️ new_count
     ☣️ 🍇
-      🆕🧠🆕 new_count ❗️ ➡️ new
+      🆕🧠 new_count ❗️ ➡️ new
       🚜 new 0 data 0 count❗️
       🚜 new count 🧠b❗️0 📏b❓❗️
-      ↩️ 🆕📇🧠 new new_count❗️
+      ↩️ 🆕📇 new new_count❗️
     🍉
   🍉
 
   📗 Returns an iterator to iterate over the bytes of this data object. 📗
   ❗️ 🍡 ➡️ 🌳🐚💧🍆 🍇
-    ↩️ 🆕🌳🐚💧🍆🆕👇❗️
+    ↩️ 🆕🌳🐚💧🍆👇❗️
   🍉
 🍉

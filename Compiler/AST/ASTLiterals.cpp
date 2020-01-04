@@ -166,7 +166,7 @@ Type ASTCollectionLiteral::comply(ExpressionAnalyser *analyser, const TypeExpect
 
 Type ASTInterpolationLiteral::analyse(ExpressionAnalyser *analyser) {
     Type sb = analyser->package()->getRawType(TypeIdentifier(U"🔠", kDefaultNamespace, position()));
-    init_ = sb.typeDefinition()->inits().lookup(U"🐧", Mood::Imperative, { Type(analyser->compiler()->sInteger) },
+    init_ = sb.typeDefinition()->inits().lookup(U"🆕", Mood::Imperative, { Type(analyser->compiler()->sInteger) },
                                                 Type(sb), analyser->typeContext(), analyser->semanticAnalyser());
 
     append_ = sb.typeDefinition()->methods().lookup(U"🐻", Mood::Imperative,

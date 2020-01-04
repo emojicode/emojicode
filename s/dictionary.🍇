@@ -8,13 +8,13 @@
     🤷‍♀️➡️🖍next
   🍉
 
-  🆕👥 pair 🐝🐚Key Element🍆️ 🍇
+  🆕 pair 🐝🐚Key Element🍆️ 🍇
     🐽pair❗️ ➡️🖍element
     🔑pair❗️ ➡️🖍key
     ⚗️pair❗️ ➡️🖍hash
 
     ↪️ next ➡️ nextu 🍇
-      🆕🐝🐚Key Element🍆👥 nextu❗️➡️🖍next
+      🆕🐝🐚Key Element🍆 nextu❗️➡️🖍next
     🍉
   🍉
 
@@ -60,19 +60,19 @@
   🆕 🍼capacity🔢 🍇
     ☣️ 🍇
       capacity✖️⚖️🍬🐝🐚🔡Element🍆 ➡️ length
-      🆕🧠🆕 length❗️ ➡️ 🖍data
+      🆕🧠 length❗️ ➡️ 🖍data
       ✍️ data 0 0 length❗
     🍉
   🍉
 
-  🆕👥 storage 🌸🐚Element🍆 🍇
+  🆕 storage 🌸🐚Element🍆 🍇
     🐴storage❓ ➡️ 🖍capacity
 
     ☣️ 🍇
-      🆕🧠🆕 capacity✖️⚖️Element❗️ ➡️ 🖍data
-      🔂 i 🆕⏩⏩ 0 capacity❗️ 🍇
+      🆕🧠 capacity✖️⚖️Element❗️ ➡️ 🖍data
+      🔂 i 🆕⏩ 0 capacity❗️ 🍇
         ↪️🐽🐚🍬🐝🐚🔡Element🍆🍆 🧠storage❗️ i✖️⚖️🍬🐝🐚🔡Element🍆❗️ ➡️ v 🍇
-          🆕🐝🐚🔡Element🍆👥 v❗️➡️pair
+          🆕🐝🐚🔡Element🍆 v❗️➡️pair
           pair ➡️🐽🐚🍬🐝🐚🔡Element🍆🍆 data i✖️⚖️🍬🐝🐚🔡Element🍆❗️
         🍉
         🙅‍♀️🍇
@@ -93,7 +93,7 @@
 
   📗 Releases everything inside the list. 📗
   ☣️❗️♻️ 🍇
-    🔂 i 🆕⏩⏩ 0 capacity❗️ 🍇
+    🔂 i 🆕⏩ 0 capacity❗️ 🍇
       ♻️🐚🍬🐝🐚🔡Element🍆🍆 data i✖️⚖️🍬🐝🐚🔡Element🍆❗
     🍉
   🍉
@@ -169,23 +169,23 @@
   📗 Prepare this dictionary for mutation. 📗
   🥯🖍🔒❗️📝 🍇
     ↪️ ❎🏮data❗️🎍🐌🍇
-      🆕🌸🐚Element🍆👥 data❗️ ➡️ 🖍data
+      🆕🌸🐚Element🍆 data❗️ ➡️ 🖍data
     🍉
   🍉
 
   📗 Creates an empty 🍯. 📗
-  🥯🆕 🐸 🍇
-    🆕🌸🐚Element🍆️🆕 7❗️➡️ 🖍data
+  🥯🆕 🍇
+    🆕🌸🐚Element🍆️ 7❗️➡️ 🖍data
   🍉
 
   📗 Creates an empty 🍯 with a capacity of at least *minCapacity*. 📗
-  🆕 🐴 minCapacity 🔢 🍇
-    🆕🌸🐚Element🍆️🆕 🛷🕊🍯🐚Element🍆 minCapacity❗️❗️➡️ 🖍data
+  🆕 ▶️🐴 minCapacity 🔢 🍇
+    🆕🌸🐚Element🍆️ 🛷🕊🍯🐚Element🍆 minCapacity❗️❗️➡️ 🖍data
   🍉
 
-  ☣️ 🆕 🍪 keys 🧠 values 🧠 count 🔢 🍇
-    🆕🌸🐚Element🍆️🆕 🛷🕊🍯🐚Element🍆 count❗️❗️➡️ 🖍data
-    🔂 i 🆕⏩⏩ 0 count❗️ 🍇
+  ☣️ 🆕 ▶️🍪 keys 🧠 values 🧠 count 🔢 🍇
+    🆕🌸🐚Element🍆️ 🛷🕊🍯🐚Element🍆 count❗️❗️➡️ 🖍data
+    🔂 i 🆕⏩ 0 count❗️ 🍇
       🐽🐚🔡🍆 keys i✖️⚖️🔡❗️ ➡️ key
       🐽🐚Element🍆 values i✖️⚖️Element❗️➡️ 🐽👇 key❗
     🍉
@@ -276,7 +276,7 @@
     count ⬅️➕ 1
     ⚗️key❗➡️ hash
     hash🚮🐴data❓ ➡️ index
-    🆕🐝🐚🔡Element🍆🆕 key value hash❗️ ➡️ entry
+    🆕🐝🐚🔡Element🍆 key value hash❗️ ➡️ entry
 
     ☣️ 🍇
       🐽🐚🍬🐝🐚🔡Element🍆🍆 🧠data❗️ index✖️⚖️🍬🐝🐚🔡Element🍆❗ ➡️ entry?
@@ -300,9 +300,9 @@
       🐴data❓ ➡️ oldCapacity
 
       0 ➡️ 🖍count
-      🆕🌸🐚Element🍆️🆕 🛷🕊🍯🐚Element🍆 🐴data❓❗️❗️➡️ 🖍data
+      🆕🌸🐚Element🍆️ 🛷🕊🍯🐚Element🍆 🐴data❓❗️❗️➡️ 🖍data
 
-      🔂 i 🆕⏩⏩ 0 oldCapacity❗️ 🍇
+      🔂 i 🆕⏩ 0 oldCapacity❗️ 🍇
         i✖️⚖️🍬🐝🐚🔡Element🍆 ➡️ offset
         ☣️ 🍇
           🐽🐚🍬🐝🐚🔡Element🍆🍆 🧠oldData❗️ offset❗ ➡️ 🖍🆕entry?
@@ -322,8 +322,8 @@
 
   📗
   ❗️ 🐙 ➡️ 🍨🐚🔡🍆 🍇
-    🆕🍨🐚🔡🍆🐴count❗➡️ 🖍🆕list
-    🔂 i 🆕⏩⏩ 0 🐴data❓❗️ 🍇
+    🆕🍨🐚🔡🍆▶️🐴count❗➡️ 🖍🆕list
+    🔂 i 🆕⏩ 0 🐴data❓❗️ 🍇
       ☣️ 🍇
         🐽🐚🍬🐝🐚🔡Element🍆🍆 🧠data❗️ i✖️⚖️🍬🐝🐚🔡Element🍆❗ ➡️ 🖍🆕entry?
       🍉

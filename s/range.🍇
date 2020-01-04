@@ -13,7 +13,7 @@
   📗
     Creates a range from *start* to *stop*.
   📗
-  🆕 ⏩ 🍼 start 🔢 🍼 stop 🔢 🍇
+  🆕 🍼 start 🔢 🍼 stop 🔢 🍇
     1 ➡️ 🖍step
     ↪️ stop ◀️ start 🍇
       -1 ➡️ 🖍step
@@ -23,7 +23,7 @@
   📗
     Creates a range from *start* to *stop* with the provided *step*.
   📗
-  🆕 ⏭ 🍼 start 🔢 🍼 stop 🔢 🍼 step 🔢 🍇🍉
+  🆕 🍼 start 🔢 🍼 stop 🔢 🍼 step 🔢 🍇🍉
 
   📗
     Returns the *n*th element of the range. *n* is only valid if
@@ -53,6 +53,6 @@
 
   📗 Returns an iterator to iterate over integers in this range. 📗
   ❗️ 🍡 ➡️ 🌳🐚🔢🍆 🍇
-    ↩️ 🆕🌳🐚🔢🍆🆕👇❗️
+    ↩️ 🆕🌳🐚🔢🍆👇❗️
   🍉
 🍉

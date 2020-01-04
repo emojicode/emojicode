@@ -58,9 +58,9 @@ string, but those themselves are then immutable again.
   🐊 ↘️🔸🔡
 
   📗 Creates a 🔡 by copying the memory from the *memory*. 📗
-  ☣️ 🆕 🧠 memory 🧠 🍼 count 🔢 🍇
+  ☣️ 🆕 memory 🧠 🍼 count 🔢 🍇
     count ➡️ size
-    🆕🧠🆕 size❗️ ➡️ 🖍bytes
+    🆕🧠 size❗️ ➡️ 🖍bytes
     🚜 bytes 0 memory 0 size❗️
   🍉
 
@@ -79,15 +79,15 @@ string, but those themselves are then immutable again.
     No new line character is included as part of the string.
     (Via the standard input/output)
   📗
-  🆕 👂🏼 📻 🔤sStringReadLine🔤
+  🆕 ▶️👂🏼 📻 🔤sStringReadLine🔤
 
   📗
     Creates a string by joining all elements into a string separated
     by *separator*.
   📗
-  🆕 🍨 list 🍨🐚🔡🍆 separator 🔡 🍇
-    🆕🔠🆕❗️ ➡️ builder
-    🔂 i 🆕⏩⏩ 0 📏list❓ ❗️  🍇
+  🆕 list 🍨🐚🔡🍆 separator 🔡 🍇
+    🆕🔠❗️ ➡️ builder
+    🔂 i 🆕⏩ 0 📏list❓ ❗️  🍇
       🐻 builder 🐽list i❗️ ❗️
 
       ↪️ i ➕ 1 ◀️ 📏list❓ 🍇
@@ -157,9 +157,9 @@ string, but those themselves are then immutable again.
     🍉
 
     ☣️ 🍇
-      🆕🧠🆕 normal_length❗️ ➡️ new
+      🆕🧠 normal_length❗️ ➡️ new
       🚜 new 0 bytes from normal_length❗️
-      ↩️ 🆕🔡🧠 new normal_length❗️
+      ↩️ 🆕🔡 new normal_length❗️
     🍉
   🍉
 
@@ -192,7 +192,7 @@ string, but those themselves are then immutable again.
     *seperator* itself is removed from the string.
   📗
   ❗️ 🔫 separator 🔡 ➡️ 🍨🐚🔡🍆 🍇
-    🆕🍨🐚🔡🍆🐸❗️ ➡️ 🖍🆕list
+    🆕🍨🐚🔡🍆❗️ ➡️ 🖍🆕list
 
     0 ➡️ 🖍🆕lastIndex
     👍 ➡️ 🖍🆕continue
@@ -257,7 +257,7 @@ string, but those themselves are then immutable again.
   📗 Converts the string to data encoded as UTF8. 📗
   ❗️ 📇 ➡️ 📇 🍇
     ☣️ 🍇
-      ↩️ 🆕📇🧠 bytes count❗️
+      ↩️ 🆕📇 bytes count❗️
     🍉
   🍉
 
@@ -270,7 +270,7 @@ string, but those themselves are then immutable again.
 
   📗 Returns an array with the graphemes from this string. 📗
   ❗️ 🎶 ➡️ 🍨🐚🔡🍆 🍇
-    🆕🍦🐚🔡🍆🆕❗️ ➡️ list
+    🆕🍦🐚🔡🍆❗️ ➡️ list
     🔣 👇🍇 grapheme🔡 🐻list grapheme❗️🍉❗️
     ↩️ 🥄list❗️
   🍉
@@ -312,7 +312,7 @@ string, but those themselves are then immutable again.
     0 ➡️ 🖍count
     16 ➡️ 🖍size
     ☣️ 🍇
-      🆕🧠🆕 16❗️ ➡️ 🖍data
+      🆕🧠 16❗️ ➡️ 🖍data
     🍉
   🍉
 
@@ -320,21 +320,21 @@ string, but those themselves are then immutable again.
     Creates a 🔠 with the contents of the provided string and a capacity of
     the length of the string plus 16.
   📗
-  🥯🆕 🔡 string 🔡 🍇
+  🥯🆕 ▶️ 🔡 string 🔡 🍇
     0 ➡️ 🖍count
     📐string❗️➕ 16 ➡️ 🖍size
     ☣️ 🍇
-      🆕🧠🆕 size❗️ ➡️ 🖍data
+      🆕🧠 size❗️ ➡️ 🖍data
       🦘👇 string❗️
     🍉
   🍉
 
   📗 Creates an empty 🔠 with the provided *capacity*. 📗
-  🥯🆕 🐧 capacity 🔢 🍇
+  🥯🆕 capacity 🔢 🍇
     0 ➡️ 🖍count
     capacity ➡️ 🖍size
     ☣️ 🍇
-      🆕🧠🆕 capacity❗️ ➡️ 🖍data
+      🆕🧠 capacity❗️ ➡️ 🖍data
     🍉
   🍉
 
@@ -452,7 +452,7 @@ string, but those themselves are then immutable again.
   📗 Returns the value of this this 🔠 as a 🔡. 📗
   ❗️ 🔡 ➡️ 🔡 🍇
     ☣️ 🍇
-      ↩️ 🆕🔡🧠 data count❗️
+      ↩️ 🆕🔡 data count❗️
     🍉
   🍉
 🍉

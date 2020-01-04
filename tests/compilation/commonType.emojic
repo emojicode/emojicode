@@ -61,19 +61,19 @@
   🖍🆕 g 🍨🐚🔡🍆
   stringList ➡️ 🖍g
 
-  🍿 🆕📱🆕❗️ 🆕📱🆕❗️ 🍆 ➡️ mobilePhoneList
+  🍿 🆕📱❗️ 🆕📱❗️ 🍆 ➡️ mobilePhoneList
   🖍🆕 l 🍨🐚📱🍆
   mobilePhoneList ➡️ 🖍l
 
-  🍿 🆕📱🆕❗️ 🆕📱🆕❗️ 🆕☎️ 🆕❗️ 🍆 ➡️ phonableList
+  🍿 🆕📱❗️ 🆕📱❗️ 🆕☎️ ❗️ 🍆 ➡️ phonableList
   🖍🆕 a 🍨🐚📞🍆
   phonableList ➡️ 🖍a
 
-  🍿 🆕📱🆕❗️ 🆕🔦🆕❗️ 🍆 ➡️ flashlightableList
+  🍿 🆕📱❗️ 🆕🔦❗️ 🍆 ➡️ flashlightableList
   🖍🆕 b 🍨🐚💡🍆
   flashlightableList ➡️ 🖍b
 
-  🍿 🆕📱🆕❗️ 🆕🚁🆕❗️ 🍆 ➡️ flashlightAndPhonableableList
+  🍿 🆕📱❗️ 🆕🚁❗️ 🍆 ➡️ flashlightAndPhonableableList
   🖍🆕 q 🍨🐚🍱💡📞🍱🍆
   flashlightAndPhonableableList ➡️ 🖍q
 

@@ -19,14 +19,14 @@
   🖍🆕 resourceB 💰
 
   🆕 🚧🐫 🍇
-    🆕💰🆕 🔤1_A🔤❗️ ➡️ 🖍resourceA
-    🆕💰🆕 🔤1_B🔤❗️ ➡️ 🖍resourceB
+    🆕💰 🔤1_A🔤❗️ ➡️ 🖍resourceA
+    🆕💰 🔤1_B🔤❗️ ➡️ 🖍resourceB
   🍉
 
-  🆕 🆒 🚧🐫 🍇
-    🆕💰🆕 🔤2_A🔤❗️ ➡️ 🖍resourceA
-    🚨🆕🐫🆕❗️
-    🆕💰🆕 🔤2_B🔤❗️ ➡️ 🖍resourceB
+  🆕 ▶️🆒 🚧🐫 🍇
+    🆕💰 🔤2_A🔤❗️ ➡️ 🖍resourceA
+    🚨🆕🐫❗️
+    🆕💰 🔤2_B🔤❗️ ➡️ 🖍resourceB
   🍉
 🍉
 
@@ -35,14 +35,14 @@
   🖍🆕 resourceD 💰
 
   🆕 🚧🐫 🍇
-    🆕💰🆕 🔤1_C🔤❗️ ➡️ 🖍resourceC
-    🆕💰🆕 🔤1_D🔤❗️ ➡️ 🖍resourceD
+    🆕💰 🔤1_C🔤❗️ ➡️ 🖍resourceC
+    🆕💰 🔤1_D🔤❗️ ➡️ 🖍resourceD
     ⤴️🆕❗️
   🍉
 
-  🆕👅 🚧🐫 🍇
-    🆕💰🆕 🔤2_C🔤❗️ ➡️ 🖍resourceC
-    🆕💰🆕 🔤2_D🔤❗️ ➡️ 🖍resourceD
+  🆕 ▶️👅 🚧🐫 🍇
+    🆕💰 🔤2_C🔤❗️ ➡️ 🖍resourceC
+    🆕💰 🔤2_D🔤❗️ ➡️ 🖍resourceD
     ⤴️🆒❗️
   🍉
 
@@ -52,28 +52,28 @@
 🍉
 
 🏁 🍇
-  🆗 a 🆕🐟🆕❗️ 🍇
+  🆗 a 🆕🐟❗️ 🍇
     😀 🔤not error🔤 ❗️
   🍉
   🙅 error 🍇
     😀 🔤error🔤 ❗️
   🍉
 
-  🆗 b 🆕🐟🆒❗️ 🍇
+  🆗 b 🆕🐟▶️🆒❗️ 🍇
     😀 🔤not error🔤 ❗️
   🍉
   🙅 error 🍇
     😀 🔤error🔤 ❗️
   🍉
 
-  🆗 c 🆕🐡🆕❗️ 🍇
+  🆗 c 🆕🐡❗️ 🍇
     😀 🔤not error🔤 ❗️
   🍉
   🙅 error 🍇
     😀 🔤error🔤 ❗️
   🍉
 
-  🆗 d 🆕🐡👅❗️ 🍇
+  🆗 d 🆕🐡▶️👅❗️ 🍇
     😀 🔤not error🔤 ❗️
   🍉
   🙅 error 🍇

@@ -105,6 +105,9 @@ protected:
 
     bool parseErrorType(Function *function);
 
+    /// Parses an $initializer-name$ or returns
+    std::u32string parseInitializerName();
+
 private:
     /// Parses a $multi-protocol$
     std::unique_ptr<ASTType> parseMultiProtocol();

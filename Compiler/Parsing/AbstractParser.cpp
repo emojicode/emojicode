@@ -14,6 +14,7 @@
 #include "Functions/Initializer.hpp"
 #include "Package/Package.hpp"
 #include "Types/Protocol.hpp"
+#include "OperatorHelper.hpp"
 #include <map>
 #include <vector>
 
@@ -167,6 +168,16 @@ bool AbstractParser::parseErrorType(Function *function) {
         return true;
     }
     return false;
+}
+
+std::u32string AbstractParser::parseInitializerName() {
+    std::u32string name = std::u32string(1, E_NEW_SIGN);
+    if (stream_.nextTokenIs(TokenType::Operator) &&
+        operatorType(stream_.nextToken().value()) == OperatorType::Greater) {
+        stream_.consumeToken();
+        name = stream_.consumeToken(TokenType::Identifier).value();
+    }
+    return name;
 }
 
 }  // namespace EmojicodeCompiler

@@ -184,7 +184,10 @@ void ASTSuper::toCode(PrettyStream &pretty) const {
 
 void ASTInitialization::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << "🆕" << typeExpr_ << name_;
+    pretty << "🆕" << typeExpr_;
+    if (name_ != U"🆕") {
+        pretty << "▶️" << name_;
+    }
     args_.genericArgsToCode(pretty);
     pretty << args_;
 }

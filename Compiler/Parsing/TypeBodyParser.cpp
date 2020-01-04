@@ -197,13 +197,7 @@ void TypeBodyParser<TypeDef>::parse() {
                     break;
                 }
 
-                std::u32string name = std::u32string(1, E_NEW_SIGN);
-                if (stream_.nextTokenIs(TokenType::Identifier) && !stream_.nextTokenIs(E_RADIO)
-                    && !stream_.nextTokenIs(E_BABY_BOTTLE) && !stream_.nextTokenIs(E_OPEN_LOCK)
-                    && !stream_.nextTokenIs(E_CLOSED_LOCK_WITH_KEY) && !stream_.nextTokenIs(TokenType::Generic)
-                    && !stream_.nextTokenIs(E_LOCK) && !stream_.nextTokenIs(E_CONSTRUCTION_SIGN)) {
-                    name = stream_.consumeToken(TokenType::Identifier).value();
-                }
+                auto name = parseInitializerName();
                 parseInitializer(name, attributes, documentation, accessLevel, token.position());
                 break;
             }

@@ -273,7 +273,7 @@ void PrettyPrinter::printEnumValues(Enum *enumeration) {
     std::sort(values.begin(), values.end(), [](auto &a, auto &b) { return a.second.value < b.second.value; });
     for (auto &value : values) {
         printDocumentation(value.second.documentation);
-        prettyStream_.indent() << "🆕" << value.first << "\n";
+        prettyStream_.indent() << "🆕▶️" << value.first << "\n";
     }
     prettyStream_.offerNewLineUnlessEmpty(values);
 }
@@ -350,7 +350,7 @@ void PrettyPrinter::print(const char *key, Function *function, bool body, bool n
         if (initializer != nullptr) {
             prettyStream_ << key;
             if (initializer->name().front() != E_NEW_SIGN) {
-                prettyStream_ << " " << function->name() << " ";
+                prettyStream_ << " ▶️" << function->name() << " ";
             }
         }
         else {
