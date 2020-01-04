@@ -241,12 +241,15 @@ void FunctionResolution<T>::explain(CompilerError *error) const {
         switch (nc.reason) {
         case NonCandidate::Reason::Access:
             error->addNotes(nc.function->position(), "This candidate is not accessible.");
+            break;
         case NonCandidate::Reason::Argument:
             error->addNotes(nc.function->position(), "Argument number ", nc.firstOffender,
                             " is not compatible to the expected type.");
+            break;
         case NonCandidate::Reason::GenericArgument:
             error->addNotes(nc.function->position(), "Generic argument number ", nc.firstOffender,
                             " is not compatible to the expected type.");
+            break;
         }
     }
 }

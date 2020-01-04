@@ -47,9 +47,6 @@ void mangleTypeName(std::stringstream &stream, const Type &typeb) {
         case TypeType::Protocol:
             stream << "protocol_";
             break;
-        case TypeType::TypeAsValue:
-            stream << "tyval_";
-            break;
         case TypeType::Callable:
             stream << "callable_";
             for (auto it = type.parameters(); it < type.parametersEnd(); it++) {
@@ -60,6 +57,26 @@ void mangleTypeName(std::stringstream &stream, const Type &typeb) {
             return;
         case TypeType::NoReturn:
             stream << "no_return";
+            return;
+        case TypeType::LocalGenericVariable:
+            stream << "l_" << type.genericVariableIndex();
+            return;
+        case TypeType::GenericVariable:
+            stream << "t_" << type.genericVariableIndex();
+            return;
+        case TypeType::Optional:
+            stream << "op_";
+            mangleTypeName(stream, type.unoptionalized());
+            return;
+        case TypeType::TypeAsValue:
+            stream << "tv_";
+            mangleTypeName(stream, type.typeOfTypeValue());
+            return;
+        case TypeType::MultiProtocol:
+            stream << "mp_";
+            for (auto &proto : type.protocols()) {
+                mangleTypeName(stream, proto);
+            }
             return;
         default:
             stream << "ty_";
@@ -115,6 +132,10 @@ std::string mangleFunction(Function *function, const std::map<size_t, Type> &gen
         stream << "_assign";
     }
     mangleGenericArguments(stream, genericArgs);
+    for (auto &param : function->parameters()) {
+        stream << '-';
+        mangleTypeName(stream, param.type->type());
+    }
     return stream.str();
 }
 
