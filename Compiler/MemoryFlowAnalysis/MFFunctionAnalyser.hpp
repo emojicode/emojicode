@@ -94,6 +94,13 @@ public:
     /// scope stats) that must be released.
     void releaseAllVariables(Releasing *releasing, const SemanticScopeStats &stats, const SourcePosition &p) const;
 
+    /// Informs the analyser that a loop has been entered.
+    void enterLoop() { inLoop_++; }
+
+    /// Informs the analyser that a loop has been exited.
+    /// @pre enterLoop() must have been called for the loop.
+    void exitLoop() { inLoop_--; }
+
 private:
     struct MFLocalVariable {
         bool isParam = false;
@@ -107,6 +114,8 @@ private:
     IDScoper<MFLocalVariable> scope_;
     Function *function_;
     bool thisEscapes_ = false;
+
+    unsigned int inLoop_ = 0;
 
     void releaseVariables(ASTBlock *block) const;
 

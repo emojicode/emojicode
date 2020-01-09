@@ -174,7 +174,8 @@ void MFFunctionAnalyser::recordVariableSet(size_t id, ASTExpr *expr, Type type) 
     var.type = std::move(type);
     if (expr != nullptr) {
         expr->analyseMemoryFlow(this, MFFlowCategory::Escaping);
-        if (auto heapAllocates = dynamic_cast<MFHeapAllocates *>(expr)) {
+        auto heapAllocates = dynamic_cast<MFHeapAllocates *>(expr);
+        if (heapAllocates != nullptr && inLoop_ == 0) {
             var.inits.emplace_back(heapAllocates);
         }
     }

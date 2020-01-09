@@ -68,7 +68,9 @@ void ASTRepeatWhile::analyse(FunctionAnalyser *analyser) {
 
 void ASTRepeatWhile::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
     condition_->analyseMemoryFlow(analyser, MFFlowCategory::Borrowing);
+    analyser->enterLoop();
     block_.analyseMemoryFlow(analyser);
+    analyser->exitLoop();
     analyser->popScope(&block_);
 }
 
