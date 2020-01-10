@@ -211,7 +211,7 @@ llvm::Function* CodeGenerator::createLlvmFunction(Function *function, Reificatio
             i++;
         }
     }
-    if (!function->genericParameters().empty()) {
+    if (!function->genericParameters().empty() && dynamic_cast<Class*>(function->owner()) == nullptr) {
         fn->addParamAttr(i, llvm::Attribute::NonNull);
         fn->addParamAttr(i, llvm::Attribute::NoCapture);
         fn->addParamAttr(i, llvm::Attribute::ReadOnly);
