@@ -22,29 +22,38 @@ public:
     void addLocal(size_t index, const Type &type, const TypeContext &tc) { local_[index].addType(type, tc); }
     void addType(size_t index, const Type &type, const TypeContext &tc) { type_[index].addType(type, tc); }
 
-    std::vector<std::shared_ptr<ASTType>> localArguments(const SourcePosition &p, Compiler *compiler) const {
+    std::vector<std::shared_ptr<ASTType>> localArguments() const {
         std::vector<std::shared_ptr<ASTType>> result;
         for (auto &finder : local_) {
-            auto commonType = finder.getCommonType(p, compiler);
+            auto commonType = finder.getCommonType();
             result.emplace_back(std::make_unique<ASTLiteralType>(commonType));
         }
         return result;
     }
 
-    std::vector<Type> localArgumentsType(const SourcePosition &p, Compiler *compiler) const {
+    std::vector<Type> localArgumentsType() const {
         std::vector<Type> result;
         for (auto &finder : local_) {
-            result.emplace_back(finder.getCommonType(p, compiler));
+            result.emplace_back(finder.getCommonType());
         }
         return result;
     }
 
-    std::vector<Type> typeArguments(const SourcePosition &p, Compiler *compiler) const {
+    std::vector<Type> typeArguments() const {
         std::vector<Type> result;
         for (auto &finder : type_) {
-            result.emplace_back(finder.getCommonType(p, compiler));
+            result.emplace_back(finder.getCommonType());
         }
         return result;
+    }
+
+    void issueWarning(const SourcePosition &p, Compiler *compiler) {
+        for (auto &finder : local_) {
+            finder.issueWarning(p, compiler);
+        }
+        for (auto &finder : type_) {
+            finder.issueWarning(p, compiler);
+        }
     }
 
 private:

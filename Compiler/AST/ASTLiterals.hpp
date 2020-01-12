@@ -16,6 +16,7 @@
 namespace EmojicodeCompiler {
 
 class FunctionAnalyser;
+class CommonTypeFinder;
 
 class ASTStringLiteral final : public ASTExpr {
 public:
@@ -90,7 +91,7 @@ private:
 
 class ASTCollectionLiteral : public ASTExpr {
 public:
-    explicit ASTCollectionLiteral(const SourcePosition &p) : ASTExpr(p) {}
+    explicit ASTCollectionLiteral(const SourcePosition &p);
 
     Type analyse(ExpressionAnalyser *analyser) override;
     Type comply(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
@@ -104,12 +105,15 @@ public:
     std::pair<Value*, Value*> prepareValueArray(FunctionCodeGenerator *fg, llvm::Type *type, size_t count, const char *name) const;
     void setPairs() { pairs_ = true; }
 
+    ~ASTCollectionLiteral() override;
+
 protected:
     std::vector<std::shared_ptr<ASTExpr>> values_;
     Type type_ = Type::noReturn();
     Initializer *initializer_ = nullptr;
     Value *init(FunctionCodeGenerator *fg, std::vector<llvm::Value *> args) const;
     bool pairs_ = false;
+    std::unique_ptr<CommonTypeFinder> finder_;
     Value* generatePairs(FunctionCodeGenerator *fg) const;
     Type complyPairs(ExpressionAnalyser *analyser, const TypeExpectation &expectation);
 };

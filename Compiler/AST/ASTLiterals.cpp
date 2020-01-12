@@ -93,8 +93,12 @@ Type ASTNoValue::comply(ExpressionAnalyser *analyser, const TypeExpectation &exp
     return type_;
 }
 
+ASTCollectionLiteral::ASTCollectionLiteral(const SourcePosition &p) : ASTExpr(p) {}
+
+ASTCollectionLiteral::~ASTCollectionLiteral() = default;
+
 Type ASTCollectionLiteral::analyse(ExpressionAnalyser *analyser) {
-    CommonTypeFinder finder(analyser->semanticAnalyser());
+     finder_ = std::make_unique<CommonTypeFinder>(analyser->semanticAnalyser());
 
     if (pairs_) {
         for (auto it = values_.begin(); it != values_.end(); it++) {
@@ -102,15 +106,15 @@ Type ASTCollectionLiteral::analyse(ExpressionAnalyser *analyser) {
             if (++it == values_.end()) {
                 throw CompilerError(position(), "A value must be provided for every key.");
             }
-            finder.addType(analyser->analyse(*it), analyser->typeContext());
+            finder_->addType(analyser->analyse(*it), analyser->typeContext());
         }
-        return Type::dictionaryLiteral(finder.getCommonType(position(), analyser->compiler()));
+        return Type::dictionaryLiteral(finder_->getCommonType());
     }
 
     for (auto &valueNode : values_) {
-        finder.addType(analyser->analyse(valueNode), analyser->typeContext());
+        finder_->addType(analyser->analyse(valueNode), analyser->typeContext());
     }
-    return Type::listLiteral(finder.getCommonType(position(), analyser->compiler()));
+    return Type::listLiteral(finder_->getCommonType());
 }
 
 Type ASTCollectionLiteral::complyPairs(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
@@ -118,8 +122,10 @@ Type ASTCollectionLiteral::complyPairs(ExpressionAnalyser *analyser, const TypeE
         type_ = expectation.copyType();
     }
     else {
+        finder_->issueWarning(position(), analyser->compiler());
         type_ = analyser->semanticAnalyser()->defaultLiteralType(expressionType());
     }
+    finder_ = nullptr;
     type_.setExact(true);
 
     Type elementType = analyser->compiler()->sDictionary->typeForVariable(0).resolveOn(TypeContext(type_));
@@ -149,8 +155,10 @@ Type ASTCollectionLiteral::comply(ExpressionAnalyser *analyser, const TypeExpect
         type_ = expectation.copyType();
     }
     else {
+        finder_->issueWarning(position(), analyser->compiler());
         type_ = analyser->semanticAnalyser()->defaultLiteralType(expressionType());
     }
+    finder_ = nullptr;
     type_.setExact(true);
 
     Type elementType = analyser->compiler()->sList->typeForVariable(0).resolveOn(TypeContext(type_));

@@ -142,7 +142,7 @@ Type ASTMethodable::analyseTypeMethodCall(ExpressionAnalyser *analyser, const st
 }
 
 Type ASTMethodable::analyseMultiProtocolCall(ExpressionAnalyser *analyser, const std::u32string &name) {
-    auto resolution = FunctionResolution<Function>(name, args_.mood(), &args_, calleeType_, analyser);
+    auto resolution = FunctionResolution<Function>(name, args_.mood(), &args_, calleeType_, analyser, position());
     for (auto &protocol : calleeType_.protocols()) {
         resolution.addResolver(&protocol.protocol()->methods());
     }

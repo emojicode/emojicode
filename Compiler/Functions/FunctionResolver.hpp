@@ -84,12 +84,12 @@ class FunctionResolution {
 public:
     FunctionResolution(const std::u32string &name, Mood mood, const std::vector<Type> &args,
                        std::vector<Type> genericArgs, const Type &callee,
-                       const TypeContext &typeContext, SemanticAnalyser *analyser)
+                       const TypeContext &typeContext, SemanticAnalyser *analyser, SourcePosition p)
             : key_(name, mood, args.size()), callee_(callee), args_(args), genericArgs_(std::move(genericArgs)),
-              typeContext_(typeContext), analyser_(analyser) {}
+              typeContext_(typeContext), analyser_(analyser), p_(p) {}
 
     FunctionResolution(const std::u32string &name, Mood mood, ASTArguments *args, const Type &callee,
-                       ExpressionAnalyser *analyser);
+                       ExpressionAnalyser *analyser, SourcePosition p);
 
     /// Adds the suitable functions of a resolver to the resolution.
     void addResolver(const FunctionResolver<T> *res);
@@ -120,6 +120,7 @@ private:
     std::vector<Type> genericArgs_;
     const TypeContext &typeContext_;
     SemanticAnalyser *analyser_;
+    const SourcePosition p_;
 
     std::optional<Candidate<T>> pick();
 

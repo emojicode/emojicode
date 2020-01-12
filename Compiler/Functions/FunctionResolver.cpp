@@ -144,7 +144,7 @@ void FunctionResolution<T>::addResolver(const FunctionResolver<T> *res) {
                 auto inf = checkCallSignature(fn.get());
                 if (inf.has_value() &&
                     checkFunctionAccess(fn.get()) &&
-                    checkGenericArguments(fn.get(), inf->localArgumentsType(SourcePosition(), analyser_->compiler()))) {
+                    checkGenericArguments(fn.get(), inf->localArgumentsType())) {
                     candidates_.emplace_back(fn.get(), *inf);
                     if (fn->overriding()) {
                         blocked.emplace(fn->superFunction());
@@ -192,11 +192,11 @@ std::optional<Candidate<T>> FunctionResolution<T>::resolve() {
 
     if (auto f = pick()) { return f; }
 
-    auto error = CompilerError(SourcePosition(), "Ambiguous call to ", utf8(key_.name), ".");
+    auto error = CompilerError(p_, "Ambiguous call to ", utf8(key_.name), ".");
     for (auto &candidate : candidates_) {
         error.addNotes(candidate.function->position(), "Found this candidate.");
     }
-    throw error;
+    throw std::move(error);
 }
 
 template <typename T>
@@ -225,13 +225,14 @@ T* FunctionResolution<T>::resolveAndReificate(ASTArguments *args, Type *type) {
         return nullptr;
     }
     if (candidate->genericInferer.inferringLocal()) {
-        args->genericArguments() = candidate->genericInferer.localArguments(args->position(), analyser_->compiler());
+        args->genericArguments() = candidate->genericInferer.localArguments();
     }
     if (candidate->genericInferer.inferringType()) {
-        type->setGenericArguments(candidate->genericInferer.typeArguments(args->position(), analyser_->compiler()));
+        type->setGenericArguments(candidate->genericInferer.typeArguments());
         type->typeDefinition()->requestReificationAndCheck(typeContext_, type->genericArguments(), args->position());
         *type = type->resolveOnSuperArgumentsAndConstraints(typeContext_);
     }
+    candidate->genericInferer.issueWarning(args->position(), analyser_->compiler());
     return candidate->function;
 }
 
@@ -256,10 +257,10 @@ void FunctionResolution<T>::explain(CompilerError *error) const {
 
 template<typename T>
 FunctionResolution<T>::FunctionResolution(const std::u32string &name, Mood mood, ASTArguments *args, const Type &callee,
-                                          ExpressionAnalyser *analyser)
+                                          ExpressionAnalyser *analyser, SourcePosition p)
         : key_(name, mood, args->args().size()), callee_(callee), args_(analyseArgs(analyser, args)),
           genericArgs_(transformTypeAstVector(args->genericArguments(), analyser->typeContext())),
-          typeContext_(analyser->typeContext()), analyser_(analyser->semanticAnalyser()) {}
+          typeContext_(analyser->typeContext()), analyser_(analyser->semanticAnalyser()), p_(p) {}
 
 template <typename T>
 FunctionResolution<T>::~FunctionResolution() = default;
@@ -277,7 +278,7 @@ T* FunctionResolver<T>::lookup(const Function *prototype, const TypeContext &pro
 template <typename T>
 T* FunctionResolver<T>::lookup(const std::u32string &name, Mood mood, const std::vector<Type> &args,
                                const Type &callee, const TypeContext &typeContext, SemanticAnalyser *analyser) const {
-    auto resolver = FunctionResolution<T>(name, mood, args, {}, callee, typeContext, analyser);
+    auto resolver = FunctionResolution<T>(name, mood, args, {}, callee, typeContext, analyser, SourcePosition());
     resolver.addResolver(this);
     if (auto candidate = resolver.resolve()) {
         return candidate->function;
@@ -288,7 +289,7 @@ T* FunctionResolver<T>::lookup(const std::u32string &name, Mood mood, const std:
 template <typename T>
 T* FunctionResolver<T>::get(const std::u32string &name, Mood mood, ASTArguments *args,
                             Type *callee, ExpressionAnalyser *analyser, const SourcePosition &p) const {
-    auto resolver = FunctionResolution<T>(name, mood, args, *callee, analyser);
+    auto resolver = FunctionResolution<T>(name, mood, args, *callee, analyser, p);
     resolver.addResolver(this);
     if (auto candidate = resolver.resolveAndReificate(args, callee)) {
         return candidate;

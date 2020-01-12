@@ -71,20 +71,27 @@ void CommonTypeFinder::updateCommonProtocols(const Type &type, const TypeContext
     }
 }
 
-Type CommonTypeFinder::getCommonType(const SourcePosition &p, Compiler *compiler) const {
-    if (!firstTypeFound_) {
-        compiler->warn(p, "Type is ambiguous without more context.");
-    }
-    else if (commonType_.unboxedType() == TypeType::Something || commonType_.unboxedType() == TypeType::Someobject) {
+Type CommonTypeFinder::getCommonType() const {
+    if (firstTypeFound_ &&
+        (commonType_.unboxedType() == TypeType::Something || commonType_.unboxedType() == TypeType::Someobject)) {
         if (commonProtocols_.size() > 1) {
             return Type(commonProtocols_);
         }
         if (commonProtocols_.size() == 1) {
             return commonProtocols_.front();
         }
-        compiler->warn(p, "Common type was inferred to be ", commonType_.toString(TypeContext()), ".");
     }
     return commonType_;
+}
+
+void CommonTypeFinder::issueWarning(const SourcePosition &p, Compiler *compiler) const {
+    if (!firstTypeFound_) {
+        compiler->warn(p, "Type is ambiguous without more context.");
+    }
+    else if ((commonType_.unboxedType() == TypeType::Something || commonType_.unboxedType() == TypeType::Someobject) &&
+             commonProtocols_.empty()) {
+        compiler->warn(p, "Common type was inferred to be ", commonType_.toString(TypeContext()), ".");
+    }
 }
 
 }  // namespace EmojicodeCompiler
