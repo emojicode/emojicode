@@ -86,20 +86,21 @@ Steps:
 2. Build Docker image:
 
    ```sh
-   docker build -t emojicode-build:latest .
+   docker build -t emojicode-build -f docker/clang .
    ```
 
-3. Verify the installation was fine:
+3. Verify the installation was fine and tests pass:
 
    ```
+   docker run --rm emojicode-build
    ...
-   ✅  Emojicode was successfully installed.
+   ✅ ✅  All tests passed.
    ```
 
 4. Start image (and mount a directory to it):
 
    ```sh
-   docker run -v $(pwd)/code:/workspace -it emojicode-build:latest
+   docker run --rm -v $(pwd)/code:/workspace -it emojicode-build /bin/bash
    ```
 
 5. Start coding !
