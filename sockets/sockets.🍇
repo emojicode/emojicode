@@ -8,7 +8,7 @@
   📦 sockets 🏠
 
   🏁 🍇
-    🍺 🆕📞🆕 🔤example.com🔤 80❗️ ➡️ socket
+    🍺 🆕📞 🔤example.com🔤 80❗️ ➡️ socket
     💬 socket 📇 🔤GET / HTTP/1.1❌r❌nHost: example.com❌r❌n❌r❌n🔤❗️❗️
 
     🍺 👂 socket 140❗️ ➡️ data
@@ -32,7 +32,7 @@
 
   💭 Simple echo server listening on port 8728
   🏁 🍇
-    🍺🆕🏄🆕 8728❗️ ➡️ server
+    🍺🆕🏄 8728❗️ ➡️ server
 
     🔁 👍 🍇
       🍺 🙋 server❗️ ➡️ clientSocket

@@ -171,7 +171,7 @@ bool AbstractParser::parseErrorType(Function *function) {
 }
 
 std::u32string AbstractParser::parseInitializerName() {
-    std::u32string name = std::u32string(1, E_NEW_SIGN);
+    std::u32string name = kDefaultInitName;
     if (stream_.nextTokenIs(TokenType::Operator) &&
         operatorType(stream_.nextToken().value()) == OperatorType::Greater) {
         stream_.consumeToken();

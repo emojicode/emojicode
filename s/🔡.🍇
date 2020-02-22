@@ -27,27 +27,16 @@
   To determine the number of graphemes in a string, you can use 📏 on that array.
   To determine the number of UTF-8 bytes that make up a string, use 📐.
 
-  ### Comparing Strings
-
-  If you want to determine whether two strings represent the same value, you can
-  use the equality operator 🙌.
-
-  ```
-  🍪🔤Straw🔤 🔤berries🔤🍪 🙌 🔤Strawberries🔤
-  ```
-
-  You can learn more about the equality operator in [Operators](operators.html).
-
   ### Mutability
 
   Strings are immutable. This means that you can’t modify any string. You can,
 however, call methods on strings that return modified copies of the orginal
 string, but those themselves are then immutable again.
 
-  ### String Literals and Concatenate Literals
+  ### String Literals and Interpolation
 
-  To learn more about 🔤🔤 String Literals and 🍪🍪 Concatenate Literals [see
-  the Language Reference.](../../reference/the-s-package.html#-strings)
+  To learn more about 🔤🔤 String Literals and 🧲 Interpolation [see
+  the Language Reference.](../../reference/literals.html#-string-literals)
 📗
 🌍 🐇 🔡 🍇
   🖍🆕 bytes 🧠

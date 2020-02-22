@@ -15,6 +15,7 @@
 #include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/TypeContext.hpp"
+#include "Generation/Mangler.hpp"
 #include <iostream>
 
 namespace EmojicodeCompiler {
@@ -148,8 +149,6 @@ void PackageReporter::reportFunction(Function *function, const TypeContext &tc) 
     }
 
     writer_.StartObject();
-    writer_.Key("name");
-    writer_.String(utf8(function->name()));
 
     writer_.Key("accessLevel");
     switch (function->accessLevel()) {
@@ -188,7 +187,16 @@ void PackageReporter::reportFunction(Function *function, const TypeContext &tc) 
         else {
             writer_.String(moodEmoji(function->mood()));
         }
+
+        writer_.Key("name");
+        writer_.String(utf8(function->name()));
+    } else {
+        writer_.Key("name");
+        writer_.String(function->name() != kDefaultInitName ? utf8(function->name()) : "");
     }
+
+    writer_.Key("mangled");
+    writer_.String(mangleFunction(function, {}));
 
     reportGenericParameters(function, tc);
     reportDocumentation(function->documentation());

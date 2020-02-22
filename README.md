@@ -41,7 +41,7 @@ Steps:
    You can of course also run CMake in another directory or use another build
    system than Ninja. Refer to the CMake documentation for more information.
 
-3. Build the Compiler and Real-Time Engine:
+3. Build the Compiler and Packages:
 
    ```sh
    ninja
