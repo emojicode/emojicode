@@ -82,7 +82,7 @@ Type ASTSelection::comply(ExpressionAnalyser *analyser, const TypeExpectation &e
             .compatibleTo(expressionType(), analyser->typeContext())) {
         analyser->compiler()->error(CompilerError(position(), "Expression cannot satisfy expectation."));
     }
-    return expressionType();
+    return expressionType().inexacted();
 }
 
 }  // namespace EmojicodeCompiler
