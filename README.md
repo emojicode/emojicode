@@ -103,10 +103,10 @@ Steps:
    docker run --rm -v $(pwd)/code:/workspace -it emojicode-build /bin/bash
    ```
 
-5. Start coding !
+5. Start coding!
 
    ```sh
-   emojicodec /workspace/hello.🍇 && . /workspace/hello
+   emojicodec /workspace/hello.🍇 && ./workspace/hello
    ```
 
 ## 📃 License
