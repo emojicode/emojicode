@@ -12,7 +12,7 @@ about: Suggest an idea for this project
 
 **Why are you proposing this? What kind of problem does this feature solve?**
 
-## 🕺Example
+## 🕺 Example
 
 ```
 Please provides some code samples so we can see the feature in action.
