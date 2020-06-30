@@ -9,7 +9,7 @@
 
   🏁 🍇
     🍺 🆕📞 🔤example.com🔤 80❗️ ➡️ socket
-    💬 socket 📇 🔤GET / HTTP/1.1❌r❌nHost: example.com❌r❌n❌r❌n🔤❗️❗️
+    🍺 💬 socket 📇 🔤GET / HTTP/1.1❌r❌nHost: example.com❌r❌n❌r❌n🔤❗️❗️
 
     🍺 👂 socket 140❗️ ➡️ data
     😀 🍺 🔡 data❗️❗️
@@ -40,7 +40,7 @@
       🔁 👍 🍇
         🆗 data 👂 clientSocket 50❗️ 🍇
           💭 We’ve read 50 bytes and send them back
-          💬 clientSocket data❗️
+          🍺 💬 clientSocket data❗️
         🍉
         🙅‍♀️ error 🍇🍉
       🍉
