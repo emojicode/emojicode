@@ -123,6 +123,11 @@ If you don’t want to read the whole license, here’s a summary without legal 
 [6]:	https://twitter.com/Real_Emojicode
 [7]:	https://github.com/emojicode/emojicode/blob/master/0.6.md#help-improving-emojicodes-syntax-
 [8]:	LICENSE
+[9]:  FAQ
 
 [image-1]:	https://app.codeship.com/projects/edbc3220-f394-0134-fad2-66135ababc06/status?branch=master
 [image-2]:	https://badges.gitter.im/emojicode/emojicode.svg
+
+## 🤔 Questions or Feature Requests
+
+For any further questions or feature requests, you can contact Emojicode via Twitter [@Real\_Emojicode][6] or refer to the [FAQ][9].
