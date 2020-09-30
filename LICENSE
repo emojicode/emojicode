@@ -1,11 +1,11 @@
-           The Artistic License 2.0
+            The Artistic License 2.0
 
       Copyright (c) 2000-2006, The Perl Foundation.
 
-     Everyone is permitted to copy and distribute verbatim copies
-      of this license document, but changing it is not allowed.
+    Everyone is permitted to copy and distribute verbatim copies
+     of this license document, but changing it is not allowed.
 
-Preamble
+                       Preamble
 
 This license establishes the terms under which a given free software
 Package may be copied, modified, distributed, and/or redistributed.
@@ -140,7 +140,7 @@ the Source of the Modified Version.
 
 Aggregating or Linking the Package
 
-(7)  You may aggregate the Package (either the Standard Version or
+(7)  You may Aggregate the Package (either the Standard Version or
 Modified Version) with other packages and Distribute the resulting
 aggregation provided that you do not charge a licensing fee for the
 Package.  Distributor Fees are permitted, and licensing fees for other
@@ -191,6 +191,7 @@ infringement, then this Artistic License to you shall terminate on the
 date that such litigation is filed.
 
 (14)  Disclaimer of Warranty:
+
 THE PACKAGE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS "AS
 IS' AND WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES. THE IMPLIED
 WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
