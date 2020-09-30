@@ -1,0 +1,17 @@
+## What is EmojiCode?
+
+## Table of Contents:
+
+
+## How Do I Ask A Question or propose a new feature?
+You can contact Emojicode via Twitter [@Real\_Emojicode][https://twitter.com/Real_Emojicode] to ask any questions or suggest new features.
+
+## For more information
+To learn more about the language and how to install Emojicode visit https://www.emojicode.org/.
+
+## How do I test Emojicode?
+After you have installed Emoji Code, you can run the following:
+
+ ```sh
+   ninja tests
+   ```
