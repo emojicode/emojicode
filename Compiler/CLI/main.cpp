@@ -44,6 +44,7 @@ bool start(const Options &options) {
     compiler.add<Compiler::ParsePhase>();
     if (options.prettyprint()) {
         compiler.add<FormatPhase>();
+        return compiler.compile();
     }
     compiler.add<Compiler::AnalysisPhase>(options.standalone());
     if (!options.interfaceFile().empty()) {
