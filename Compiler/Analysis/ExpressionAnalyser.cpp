@@ -243,6 +243,11 @@ void ExpressionAnalyser::makeIntoBox(Type &exprType, const TypeExpectation &expe
         case StorageType::Box:
             if (expectation.type() == TypeType::Box &&
                 !exprType.boxedFor().identicalTo(expectation.boxedFor(), typeContext(), nullptr)) {
+                if (exprType.isReference()) {
+                    // This is an edge case caused by ASTInterpolationLiteral.
+                    exprType.setReference(false);
+                    insertNode<ASTDereference>(node, exprType);
+                }
                 exprType = exprType.unboxed().boxedFor(expectation.boxedFor());
                 insertNode<ASTRebox>(node, exprType);
             }
