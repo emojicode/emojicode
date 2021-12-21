@@ -1,0 +1,26 @@
+🏁🍇
+  📨🐇 🏭❗
+🍉
+
+🐇 🏭 🍇
+    🐇 ❗📨 🍇
+      🆕🥡 0 0 0 0 ❗ ➡️ packet
+      😀🔤🥡🔤❗
+    🍉
+🍉
+
+🐇 ✉️ 🍇
+    🖍️🆕packetVersion🔢
+    🖍️🆕packetType🔢
+    🖍️🆕packetLength🔢
+
+    🆕 🍼packetVersion🔢 🍼packetType🔢 🍼packetLength🔢 🍇🍉
+🍉
+
+🐇 🥡 ✉️ 🍇
+    🖍️🆕literalValue🔢
+
+    🆕 packetVersion🔢 packetType🔢 packetLength🔢 🍼literalValue🔢 🍇
+        ⤴️🆕 packetVersion packetType packetLength ❗
+    🍉
+🍉

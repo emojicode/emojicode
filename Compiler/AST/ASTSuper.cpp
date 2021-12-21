@@ -60,8 +60,8 @@ void ASTSuper::analyseSuperInit(ExpressionAnalyser *analyser) {
 }
 
 void ASTSuper::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
-    analyser->recordThis(function_->memoryFlowTypeForThis());
     analyser->analyseFunctionCall(&args_, nullptr, function_);
+    analyser->recordThis(function_->memoryFlowTypeForThis());
 }
 
 const Type& ASTSuper::errorType() const {

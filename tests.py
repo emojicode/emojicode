@@ -105,7 +105,8 @@ compilation_tests = [
     "identifierTest",
     "shortCircuit",
     "errorReraisePrefix",
-    "weak"
+    "weak",
+    "superMemoryFlow"
 ]
 
 if not (quick or valgrind):
