@@ -9,7 +9,7 @@ matrix:
       dist: bionic
       compiler: gcc
     - os: osx
-      osx_image: xcode10.1
+      osx_image: xcode13.1
       compiler: clang
 
 deploy:
