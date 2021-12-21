@@ -215,6 +215,11 @@ def test():
         included = os.path.join(dist.source, "tests", "compilation", "included.emojic")
         os.rename(included + '_original', included)
 
+        source_path = test_paths('included', 'compilation')[0]
+        run([emojicodec, '--format', source_path], check=True)
+        compilation_test('includer')
+        os.rename(source_path + '_original', source_path)
+
     for test in reject_tests:
         reject_test(test)
     os.chdir(os.path.join(dist.source, "tests", "s"))

@@ -45,6 +45,7 @@ void ASTArguments::toCode(PrettyStream &pretty) const {
         pretty << " ";
         for (auto &arg : arguments_) {
             pretty << arg;
+            pretty.offerSpace();
         }
     }
     pretty.refuseOffer() << (mood_ == Mood::Imperative ? "❗️" : "❓️");

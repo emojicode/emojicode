@@ -73,7 +73,7 @@ public:
     const std::u32string& documentation() const { return documentation_; }
     void setDocumentation(const std::u32string &doc) { documentation_ = doc; }
 
-    void setStartFlagFunction(Function *function) { startFlag_ = function; }
+    virtual void setStartFlagFunction(Function *function) { startFlag_ = function; }
     Function* startFlagFunction() const { return startFlag_; }
     /// Whether a start flag function was encountered and compiled.
     bool hasStartFlagFunction() const { return startFlag_ != nullptr; }

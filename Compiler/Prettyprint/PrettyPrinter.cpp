@@ -30,22 +30,10 @@ void PrettyPrinter::printRecordings(const std::vector<std::unique_ptr<RecordingP
 }
 
 void PrettyPrinter::print() {
-    auto first = true;
     for (auto &file : package_->files()) {
         prettyStream_.setOutPath(filePath(file.path_));
 
         printRecordings(file.recordings_);
-
-        if (first) {
-            first = false;
-            prettyStream_ << "🏁 ";
-            if (package_->startFlagFunction()->returnType() != nullptr) {
-                printReturnType(package_->startFlagFunction());
-                prettyStream_ << " ";
-            }
-            prettyStream_.setLastCommentQueryPlace(package_->startFlagFunction()->position());
-            package_->startFlagFunction()->ast()->toCode(prettyStream_);
-        }
     }
 }
 
@@ -88,6 +76,15 @@ void PrettyPrinter::print(RecordingPackage::Recording *recording) {
             prettyStream_.refuseOffer() << "📜 🔤" << include->path_ << "🔤\n";
             prettyStream_.offerNewLine();
         }
+    }
+    if (dynamic_cast<RecordingPackage::StartFlagFunctionRecording *>(recording)) {
+        prettyStream_ << "🏁 ";
+        if (package_->startFlagFunction()->returnType() != nullptr) {
+            printReturnType(package_->startFlagFunction());
+            prettyStream_ << " ";
+        }
+        prettyStream_.setLastCommentQueryPlace(package_->startFlagFunction()->position());
+        package_->startFlagFunction()->ast()->toCode(prettyStream_);
     }
 }
 

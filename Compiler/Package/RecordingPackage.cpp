@@ -37,4 +37,9 @@ void RecordingPackage::includeDocument(const std::string &path, const std::strin
     currentFile_ = temp;
 }
 
+void RecordingPackage::setStartFlagFunction(Function *function) {
+    files_[currentFile_].recordings_.emplace_back(std::make_unique<StartFlagFunctionRecording>());
+    Package::setStartFlagFunction(function);
+}
+
 }  // namespace EmojicodeCompiler
