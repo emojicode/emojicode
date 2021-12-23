@@ -296,11 +296,17 @@
   🍉
 
   📗
-    Sorts this array in place using the quick sort algorithm.
+    Sorts this array in place using the quick sort algorithm using the ordering specified by
+    `comparator`.
 
     `comparator` must return an integer less than, equal to, or greater than 0,
     if the first argument is considered respectively less than, equal to, or
     greater than the second.
+
+    `comparator` must satisfy the following properties otherwise the result of the method call is undefined:
+    - For all `a`, `b` and `c` of type Element, if `⁉️ comparator a b❗️ ▶️ 0 🤝 ⁉️ comparator b c❗️ ▶️ 0` then
+      `⁉️ comparator a c❗️ ▶️ 0` (transitivity).
+    - For all `a` and `b` of type Element, `⁉️ comparator a b❗️ 🙌 🔋⁉️ comparator b a❗️❗️` (antisymmetry).
   📗
   🖍❗️ 🦁 comparator 🍇Element Element➡️🔢🍉 🍇
     📝❗️
@@ -309,23 +315,24 @@
 
   🔒❗️✂️ first 🔢 last 🔢 comparator 🍇Element Element➡️🔢🍉 ➡️ 🔢 🍇
     ☣️ 🍇
-      🐽🐚Element🍆 🧠data❗️ first✖️⚖️Element❗️  ➡️ pivot
+      🐽🐚Element🍆 🧠data❗️ 🤜first ➕ 🤜last ➖ first🤛 ➗ 2🤛✖️⚖️Element❗️  ➡️ pivot
     🍉
 
     first ➖ 1 ➡️🖍🆕i
     last ➕ 1 ➡️🖍🆕j
 
+
     🔁 👍 🍇
       i ⬅️➕ 1
       ☣️ 🍇
-        🔁 ⁉️comparator 🐽🐚Element🍆 🧠data❗️ i✖️⚖️Element❗️ pivot❗️ ◀️ 0 🍇
+        🔁 i ◀️🙌 last 🤝 ⁉️comparator 🐽🐚Element🍆 🧠data❗️ i✖️⚖️Element❗️ pivot❗️ ◀️ 0 🍇
           i ⬅️➕ 1
         🍉
       🍉
 
       j ⬅️➖ 1
       ☣️ 🍇
-        🔁 ⁉️comparator 🐽🐚Element🍆 🧠data❗️ j✖️⚖️Element❗️ pivot❗️ ▶️ 0 🍇
+        🔁 j ▶️🙌 first 🤝 ⁉️comparator 🐽🐚Element🍆 🧠data❗️ j✖️⚖️Element❗️ pivot❗️ ▶️ 0 🍇
           j ⬅️➖ 1
         🍉
       🍉
@@ -338,12 +345,18 @@
         🔄👇 i j❗️
       🍉
     🍉
-    ↩️ 0
+    🤯🐇💻 🔤Unreachable code reached during 🦁🔤 ❗️
+    ↩️0
   🍉
 
   🔒❗️🥃 first 🔢 last 🔢 comparator 🍇Element Element➡️🔢🍉 🍇
     ↪️ first ◀️ last 🍇
       ✂️👇 first last comparator❗️ ➡️ p
+      ↪️ p 🙌 last 👐 p ◀️ first 🍇
+        💭 The comparator does not fulfill the required properties.
+        💭 There is no way we can make progress as either 🥃 call below will lead to an infinite recursion.
+        ↩️↩️
+      🍉
       🥃👇 first p comparator❗️
       🥃👇 p ➕ 1 last comparator❗️
     🍉
