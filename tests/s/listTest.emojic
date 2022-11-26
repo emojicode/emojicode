@@ -53,6 +53,10 @@
     ⛔👇 🍺🐼literalList❗️ 🙌 🔤Franz🔤🔤Pop = Franz🔤❗️
     ⛔👇 📏literalList❓ 🙌 4 🔤Correct Length 4🔤❗️
 
+    ⛔👇 🔪🍿0 1 2 3 4 5 6 7 8 9🍆 2 4❗ 🙌 🍿2 3 4 5🍆 🔤slicing list returns correct elements🔤❗
+    ⛔👇 🔪🍿0 1 2 3 4 5 6 7 8 9🍆 10 6❗ 🙌 🆕🍨🐚🔢🍆❗ 🔤slicing list with out of bounds index returns empty list🔤❗
+    ⛔👇 🔪🍿0 1 2 3 4 5 6 7 8 9🍆 7 6❗ 🙌 🍿7 8 9🍆 🔤slicing list with out of bounds length returns list to end🔤❗
+
     🐰🍿 🔤aa🔤 🔤12345🔤 🍆 🍇a 🔡 ➡️ 🔡
       ↩️ 🔤🧲a🧲!🔤
     🍉❗️ ➡️ g
