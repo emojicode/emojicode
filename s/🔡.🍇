@@ -159,7 +159,21 @@ string, but those themselves are then immutable again.
     Returns the index of the first occurrence or no value if *search* does not
     occur.
   📗
-  ❗️ 🔍 search 🔡 ➡️ 🍬🔢 📻 🔤sStringFind🔤
+  ❗️ 🔍 search 🔡 ➡️ 🍬🔢 🍇
+    0 ➡️ 🖍️🆕index
+    🎶👇❗ ➡️ chars
+    📏chars❓ ➡️ length
+
+    🔁 index ◀️ length 🍇
+      🔪👇 index length➖index❗ ➡️ substring
+      ↪️ 🎼substring search❗ 🍇
+        ↩️ index
+      🍉
+      index ⬅️➕ 1
+    🍉
+
+    ↩️ 🤷
+  🍉
 
   📗
     Finds the first occurrences of a string in this string after the

@@ -100,15 +100,6 @@ extern "C" String* sStringToUppercase(String *string) {
     return newString;
 }
 
-extern "C" runtime::SimpleOptional<runtime::Integer> sStringFind(String *string, String* search) {
-    auto end = string->characters.get() + string->count;
-    auto pos = std::search(string->characters.get(), end, search->characters.get(), search->characters.get() + search->count);
-    if (pos != end) {
-        return pos - string->characters.get();
-    }
-    return runtime::NoValue;
-}
-
 extern "C" runtime::SimpleOptional<runtime::Integer> sStringFindFromIndex(String *string, String* search,
                                                                           runtime::Integer offset) {
     if (offset >= string->count) {
