@@ -49,7 +49,7 @@ extern "C" String* sStringReadLine(String *string) {
     return string;
 }
 
-extern "C" char sStringBeginsWith(String *string, String *beginning) {
+extern "C" char sStringBeginsWithAtIndex(String *string, String *beginning, int startIndex) {
     if (string->count < beginning->count) {
         return false;
     }

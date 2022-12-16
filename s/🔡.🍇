@@ -165,8 +165,7 @@ string, but those themselves are then immutable again.
     📏chars❓ ➡️ length
 
     🔁 index ◀️ length 🍇
-      🔪👇 index length➖index❗ ➡️ substring
-      ↪️ 🎼substring search❗ 🍇
+      ↪️ 🎼👇 search index❗ 🍇
         ↩️ index
       🍉
       index ⬅️➕ 1
@@ -184,8 +183,13 @@ string, but those themselves are then immutable again.
   📗
   ❗️ 🕵️‍♀️ search 🔡 offset 🔢 ➡️ 🍬🔢 📻 🔤sStringFindFromIndex🔤
 
-  📗 Whether this strings begins with another string. 📗
-  ❗️ 🎼 testString 🔡 ➡️ 👌 📻 🔤sStringBeginsWith🔤
+  📗 Whether this string begins with another string. 📗
+  ❗️ 🎼 testString 🔡 ➡️ 👌 🍇
+    ↩️ 🎼👇 testString 0❗
+  🍉
+
+  📗 Whether this string begins with another string, starting at the specified grapheme index. 📗
+  ❗️ 🎼 testString 🔡 index 🔢 ➡️ 👌 📻 🔤sStringBeginsWithAtIndex🔤
 
   📗 Whether this strings ends with another string. 📗
   ❗️ ⛳️ testString 🔡 ➡️ 👌 📻 🔤sStringEndsWith🔤
