@@ -159,7 +159,7 @@ string, but those themselves are then immutable again.
     Returns the index of the first occurrence or no value if *search* does not
     occur.
   📗
-  ❗️ 🔍 search 🔡 offset 🔢 ➡️ 🍬🔢 🍇
+  ❗️ 🔍 search 🔡 ➡️ 🍬🔢 🍇
     ↩️ 🕵️‍♀️👇 search 0❗
   🍉
 
@@ -175,10 +175,12 @@ string, but those themselves are then immutable again.
     0 ➡️ 🖍️🆕byteIndex
     🎶👇❗ ➡️ chars
     📏chars❓ ➡️ length
+    📐👇❗ ➡️ byteLength
+    📐search❗ ➡️ searchByteLength
 
-    🔁 graphemeIndex ◀️ length 🍇
+    🔁 byteIndex ➕ searchByteLength ◀️🙌 byteLength 🍇
       🐽chars graphemeIndex❗ ➡️ grapheme
-      📐grapheme❓ ➡️ graphemeLength
+      📐grapheme❗ ➡️ graphemeLength
       graphemeIndex ▶️🙌 offset ➡️ canStartSearch
       ↪️ canStartSearch 🤝 🎼👇 search byteIndex❗ 🍇
         ↩️ graphemeIndex
@@ -192,7 +194,7 @@ string, but those themselves are then immutable again.
 
   📗 Whether this string begins with another string. 📗
   ❗️ 🎼 testString 🔡 ➡️ 👌 🍇
-    ↪️ 📐👇❓ ◀️ 📐testString❓ 🍇
+    ↪️ 📐👇❗ ◀️ 📐testString❗ 🍇
       ↩️ 👎
     🍉
 
