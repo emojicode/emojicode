@@ -159,7 +159,9 @@ string, but those themselves are then immutable again.
     Returns the index of the first occurrence or no value if *search* does not
     occur.
   📗
-  ❗️ 🔍 search 🔡 ➡️ 🍬🔢 📻 🔤sStringFind🔤
+  ❗️ 🔍 search 🔡 ➡️ 🍬🔢 🍇
+    ↩️ 🕵️‍♀️👇 search 0❗
+  🍉
 
   📗
     Finds the first occurrences of a string in this string after the
@@ -168,10 +170,39 @@ string, but those themselves are then immutable again.
     Returns the index of the occurrence or no value if *search* does not
     occur.
   📗
-  ❗️ 🕵️‍♀️ search 🔡 offset 🔢 ➡️ 🍬🔢 📻 🔤sStringFindFromIndex🔤
+  ❗️ 🕵️‍♀️ search 🔡 offset 🔢 ➡️ 🍬🔢 🍇
+    0 ➡️ 🖍️🆕graphemeIndex
+    0 ➡️ 🖍️🆕byteIndex
+    🎶👇❗ ➡️ chars
+    📏chars❓ ➡️ length
+    📐👇❗ ➡️ byteLength
+    📐search❗ ➡️ searchByteLength
 
-  📗 Whether this strings begins with another string. 📗
-  ❗️ 🎼 testString 🔡 ➡️ 👌 📻 🔤sStringBeginsWith🔤
+    🔁 byteIndex ➕ searchByteLength ◀️🙌 byteLength 🍇
+      🐽chars graphemeIndex❗ ➡️ grapheme
+      📐grapheme❗ ➡️ graphemeLength
+      graphemeIndex ▶️🙌 offset ➡️ canStartSearch
+      ↪️ canStartSearch 🤝 🎼👇 search byteIndex❗ 🍇
+        ↩️ graphemeIndex
+      🍉
+      graphemeIndex ⬅️➕ 1
+      byteIndex ⬅️➕ graphemeLength
+    🍉
+
+    ↩️ 🤷
+  🍉
+
+  📗 Whether this string begins with another string. 📗
+  ❗️ 🎼 testString 🔡 ➡️ 👌 🍇
+    ↪️ 📐👇❗ ◀️ 📐testString❗ 🍇
+      ↩️ 👎
+    🍉
+
+    ↩️ 🎼👇 testString 0❗
+  🍉
+
+  📗 Whether this string begins with another string, starting at the specified UTF-8 byte index. 📗
+  🔒❗️ 🎼 testString 🔡 utf8Index 🔢 ➡️ 👌 📻 🔤sStringBeginsWithAtIndex🔤
 
   📗 Whether this strings ends with another string. 📗
   ❗️ ⛳️ testString 🔡 ➡️ 👌 📻 🔤sStringEndsWith🔤

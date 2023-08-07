@@ -49,11 +49,8 @@ extern "C" String* sStringReadLine(String *string) {
     return string;
 }
 
-extern "C" char sStringBeginsWith(String *string, String *beginning) {
-    if (string->count < beginning->count) {
-        return false;
-    }
-    return std::memcmp(string->characters.get(), beginning->characters.get(), beginning->count) == 0;
+extern "C" char sStringBeginsWithAtIndex(String *string, String *beginning, int utf8Index) {
+    return std::memcmp(string->characters.get() + utf8Index, beginning->characters.get(), beginning->count) == 0;
 }
 
 extern "C" char sStringEndsWith(String *string, String *ending) {
@@ -98,29 +95,6 @@ extern "C" String* sStringToUppercase(String *string) {
         off += state;
     }
     return newString;
-}
-
-extern "C" runtime::SimpleOptional<runtime::Integer> sStringFind(String *string, String* search) {
-    auto end = string->characters.get() + string->count;
-    auto pos = std::search(string->characters.get(), end, search->characters.get(), search->characters.get() + search->count);
-    if (pos != end) {
-        return pos - string->characters.get();
-    }
-    return runtime::NoValue;
-}
-
-extern "C" runtime::SimpleOptional<runtime::Integer> sStringFindFromIndex(String *string, String* search,
-                                                                          runtime::Integer offset) {
-    if (offset >= string->count) {
-        return runtime::NoValue;
-    }
-    auto end = string->characters.get() + string->count;
-    auto pos = std::search(string->characters.get() + offset, end, search->characters.get(),
-                           search->characters.get() + search->count);
-    if (pos != end) {
-        return pos - string->characters.get();
-    }
-    return runtime::NoValue;
 }
 
 extern "C" void sStringCodepoints(String *string, runtime::Callable<void, runtime::Integer, runtime::Integer> cb) {
