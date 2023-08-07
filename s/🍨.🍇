@@ -296,6 +296,33 @@
   🍉
 
   📗
+    Returns a new list consisting of *length* elements beginning from
+    the element at index *from* in this list. Complexity: O(n).
+
+    For instance:
+
+    ```
+    🔪🍿0 1 2 3 4 5 6 7 8 9🍆 2 4❗ 💭 returns 🍿2 3 4 5🍆
+    🔪🍿0 1 2 3 4 5 6 7 8 9🍆 10 6❗ 💭 returns 🆕🍨🐚🔢🍆❗
+    🔪🍿0 1 2 3 4 5 6 7 8 9🍆 7 6❗ 💭 returns 🍿7 8 9🍆
+    ```
+  📗
+  ❗️🔪 from🔢 length🔢 ➡️ 🍨🐚Element🍆 🍇
+    🆕🍨🐚Element🍆❗ ➡️ 🖍️🆕output
+    ↪️ 📏👇❓ ◀️ from 🍇
+      ↩️ output
+    🍉
+
+    from ➡️ 🖍️🆕index
+    🔁 📏output❓ ◀️ length 🤝 index ◀️ 📏👇❓ 🍇
+      🐻output 🐽👇 index❗❗
+      index ⬅️➕ 1
+    🍉
+
+    ↩️ output
+  🍉
+
+  📗
     Sorts this array in place using the quick sort algorithm using the ordering specified by
     `comparator`.
 
