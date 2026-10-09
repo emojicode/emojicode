@@ -93,7 +93,9 @@ void Compiler::LinkPhase::perform(Compiler *compiler) {
     auto runtimeLib = compiler->findBinaryPathPackage(compiler->searchPackage("runtime", SourcePosition()), "runtime");
     cmd << " " << runtimeLib << " -o " << outPath_;
 
-    system(cmd.str().c_str());
+    if (system(cmd.str().c_str()) != 0) {
+        compiler->error(CompilerError(SourcePosition(), "Linking failed."));
+    }
 }
 
 void Compiler::ArchivePhase::perform(Compiler *compiler) {
@@ -102,7 +104,9 @@ void Compiler::ArchivePhase::perform(Compiler *compiler) {
     cmd.append(outPath_);
     cmd.append(" ");
     cmd.append(objectFilePath_);
-    system(cmd.c_str());
+    if (system(cmd.c_str()) != 0) {
+        compiler->error(CompilerError(SourcePosition(), "Creating the archive failed."));
+    }
 }
 
 std::string Compiler::searchPackage(const std::string &name, const SourcePosition &p) {
