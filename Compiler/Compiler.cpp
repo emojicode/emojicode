@@ -81,7 +81,7 @@ void Compiler::LinkPhase::perform(Compiler *compiler) {
 
     cmd << linker_ << " " << objectFilePath_;
 
-    for (auto it = compiler->packageImportOrder_.rbegin(); it != compiler->packageImportOrder_.rend(); it++) {
+    for (auto it = compiler->packageLinkOrder_.rbegin(); it != compiler->packageLinkOrder_.rend(); it++) {
         auto package = *it;
         auto path = compiler->findBinaryPathPackage(package->path(), package->name());
         cmd << " " << path;
@@ -146,6 +146,7 @@ Package *Compiler::loadPackage(const std::string &name, const SourcePosition &p,
     packageImportOrder_.emplace_back(rawPtr);
     packages_.emplace(name, std::move(package));
     parseInterface(rawPtr, p);
+    packageLinkOrder_.emplace_back(rawPtr);
 
     SemanticAnalyser(rawPtr, true).analyse(false);
     if (!hasError_) {

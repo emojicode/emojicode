@@ -215,6 +215,7 @@ private:
 
     std::map<std::string, std::unique_ptr<Package>> packages_;
     std::vector<Package *> packageImportOrder_;
+    std::vector<Package *> packageLinkOrder_;
 
     bool hasError_ = false;
     std::string mainFile_;
