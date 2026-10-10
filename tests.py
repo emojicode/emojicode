@@ -133,11 +133,15 @@ library_tests = [
 ]
 reject_tests = glob.glob(os.path.join(dist.source, "tests", "reject",
                                       "*.emojic"))
+package_tests = [
+    ("packageImportingPackage", ["inner", "outer"])
+]
 
 failed_tests = []
 
 emojicodec = os.path.abspath("Compiler/emojicodec")
 os.environ["EMOJICODE_PACKAGES_PATH"] = os.path.abspath(".")
+test_packages_path = os.path.abspath(os.path.join("tests", "packages"))
 
 
 def fail_test(name):
@@ -178,6 +182,45 @@ def reject_test(filename):
     if completed.returncode != 1 or len(re.findall(r"🚨 error:", output)) != 1:
         print(output)
         fail_test(filename)
+
+
+def test_package_arguments(name):
+    source_path = os.path.join(dist.source, "tests", "packages", name,
+                               name + ".emojic")
+    out_dir = os.path.join(test_packages_path, name)
+    os.makedirs(out_dir, exist_ok=True)
+    return [source_path, '-p', name, '-S', test_packages_path,
+            '-o', os.path.join(out_dir, "lib" + name + ".a")]
+
+
+def build_test_package(name):
+    run([emojicodec] + test_package_arguments(name), check=True)
+
+
+def package_test(name, packages):
+    for package in packages:
+        build_test_package(package)
+    source_path = os.path.join(dist.source, "tests", "packages",
+                               name + ".emojic")
+    binary_path = os.path.join(test_packages_path, name)
+    run([emojicodec, source_path, '-S', test_packages_path,
+         '-o', binary_path], check=True)
+    completed = run([binary_path], stdout=PIPE)
+    exp_path = os.path.join(dist.source, "tests", "packages", name + ".txt")
+    output = completed.stdout.decode('utf-8')
+    if output != open(exp_path, "r", encoding='utf-8').read():
+        print(output)
+        fail_test(name)
+
+
+def failing_tool_test(name, variable, arguments):
+    env = dict(os.environ)
+    env[variable] = "false"
+    completed = run([emojicodec] + arguments, stderr=PIPE, env=env)
+    output = completed.stderr.decode('utf-8')
+    if completed.returncode != 1 or len(re.findall(r"🚨 error:", output)) != 1:
+        print(output)
+        fail_test(name)
 
 
 def available_compilation_tests():
@@ -222,6 +265,12 @@ def test():
 
     for test in reject_tests:
         reject_test(test)
+    for name, packages in package_tests:
+        package_test(name, packages)
+    failing_tool_test("linkerFailure", "CXX",
+                      [test_paths("hello", "compilation")[0]])
+    failing_tool_test("archiverFailure", "AR",
+                      test_package_arguments("inner"))
     os.chdir(os.path.join(dist.source, "tests", "s"))
     os.environ["TEST_ENV_1"] = "The day starts like the rest I've seen"
     for test in library_tests:

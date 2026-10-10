@@ -81,7 +81,7 @@ void Compiler::LinkPhase::perform(Compiler *compiler) {
 
     cmd << linker_ << " " << objectFilePath_;
 
-    for (auto it = compiler->packageImportOrder_.rbegin(); it != compiler->packageImportOrder_.rend(); it++) {
+    for (auto it = compiler->packageLinkOrder_.rbegin(); it != compiler->packageLinkOrder_.rend(); it++) {
         auto package = *it;
         auto path = compiler->findBinaryPathPackage(package->path(), package->name());
         cmd << " " << path;
@@ -93,7 +93,9 @@ void Compiler::LinkPhase::perform(Compiler *compiler) {
     auto runtimeLib = compiler->findBinaryPathPackage(compiler->searchPackage("runtime", SourcePosition()), "runtime");
     cmd << " " << runtimeLib << " -o " << outPath_;
 
-    system(cmd.str().c_str());
+    if (system(cmd.str().c_str()) != 0) {
+        compiler->error(CompilerError(SourcePosition(), "Linking failed."));
+    }
 }
 
 void Compiler::ArchivePhase::perform(Compiler *compiler) {
@@ -102,7 +104,9 @@ void Compiler::ArchivePhase::perform(Compiler *compiler) {
     cmd.append(outPath_);
     cmd.append(" ");
     cmd.append(objectFilePath_);
-    system(cmd.c_str());
+    if (system(cmd.c_str()) != 0) {
+        compiler->error(CompilerError(SourcePosition(), "Creating the archive failed."));
+    }
 }
 
 std::string Compiler::searchPackage(const std::string &name, const SourcePosition &p) {
@@ -146,6 +150,7 @@ Package *Compiler::loadPackage(const std::string &name, const SourcePosition &p,
     packageImportOrder_.emplace_back(rawPtr);
     packages_.emplace(name, std::move(package));
     parseInterface(rawPtr, p);
+    packageLinkOrder_.emplace_back(rawPtr);
 
     SemanticAnalyser(rawPtr, true).analyse(false);
     if (!hasError_) {
